@@ -10,8 +10,8 @@ async def on_ready():
 @b.event
 async def on_member_join(m):
   e = d.Embed(
-    title="",
-    description=f"{m.mention} **{len(m.guild.members)}**й"
+    title="\t**Добро пожаловать**",
+    description=f"Привет, {m.name}! Рад видеть тебя в нашем уютном уголке - <названиесервера>."
   ).set_thumbnail(url=m.avatar_url)
   
   await m.add_roles(b.get_guild(542005378049638400).get_role(542012055775870976), reason="new user")
