@@ -1,6 +1,6 @@
 {
   "install": "pip3 install --user -r req.txt",
-  "start": "PYTHONUNBUFFERED=true python3 main.py",
+  "start": "PYTHONUNBUFFERED=true python3 bot.py",
   "watch": {
     "ignore": [
       "\\.pyc$"
