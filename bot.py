@@ -17,8 +17,8 @@ class Ciri(c.Bot):
   def tm(self, string: str = ""):
     hour = str(localtime().tm_hour + 3)
     minu = str(localtime().tm_min)
-    tm = string + hour + "-" + minu
-    return tm
+    tm = string + "[" + hour + "-" + minu + "]"
+    return str(tm)
 
   async def event_time(self):
     while 1:
