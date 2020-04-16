@@ -3,10 +3,18 @@ from discord.ext import commands as c
 
 b = c.Bot(command_prefix="adshgrsfhfhgk,jlij;lj'nhplftujxfvjf")
 
+def tm(string: str = ""):
+  hour = str(localtime().tm_hour + 3)
+  minu = str(localtime().tm_min)
+  tm = string + hour + ":" + minu
+  return tm
+
 @b.event
 async def on_ready():
   print("ready")
-
+  fc = b.get_channel(684011140908449843)
+  n = tm("⸨🎉︙ивенты ")
+  
 @b.event
 async def on_member_join(m):
   c = b.get_channel(639709192042709002)
@@ -14,6 +22,7 @@ async def on_member_join(m):
   sc = b.get_channel(542005378049638403)
   o = b.get_user(348444859360608256)
   r = b.get_guild(542005378049638400).get_role(542012055775870976)
+  
   
   e = d.Embed(title="\t**Добро пожаловать**",description=f"\
     Привет, {m.mention}! Рад видеть тебя в нашем уютном уголке - {m.guild.name}.\n\n\
