@@ -17,7 +17,7 @@ class Ciri(c.Bot):
   def tm(self, string: str = ""):
     hour = str(localtime().tm_hour + 3)
     minu = str(localtime().tm_min)
-    tm = string + "[" + hour + "-" + minu + "]"
+    tm = string + "〘" + hour + "∵" + minu + "〙"
     return str(tm)
 
   async def event_time(self):
@@ -27,7 +27,7 @@ class Ciri(c.Bot):
 
       await fc.edit(reason="event time", name=n)
       
-      await ai.sleep(30)
+      await ai.sleep(10)
   
   async def on_ready(self):
     print("ready")
