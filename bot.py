@@ -1,10 +1,12 @@
 import discord as d
+import asyncio as ai
 from discord.ext import commands as c
 from discord.ext.tasks import loop as l
+from time import localtime
 
 class Ciri(c.Bot):
   def __init__(self):
-    super().__init__(command_prefix=self.prefix, case_insensitive=True)
+    super().__init__(command_prefix="adshgrsfhfhgk,jlij;lj'nhplftujxfvjf", case_insensitive=True)
     
     self.init()
     
@@ -12,16 +14,26 @@ class Ciri(c.Bot):
     self.prefix = "adshgrsfhfhgk,jlij;lj'nhplftujxfvjf"
     self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
     
-  def tm(string: str = ""):
+  def tm(self, string: str = ""):
     hour = str(localtime().tm_hour + 3)
     minu = str(localtime().tm_min)
-    tm = string + hour + ":" + minu
+    tm = string + hour + "-" + minu
     return tm
 
-  async def on_ready():
-    print("ready")
+  async def event_time(self):
+    while 1:
+      fc = self.get_channel(684011140908449843)
+      n = self.tm("⸨🎉︙ивенты ")
 
-  async def on_member_join(m):
+      await fc.edit(reason="event time", name=n)
+      
+      await ai.sleep(60)
+  
+  async def on_ready(self):
+    print("ready")
+    await self.event_time()
+
+  async def on_member_join(self, m):
     c = self.get_channel(639709192042709002)
     fc = self.get_channel(684010692571037706)
     sc = self.get_channel(542005378049638403)
@@ -41,13 +53,11 @@ class Ciri(c.Bot):
     await m.add_roles(r, reason="new user")
     await c.send(embed=e)
 
-  @l(seconds=60)
-  async def event_time():
-    fc = self.get_channel(684011140908449843)
-    n = tm("⸨🎉︙ивенты ")
+  
     
 
   def startup(self):
     super().run(self.token)
+
     
 bot = Ciri()
