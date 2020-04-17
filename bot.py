@@ -1,5 +1,6 @@
 import discord as d
 import asyncio as ai
+
 from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
@@ -22,6 +23,7 @@ class Ciri(c.Bot):
     tm = string + "〘" + (hour if len(hour) == 2 else "0" + hour) + "∵" + (minu if len(minu) == 2 else "0" + minu) + "〙"
     return str(tm)
 
+  
   async def event_time(self):
     while 1:
       fc = self.get_channel(684011140908449843)
@@ -31,10 +33,13 @@ class Ciri(c.Bot):
       
       await ai.sleep(15)
   
+  
+  
   async def on_ready(self):
     print("ready")
     await self.event_time()
 
+    
   async def on_member_join(self, m):
     c = self.get_channel(639709192042709002)
     fc = self.get_channel(684010692571037706)
@@ -42,13 +47,13 @@ class Ciri(c.Bot):
     o = self.get_user(348444859360608256)
     r = self.get_guild(542005378049638400).get_role(542012055775870976)
 
-
     e = d.Embed(title="\t**Добро пожаловать**",description=f"\
       Привет, {m.mention}! Рад видеть тебя в нашем уютном уголке - {m.guild.name}.\n\n\
       👉 **Обязательно загляни в канал** {fc.mention}!\n\
       Там ты найдешь всю важную инфу для комфортного времяпровождения на сервере (⌒▽⌒)♡\n\n\
       💜 **Если хочешь начать общение, просто напиши \"Привет всем\" в канал** {sc.mention}!\n\n\
       Ты у нас уже - {len(m.guild.members)}-й гость.")
+    
     e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
     e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
 
