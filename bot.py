@@ -49,8 +49,8 @@ class Ciri(c.Bot):
       Там ты найдешь всю важную инфу для комфортного времяпровождения на сервере (⌒▽⌒)♡\n\n\
       💜 **Если хочешь начать общение, просто напиши \"Привет всем\" в канал** {sc.mention}!\n\n\
       Ты у нас уже - {len(m.guild.members)}-й гость.")
-    e.set_thumbnail(url=m.avatar_url)
-    e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url)
+    e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
+    e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
 
     await m.add_roles(r, reason="new user")
     await c.send(embed=e)
