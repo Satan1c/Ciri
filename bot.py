@@ -29,7 +29,7 @@ class Ciri(c.Bot):
 
       await fc.edit(reason="event time", name=n)
       
-      await ai.sleep(30)
+      await ai.sleep(15)
   
   async def on_ready(self):
     print("ready")
