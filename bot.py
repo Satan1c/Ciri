@@ -27,7 +27,7 @@ class Ciri(c.Bot):
   async def event_time(self):
     while 1:
       fc = self.get_channel(684011140908449843)
-      n = self.tm("╽🎉︙ивенты")
+      n = self.tm("╽🎉ивенты")
 
       await fc.edit(reason="event time", name=n)
       
