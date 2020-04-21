@@ -27,7 +27,7 @@ class Ciri(c.Bot):
   async def event_time(self):
     while 1:
       fc = self.get_channel(684011140908449843)
-      n = self.tm("⸨🎉︙ивенты")
+      n = self.tm("╽🎉︙ивенты")
 
       await fc.edit(reason="event time", name=n)
       
@@ -59,6 +59,13 @@ class Ciri(c.Bot):
 
     await m.add_roles(r, reason="new user")
     await c.send(embed=e)
+    
+  
+  async def on_message(self, msg):
+    channel = self.get_channel(702122569851076649).id
+    if msg.channel.id == channel:
+      await msg.add_reaction("<:e_ftyes:701774227610796132>")
+      await msg.add_reaction("<:e_ftno:701774245746704436>")
 
   
     
