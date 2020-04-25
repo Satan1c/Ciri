@@ -5,6 +5,7 @@ from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
 
+
 class Ciri(c.Bot):
   def __init__(self):
     super().__init__(command_prefix="adshgrsfhfhgk,jlij;lj'nhplftujxfvjf", case_insensitive=True)
@@ -14,6 +15,7 @@ class Ciri(c.Bot):
   def init(self):
     self.prefix = "adshgrsfhfhgk,jlij;lj'nhplftujxfvjf"
     self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
+    self.etime = self.event_time
     
   def tm(self, string: str = ""):
     hour = str(localtime().tm_hour + 3)
