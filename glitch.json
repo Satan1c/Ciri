@@ -1,13 +1,13 @@
 {
-  "install": "pip3 install --user -r req.txt",
-  "start": "PYTHONUNBUFFERED=true python3 app.py",
+  "install": "pip3 install --user -r requirements.txt",
+  "start": "PYTHONUNBUFFERED=true python3 server.py",
   "watch": {
     "ignore": [
       "\\.pyc$"
     ],
     "install": {
       "include": [
-        "^req\\.txt$"
+        "^requirements\\.txt$"
       ]
     },
     "restart": {
