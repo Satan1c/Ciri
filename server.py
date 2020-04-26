@@ -8,7 +8,10 @@ app = Flask(__name__)
 def hello():
   return "bumped"
 
+def f():
+  app.run()
+
 if __name__ == "__main__":
+  Process(target=f()).start()
   bot.startup()
-  Process(target=app.run()).start()
   

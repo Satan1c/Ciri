@@ -9,13 +9,13 @@ class Events(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
   
-  @commands.listener()
+  @commands.Cog.listener()
   async def on_ready(self):
     
     print("ready")
     await self.etime()
 
-  @commands.listener()
+  @commands.Cog.listener()
   async def on_member_join(self, m):
     c = self.get_channel(639709192042709002)
     fc = self.get_channel(684010692571037706)
@@ -36,7 +36,7 @@ class Events(commands.Cog):
     await m.add_roles(r, reason="new user")
     await c.send(embed=e)
     
-  @commands.listener()
+  @commands.Cog.listener()
   async def on_message(self, msg):
     channel = self.get_channel(702122569851076649).id
     if msg.channel.id == channel:
