@@ -5,6 +5,14 @@ import os
 from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
+from flask import Flask
+from multiprocessing import Process
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+  return "bumped"
 
 
 class Ciri(c.Bot):
@@ -13,10 +21,14 @@ class Ciri(c.Bot):
     
     self.init()
     
+  def f(self):
+    app.run()
+  
   def init(self):
     self.prefix = "adshgrsfhfhgk,jlij;lj'nhplftujxfvjf"
     self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
     self.etime = self.event_time
+    
     
     for file in os.listdir('./cogs'):
       if file[-3:] == '.py':
@@ -44,6 +56,9 @@ class Ciri(c.Bot):
       await fc.edit(reason="event time", name=n)
       
       await ai.sleep(15)
+  
+  async def on_connect(self):
+    Process(target=self.f).start()
   
   def startup(self):
     super().run(self.token)
