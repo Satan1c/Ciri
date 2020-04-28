@@ -11,12 +11,11 @@ from .serv import f
 
 class Ciri(c.Bot):
   def __init__(self):
-    super().__init__(command_prefix="adshgrsfhfhgk,jlij;lj'nhplftujxfvjf", case_insensitive=True)
+    super().__init__(command_prefix="fdhhntfgntngtntnnntntntngfhfdhydhedhrtdhth", case_insensitive=True)
     
     self.init()
   
   def init(self):
-    self.prefix = "-"
     self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
     self.etime = self.event_time
     
