@@ -6,6 +6,10 @@ class Test(commands.Cog):
   @commands.command(usage="test")
   async def test(self, ctx):
     return await ctx.message.channel.send("done")
+  @commands.command(usage="ract")
+  async def react(self, ctx, msg: int = None):
+    if msg:
+      await ctx.guild.fetch_message(msg)
     
 def setup(bot):
   bot.add_cog(Test(bot))
