@@ -11,7 +11,7 @@ from .serv import f
 
 class Ciri(c.Bot):
   def __init__(self):
-    super().__init__(command_prefix="fdhhntfgntngtntnnntntntngfhfdhydhedhrtdhth", case_insensitive=True)
+    super().__init__(command_prefix="-", owner=348444859360608256)
     
     self.init()
   
