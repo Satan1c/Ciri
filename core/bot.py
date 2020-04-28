@@ -5,14 +5,8 @@ import os
 from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
-from flask import Flask
-from multiprocessing import Process
+from .serv import f
 
-app = Flask(__name__)
-
-@app.route("/")
-def hello():
-  return "bumped"
 
 
 class Ciri(c.Bot):
@@ -20,12 +14,9 @@ class Ciri(c.Bot):
     super().__init__(command_prefix="adshgrsfhfhgk,jlij;lj'nhplftujxfvjf", case_insensitive=True)
     
     self.init()
-    
-  def f(self):
-    app.run()
   
   def init(self):
-    self.prefix = "adshgrsfhfhgk,jlij;lj'nhplftujxfvjf"
+    self.prefix = "-"
     self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
     self.etime = self.event_time
     
@@ -58,7 +49,7 @@ class Ciri(c.Bot):
       await ai.sleep(15)
   
   async def on_connect(self):
-    Process(target=self.f).start()
+    f()
   
   def startup(self):
     super().run(self.token)

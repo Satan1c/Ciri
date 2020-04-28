@@ -17,11 +17,11 @@ class Events(commands.Cog):
 
   @commands.Cog.listener()
   async def on_member_join(self, m):
-    c = self.get_channel(639709192042709002)
-    fc = self.get_channel(684010692571037706)
-    sc = self.get_channel(542005378049638403)
-    o = self.get_user(348444859360608256)
-    r = self.get_guild(542005378049638400).get_role(542012055775870976)
+    c = self.bot.get_channel(639709192042709002)
+    fc = self.bot.get_channel(684010692571037706)
+    sc = self.bot.get_channel(542005378049638403)
+    o = self.bot.get_user(348444859360608256)
+    r = self.bot.get_guild(542005378049638400).get_role(542012055775870976)
 
     e = d.Embed(title="\t**Добро пожаловать**",description=f"\
       Привет, {m.mention}! Рад видеть тебя в нашем уютном уголке - {m.guild.name}.\n\n\
@@ -38,7 +38,7 @@ class Events(commands.Cog):
     
   @commands.Cog.listener()
   async def on_message(self, msg):
-    channel = self.get_channel(702122569851076649).id
+    channel = self.bot.get_channel(702122569851076649).id
     if msg.channel.id == channel:
       await msg.add_reaction("<:e_ftyes:701774227610796132>")
       await msg.add_reaction("<:e_ftno:701774245746704436>")
