@@ -19,17 +19,17 @@ class Events(commands.Cog):
   async def on_member_join(self, m):
     g = self.bot.get_guild(542005378049638400)
     c = self.bot.get_channel(639709192042709002)
-    fc = self.bot.get_channel(684010692571037706)
-    sc = self.bot.get_channel(542005378049638403)
+    fc = self.bot.get_channel(705803983268216903)
+    sc = self.bot.get_channel(705803983268216903)
     o = self.bot.get_user(348444859360608256)
     r = g.get_role(542012055775870976)
 
     e = d.Embed(title="\t🌞  🇯🇵  ヤーホー !  ( Yaho ! )  🇯🇵  🌞",description=f"\
       Приветствуем тебя, {m.mention}!\n\n\
-      Только что Ты стал частью уютного сервера {g.name}!\n\
-      👉 Обязательно загляни в канал #deleted-channel.n\n\
+      Только что **Ты** стал частью уютного сервера {g.name}!\n\
+      👉 Обязательно загляни в канал {fc.mention}.n\n\
       Там ты найдешь всю важную инфу для комфортного времяпровождения на сервере (⌒▽⌒)❤️\n\n\
-      💬 Если хочешь начать общение, просто напиши \"Привет всем\" в канал #deleted-channel!\n\n\
+      💬 Если хочешь начать общение, просто напиши \"Привет всем\" в канал {sc.mention}!\n\n\
       Ты у нас уже - {len(m.guild.members)}-й гость.")
     
     e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
@@ -42,10 +42,11 @@ class Events(commands.Cog):
   async def on_member_remove(self, m):
     g = self.bot.get_guild(542005378049638400)
     r = g.get_role(542012055775870976)
+    o = self.bot.get_user(348444859360608256)
 
-    e = d.Embed(title="\t🌛  🇯🇵  さようなら!  ( Sayounara ! )   :flag_jp:   🌛",description=f"\
+    e = d.Embed(title="\t🌛  🇯🇵  さようなら!  ( Sayounara ! )  🇯🇵  🌛",description=f"\
       Береги себя, {m.mention}!\n\n\
-      Бyдем надеяться, что наш дрyг снова зяглянет к нам! :sparkles:.")
+      Бyдем надеяться, что наш дрyг снова зяглянет к нам! ✨.")
     
     e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
     e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
