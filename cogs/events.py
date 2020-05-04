@@ -24,7 +24,7 @@ class Events(commands.Cog):
     o = self.bot.get_user(348444859360608256)
     r = g.get_role(542012055775870976)
 
-    e = d.Embed(title="\t🌞  🇯🇵  ヤーホー !  ( Yaho ! )  🇯🇵  🌞",description=f"\
+    e = d.Embed(colour=d.Colour.get_rgb(), title="\t🌞  🇯🇵  ヤーホー !  ( Yaho ! )  🇯🇵  🌞",description=f"\
       Приветствуем тебя, {m.mention}!\n\n\
       Только что **Ты** стал частью уютного сервера {g.name}!\n\
       👉 Обязательно загляни в канал {fc.mention}.n\n\
