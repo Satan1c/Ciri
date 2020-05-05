@@ -19,8 +19,8 @@ class Events(commands.Cog):
   async def on_member_join(self, m):
     g = self.bot.get_guild(542005378049638400)
     c = self.bot.get_channel(639709192042709002)
-    fc = self.bot.get_channel(705803983268216903)
-    sc = self.bot.get_channel(705803983268216903)
+    fc = self.bot.get_channel(684010692571037706)
+    sc = self.bot.get_channel(542005378049638403)
     o = self.bot.get_user(348444859360608256)
     r = g.get_role(542012055775870976)
 
@@ -43,6 +43,7 @@ class Events(commands.Cog):
     g = self.bot.get_guild(542005378049638400)
     r = g.get_role(542012055775870976)
     o = self.bot.get_user(348444859360608256)
+    c = self.bot.get_channel(639709192042709002)
 
     e = d.Embed(title="\t🌛  🇯🇵  さようなら!  ( Sayounara ! )  🇯🇵  🌛",description=f"\
       Береги себя, {m.mention}!\n\n\
@@ -51,7 +52,6 @@ class Events(commands.Cog):
     e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
     e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
 
-    await m.add_roles(r, reason="new user")
     await c.send(embed=e)
     
   @commands.Cog.listener()
