@@ -54,10 +54,10 @@ class Ciri(c.Bot):
     f()
   
   async def _bump(self, cmd):
-    ai.sleep(14340)
-    ch = self.get_channel(684011228531654658)
-    msg = f"<@&709306526094983209> {cmd}"
-    await ch.send(msg)
+      ai.sleep(14340)
+      ch = self.get_channel(684011228531654658)
+      msg = f"<@&709306526094983209> начинайте писать {cmd}"
+      await ch.send(msg)
   
   def startup(self):
     super().run(self.token)

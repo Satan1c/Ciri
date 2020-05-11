@@ -62,9 +62,14 @@ class Events(commands.Cog):
       await msg.add_reaction("<:e_ftno:701774245746704436>")
     
     if msg.channel.id == 684011228531654658:
+      if not msg.embeds:
+        return
+      
       embed = msg.embeds[0]
+      
       if embed.title.start_with("Сервер Up"):
         self.bump("`s.up`")
+        
       elif embed.description.start_with("Server bumped by"):
         self.bump("`!bump`")
       
