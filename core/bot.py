@@ -6,6 +6,7 @@ from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
 from .serv import f
+from multiprocessing import Process as p
 
 
 
@@ -47,8 +48,16 @@ class Ciri(c.Bot):
       
       await ai.sleep(15)
   
+  
+  
   async def on_connect(self):
     f()
+  
+  async def _bump(self, cmd):
+    ai.sleep(14340)
+    ch = self.get_channel(684011228531654658)
+    msg = f"<@&709306526094983209> {cmd}"
+    await ch.send(msg)
   
   def startup(self):
     super().run(self.token)

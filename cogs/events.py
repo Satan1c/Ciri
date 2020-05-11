@@ -9,6 +9,7 @@ class Events(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.etime = bot.etime
+    self.bump = bot._bump
   
   @commands.Cog.listener()
   async def on_ready(self):
@@ -56,10 +57,17 @@ class Events(commands.Cog):
     
   @commands.Cog.listener()
   async def on_message(self, msg):
-    channel = self.bot.get_channel(702122569851076649).id
-    if msg.channel.id == channel:
+    if msg.channel.id == 702122569851076649:
       await msg.add_reaction("<:e_ftyes:701774227610796132>")
       await msg.add_reaction("<:e_ftno:701774245746704436>")
+    
+    if msg.channel.id == 684011228531654658:
+      embed = msg.embeds[0]
+      if embed.title.start_with("Сервер Up"):
+        self.bump("`s.up`")
+      elif embed.description.start_with("Server bumped by"):
+        self.bump("`!bump`")
+      
   
 def setup(bot):
   bot.add_cog(Events(bot))

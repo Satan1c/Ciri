@@ -3,10 +3,12 @@ from discord.ext import commands
 class Test(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    
   @commands.command(usage="test")
   @commands.is_owner()
   async def test(self, ctx):
     return await ctx.message.channel.send("done")
+  
   @commands.command(usage="ract")
   @commands.is_owner()
   async def react(self, ctx, msg: int = None):
