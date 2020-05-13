@@ -66,6 +66,7 @@ class Events(commands.Cog):
         return
       
       embed = msg.embeds[0]
+      print(embed)
       
       if embed.description.startswith("Нравится сервер?"):
         self.bump("`s.up`")
