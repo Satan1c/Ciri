@@ -67,10 +67,10 @@ class Events(commands.Cog):
       
       embed = msg.embeds[0]
       
-      if embed.description.startwith("Нравится сервер?"):
+      if embed.description.startswith("Нравится сервер?"):
         self.bump("`s.up`")
         
-      elif embed.description.startwith("Server bumped by"):
+      elif embed.description.startswith("Server bumped by"):
         self.bump("`!bump`")
       
   
