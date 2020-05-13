@@ -69,10 +69,10 @@ class Events(commands.Cog):
       print(embed)
       
       if embed.description.startswith("Нравится сервер?"):
-        self.bump("`s.up`")
+        await self.bump("`s.up`")
         
       elif embed.description.startswith("Server bumped by"):
-        self.bump("`!bump`")
+        await self.bump("`!bump`")
       
   
 def setup(bot):
