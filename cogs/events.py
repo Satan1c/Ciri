@@ -66,7 +66,7 @@ class Events(commands.Cog):
         return
       
       embed = msg.embeds[0]
-      print(msg.author.name, dir(embed))
+      print(f"{msg.author.name}, {dir(embed)}")
       
       if embed.title.startswith("Сервер Up"):
         await self.bump("`s.up`")
