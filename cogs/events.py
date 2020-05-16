@@ -65,14 +65,6 @@ class Events(commands.Cog):
       if not msg.embeds:
         return
       
-      embed = msg.embeds[0]
-      
-      if embed.description.startswith("Server bumped by"):
-        await self.bump("`!bump`")
-        
-      elif embed.title.startswith("Сервер Up"):
-        await self.bump("`s.up`")
-      
   
 def setup(bot):
   bot.add_cog(Events(bot))
