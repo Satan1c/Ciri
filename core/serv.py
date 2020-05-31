@@ -3,7 +3,7 @@ from multiprocessing import Process
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def hello():
   return "bumped"
 
