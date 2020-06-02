@@ -43,8 +43,8 @@ class Ciri(c.Bot):
     while 1:
       fc = self.get_channel(684011140908449843)
       n = self.tm("╽🎉ивенты")
-
-      await fc.edit(reason="event time", name=n)
+      if n != fc.name:
+        await fc.edit(reason="event time", name=n)
       
       await ai.sleep(15)
   
