@@ -39,7 +39,7 @@ class Events(commands.Cog):
 
 		await m.add_roles(r, reason="new user")
 		await c.send(embed=e)
-		
+
 	@commands.Cog.listener()
 	async def on_member_remove(self, m):
 		g = self.bot.get_guild(542005378049638400)
@@ -55,7 +55,7 @@ class Events(commands.Cog):
 		e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
 
 		await c.send(embed=e)
-		
+
 	@commands.Cog.listener()
 	async def on_message(self, msg):
 		if msg.channel.id == 702122569851076649:
@@ -68,8 +68,13 @@ class Events(commands.Cog):
 				self.bot.get_user(348444859360608256).send(f"{em.title}, {em.description}")
 
 		if msg.type == discord.MessageType.premium_guild_subscription:
-			
-      
-  
+			em = discord.Embed(
+				title=f"{msg.author}\nбустит сервер",
+				description="Огромное спасибо, что помогаете серверу!!")
+			em.set_thumbnail(msg.author.ava)
+
+			await msg.guild.get_channel(699990941439754371).send("boost")
+
+
 def setup(bot):
 	bot.add_cog(Events(bot))
