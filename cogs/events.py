@@ -15,7 +15,7 @@ class Events(commands.Cog):
 	@commands.Cog.listener()
 	async def on_ready(self):
 		print("ready")
-		asyncio.run_coroutine_threadsafe(self.etime, self.bot)
+		await self.etime
 
 	@commands.Cog.listener()
 	async def on_member_join(self, m):
@@ -67,13 +67,13 @@ class Events(commands.Cog):
 				em = msg.embeds[0]
 				self.bot.get_user(348444859360608256).send(f"{em.title}, {em.description}")
 
-		if msg.type == discord.MessageType.premium_guild_subscription:
-			em = discord.Embed(
+		if msg.type == d.MessageType.premium_guild_subscription:
+			em = d.Embed(
 				title=f"{msg.author}\nбустит сервер",
 				description="Огромное спасибо, что помогаете серверу!!")
-			em.set_thumbnail(msg.author.ava)
+			em.set_thumbnail(msg.author.avatar_url_as(static_format='png', size=512))
 
-			await msg.guild.get_channel(699990941439754371).send("boost")
+			await msg.guild.get_channel(699990941439754371).send(embed=em)
 
 
 def setup(bot):
