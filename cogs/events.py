@@ -2,6 +2,7 @@ import discord as d
 import asyncio as ai
 
 from discord.ext import commands
+import asyncio
 
 
 
@@ -60,6 +61,8 @@ class Events(commands.Cog):
 		if msg.channel.id == 702122569851076649:
 			await msg.add_reaction("<:e_ftyes:701774227610796132>")
 			await msg.add_reaction("<:e_ftno:701774245746704436>")
+		
+		if msg.channel.id == 684011228531654658 and msg.embed
       
   
 def setup(bot):
