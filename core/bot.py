@@ -5,7 +5,7 @@ import os
 from discord.ext import commands as c
 from discord.ext.tasks import loop as l
 from time import localtime
-from .serv import f
+from .serv import app
 from multiprocessing import Process as p
 
 
@@ -51,7 +51,7 @@ class Ciri(c.Bot):
 	
 	
 	async def on_connect(self):
-		f()
+		p(target=app.run).start()
 	
 	async def _bump(self, cmd):
 		ai.sleep(14340)
