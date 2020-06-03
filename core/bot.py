@@ -32,10 +32,12 @@ class Ciri(c.Bot):
 		
 	def tm(self, string: str = ""):
 		hour = str(localtime().tm_hour + 3)
+    
 		if int(hour) >= 24:
 			hour = str(int(hour)-24)
-			minu = str(localtime().tm_min)
-			tm = string + "〘" + (hour if len(hour) == 2 else "0" + hour) + "∵" + (minu if len(minu) == 2 else "0" + minu) + "〙"
+		minu = str(localtime().tm_min)
+		tm = string + "〘" + (hour if len(hour) == 2 else "0" + hour) + "∵" + (minu if len(minu) == 2 else "0" + minu) + "〙"
+      
 		return str(tm)
 
 	
@@ -48,8 +50,7 @@ class Ciri(c.Bot):
 			
 			await ai.sleep(15)
 	
-	
-	
+  
 	async def on_connect(self):
 		p(target=app.run).start()
 	

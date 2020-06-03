@@ -15,7 +15,7 @@ class Events(commands.Cog):
 	@commands.Cog.listener()
 	async def on_ready(self):
 		print("ready")
-		await self.etime
+		await self.etime()
 
 	@commands.Cog.listener()
 	async def on_member_join(self, m):
