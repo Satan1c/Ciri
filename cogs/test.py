@@ -6,7 +6,8 @@ class Test(commands.Cog):
 		
 	@commands.command(usage="test")
 	@commands.is_owner()
-	async def test(self, ctx):
+	async def test(self, ctx, id: int):
+    emoji = await 
 		return await ctx.message.channel.send("done")
 	
 	@commands.command(usage="ract")
