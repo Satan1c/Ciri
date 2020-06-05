@@ -12,7 +12,7 @@ from multiprocessing import Process as p
 
 class Ciri(c.Bot):
 	def __init__(self):
-		super().__init__(command_prefix="-", owner=348444859360608256)
+		super().__init__(command_prefix="Ciri ", owner=348444859360608256)
 		
 		self.init()
 	
