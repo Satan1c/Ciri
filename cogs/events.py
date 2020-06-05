@@ -62,10 +62,10 @@ class Events(commands.Cog):
             await msg.add_reaction("<:e_ftyes:701774227610796132>")
             await msg.add_reaction("<:e_ftno:701774245746704436>")
 
-        if msg.channel.id == 684011228531654658 and len(msg.embeds) > 0:
+        if msg.channel.id == 684011228531654658:
             if msg.author.id == 315926021457051650 or msg.author.id == 464272403766444044:
                 em = msg.embeds[0]
-                self.bot.get_user(348444859360608256).send(f"{em.title}, {em.description}")
+                self.bot.get_user(348444859360608256).send(f"{dict(em)}")
 
         if msg.type == d.MessageType.premium_guild_subscription:
             em = d.Embed(

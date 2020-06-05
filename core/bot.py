@@ -30,9 +30,8 @@ class Ciri(c.Bot):
 					print(f'[!] cogs.{file[0:-3]} error: `{err}`')
 		print('-' * 30)
 		
-	def tm(self, string: str = ""):
+	def _tm(self, string: str = ""):
 		hour = str(localtime().tm_hour + 3)
-    
 		if int(hour) >= 24:
 			hour = str(int(hour)-24)
 		minu = str(localtime().tm_min)
@@ -44,9 +43,8 @@ class Ciri(c.Bot):
 	async def event_time(self):
 		while 1:
 			fc = self.get_channel(684011140908449843)
-			n = self.tm("╽🎉ивенты")
-			if n != fc.name:
-				await fc.edit(reason="event time", name=n)
+			n = self._tm("╽🎉ивенты")
+			await fc.edit(reason="event time", name=n)
 			
 			await ai.sleep(15)
 	
