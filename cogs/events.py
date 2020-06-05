@@ -52,7 +52,7 @@ class Events(commands.Cog):
 			Бyдем надеяться, что наш дрyг снова зяглянет к нам! ✨.")
 		
 		e.set_thumbnail(url=m.avatar_url_as(size= 4096, format= None, static_format= "png"))
-		e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, format= None, static_format= "png"))
+		e.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, static_format= "png"))
 
 		await c.send(embed=e)
 
@@ -69,9 +69,11 @@ class Events(commands.Cog):
 
 		if msg.type == d.MessageType.premium_guild_subscription:
 			em = d.Embed(
-				title=f"{msg.author}\nбустит сервер",
+				title=f"{msg.author}\n**Забустил сервер**\n{msg.guild.get_role().mebtion}",
 				description="Огромное спасибо, что помогаете серверу!!")
 			em.set_thumbnail(msg.author.avatar_url_as(static_format='png', size=512))
+      em.set_image(url="https://images.app.goo.gl/YCaWRNtd8qHiziMs8")
+      em.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size= 4096, static_format= "png"))
 
 			await msg.guild.get_channel(699990941439754371).send(embed=em)
 
