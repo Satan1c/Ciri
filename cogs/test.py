@@ -15,7 +15,7 @@ class Test(commands.Cog):
                 title=f"{ctx.author}\n**Забустил сервер**",
                 description=f"{ctx.guild.get_role(709738102394191984).mention}\nОгромное спасибо, что помогаете серверу!!")
         em.set_thumbnail(url=ctx.author.avatar_url_as(static_format='png', size=512))
-        em.set_image(url="https://images.app.goo.gl/YCaWRNtd8qHiziMs8")
+        em.set_image(url="https://thumbs.gfycat.com/ClumsyExcellentLeveret-size_restricted.gif")
         em.timestamp = datetime.datetime.utcnow()
         em.set_footer(text=f"{o.name}#{o.discriminator}\nБольшое спасибо передаёт администрация FT", icon_url=o.avatar_url_as(size=4096, static_format="png"))
         await ctx.send(embed = em)

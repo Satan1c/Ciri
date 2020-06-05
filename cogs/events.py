@@ -72,7 +72,7 @@ class Events(commands.Cog):
                 title=f"{msg.author}\n**Забустил сервер**\n{msg.guild.get_role(709738102394191984).mebtion}",
                 description="Огромное спасибо, что помогаете серверу!!")
             em.set_thumbnail(url=msg.author.avatar_url_as(static_format='png', size=512))
-            em.set_image(url="https://images.app.goo.gl/YCaWRNtd8qHiziMs8")
+            em.set_image(url="https://thumbs.gfycat.com/ClumsyExcellentLeveret-size_restricted.gif")
             em.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size=4096, static_format="png"\
                                                                                       "Большое спасибо передаёт администрация FT"))
 
