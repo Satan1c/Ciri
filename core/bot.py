@@ -54,7 +54,7 @@ class Ciri(c.Bot):
 	async def on_connect(self):
 		p(target=app.run).start()
 	
-	async def _bump(self, cmd):
+	async def bump(self, cmd):
 		ai.sleep(14340)
 		ch = self.get_channel(684011228531654658)
 		msg = f"<@&709306526094983209> начинайте писать {cmd}"
