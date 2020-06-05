@@ -10,11 +10,7 @@ class Test(commands.Cog):
     @commands.is_owner()
     async def test(self, ctx, eid: int):
         emoji = await self.bot.get_guild(542005378049638400).fetch_emoji(eid)
-        print(dict(emoji))
-        emoji = await emoji.url.read()
-        print(emoji)
-        emoji = await emoji.save(emoji)
-        await ctx.message.channel.send(file=d.File(emoji))
+        await ctx.message.channel.send(emoji.url)
 
     @commands.command(usage="react")
     @commands.is_owner()
