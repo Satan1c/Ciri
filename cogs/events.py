@@ -76,7 +76,7 @@ class Events(commands.Cog):
             em.set_footer(text=f"{o.name}#{o.discriminator}", icon_url=o.avatar_url_as(size=4096, static_format="png"\
                                                                                       "Большое спасибо передаёт администрация FT"))
 
-            await msg.guild.get_channel(703587055501967390).send(embed=em)
+            await msg.guild.get_channel(684011135287951392).send(embed=em)
 
 
 def setup(bot):
