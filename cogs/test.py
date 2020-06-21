@@ -10,15 +10,7 @@ class Test(commands.Cog):
     @commands.command(usage="test")
     @commands.is_owner()
     async def test(self, ctx):
-        o = ctx.guild.get_member(348444859360608256)
-        em = d.Embed(
-                title=f"{ctx.author}\n**Забустил сервер**",
-                description=f"{ctx.guild.get_role(709738102394191984).mention}\nОгромное спасибо, что помогаете серверу!!")
-        em.set_thumbnail(url=ctx.author.avatar_url_as(static_format='png', size=512))
-        em.set_image(url="https://thumbs.gfycat.com/ClumsyExcellentLeveret-size_restricted.gif")
-        em.timestamp = datetime.datetime.utcnow()
-        em.set_footer(text=f"{o.name}#{o.discriminator}\nБольшое спасибо передаёт администрация FT", icon_url=o.avatar_url_as(size=4096, static_format="png"))
-        await ctx.send(embed = em)
+        await ctx.send("done")
             
 
     @commands.command(usage="react")
