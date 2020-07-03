@@ -46,7 +46,7 @@ class Ciri(c.Bot):
 			n = self._tm("╽🎉ивенты")
 			await fc.edit(reason="event time", name=n)
 			
-			await ai.sleep(60)
+			await ai.sleep(120)
 	
   
 	async def on_connect(self):
