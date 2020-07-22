@@ -17,7 +17,7 @@ class Ciri(c.Bot):
 		self.init()
 	
 	def init(self):
-		self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XpXzuA.pGlWBQnL839E8uEoV_vV5nnYfLA"
+		self.token = "Njk5NjczMzUzMDE1MDAxMTE4.XxhUbg.yMFXMdf65sjGacDX7gSHgGoTy7c"
 		self.etime = self.event_time
 		
 		
