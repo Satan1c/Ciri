@@ -26,8 +26,7 @@ class Test(commands.Cog):
     @commands.guild_only()
     async def created_at(self, ctx):
         date = ctx.guild.created_at
-        res = "{0.day}/{0.month}/{0.year} {0.hour}:{0.minute}:{0.second}"
-        .format(date)
+        res = "{0.day}/{0.month}/{0.year} {0.hour}:{0.minute}:{0.second}".format(date)
         await ctx.send(res)
 
 
