@@ -57,8 +57,11 @@ class Ciri(c.Bot):
 		ch = self.get_channel(684011228531654658)
 		msg = f"<@&709306526094983209> начинайте писать {cmd}"
 		await ch.send(msg)
-	
-	def startup(self):
+    
+  async def on_command_error(self, ctx, err):
+    print(err)
+    
+  def startup(self):
 		super().run(self.token)
 
     

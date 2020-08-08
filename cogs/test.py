@@ -7,13 +7,13 @@ class Test(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(usage="test")
+    @commands.command()
     @commands.is_owner()
     async def test(self, ctx):
         await ctx.send("done")
             
 
-    @commands.command(usage="react")
+    @commands.command()
     @commands.is_owner()
     async def react(self, ctx, msg: int = None):
         if msg:
@@ -21,6 +21,14 @@ class Test(commands.Cog):
 
             for i in ["<:e_ftyes:701774227610796132>", "<:e_ftno:701774245746704436>"]:
                 await msg.add_reaction(i)
+    
+    @commands.command()
+    @commands.guild_only()
+    async def created_at(self, ctx):
+        date = ctx.guild.created_at
+        res = "{0.day}/{0.month}/{0.year} {0.hour}:{0.minute}:{0.second}"
+        .format(date)
+        await ctx.send(res)
 
 
 def setup(bot):
