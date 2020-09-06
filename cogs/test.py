@@ -10,7 +10,7 @@ class Test(cmd.Cog):
     @cmd.command()
     @cmd.is_owner()
     async def test(self, ctx):
-        await ctx.send("done")
+        await ctx.send(ctx.message.clean_content)
             
 
     @cmd.command()
@@ -31,14 +31,15 @@ class Test(cmd.Cog):
         
     @cmd.command(aliases=['предложение'])
     @cmd.guild_only()
-    async def poll(self, ctx: cmd.Context, *, text: str = None):
+    async def poll(self, ctx: cmd.Context):
+        text = " ".join(ctx.message.clean_content.split(" ")[1:])
         if not text:
           return ctx.channel.send("Give some `text`")
       
         msg = await ctx.guild.get_channel(702122569851076649).send(
-        embed=d.Embed(description=text, colour=d.Colour.from_rgb(250, 240, 120))
-        .set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
-      )
+          embed=d.Embed(description=text, colour=d.Colour.from_rgb(250, 240, 120))
+          .set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+        )
       
         await msg.add_reaction("⬆️")
         await msg.add_reaction("⬇️")
