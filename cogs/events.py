@@ -58,9 +58,6 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, msg):
         o = self.bot.get_user(348444859360608256)
-        if msg.channel.id == 702122569851076649:
-            await msg.add_reaction("<:e_ftyes:701774227610796132>")
-            await msg.add_reaction("<:e_ftno:701774245746704436>")
 
         if msg.author.id == 315926021457051650 or msg.author.id == 464272403766444044:
             em = msg.embeds[0]
