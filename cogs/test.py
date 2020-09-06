@@ -29,20 +29,21 @@ class Test(cmd.Cog):
         res = "{0.day}/{0.month}/{0.year} {0.hour}:{0.minute}:{0.second}".format(date)
         await ctx.send(res)
         
-    @cmd.command()
+    @cmd.command(aliases=['предложение'])
     @cmd.guild_only()
-    @cmd.has_permissions(manage_messages=True)
     async def poll(self, ctx: cmd.Context, *, text: str = None):
-      if not text:
-        return ctx.channel.send("Give some `text`")
+        if not text:
+          return ctx.channel.send("Give some `text`")
       
-      msg = await ctx.guild.get_channel(702122569851076649).send(
-        embed=d.Embed(description=text)
+        msg = await ctx.guild.get_channel(702122569851076649).send(
+        embed=d.Embed(description=text, colour=d.Colour.from_rgb(250, 240, 120))
         .set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
       )
       
-      await msg.add_reaction("⬆️")
-      await msg.add_reaction("⬇️")
+        await msg.add_reaction("⬆️")
+        await msg.add_reaction("⬇️")
+      
+        await ctx.message.delete()
 
 
 def setup(bot):
