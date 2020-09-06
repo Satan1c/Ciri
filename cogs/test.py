@@ -1,20 +1,20 @@
 import discord as d
-from discord.ext import commands
+from discord.ext import commands as cmd
 import datetime
 
 
-class Test(commands.Cog):
+class Test(cmd.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    @commands.is_owner()
+    @cmd.command()
+    @cmd.is_owner()
     async def test(self, ctx):
         await ctx.send("done")
             
 
-    @commands.command()
-    @commands.is_owner()
+    @cmd.command()
+    @cmd.is_owner()
     async def react(self, ctx, msg: int = None):
         if msg:
             msg = await ctx.guild.get_channel(702122569851076649).fetch_message(msg)
@@ -22,12 +22,14 @@ class Test(commands.Cog):
             for i in ["<:e_ftyes:701774227610796132>", "<:e_ftno:701774245746704436>"]:
                 await msg.add_reaction(i)
     
-    @commands.command()
-    @commands.guild_only()
+    @cmd.command()
+    @cmd.guild_only()
     async def created_at(self, ctx):
         date = ctx.guild.created_at
         res = "{0.day}/{0.month}/{0.year} {0.hour}:{0.minute}:{0.second}".format(date)
         await ctx.send(res)
+        
+    @cmd.comm
 
 
 def setup(bot):
