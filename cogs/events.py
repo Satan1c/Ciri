@@ -1,6 +1,3 @@
-import asyncio
-import threading
-
 import discord
 from discord.ext import commands as cmd
 
@@ -68,15 +65,11 @@ class Events(cmd.Cog):
                 data = msg.embeds[0].to_dict()
 
                 if "title" in data and data['title'] == "Сервер Up":
-                    for i in range(1):
-                        threading.Thread(target=asyncio.run,
-                                         args=(self.utils.up_remind(msg.channel.id, "s.up"),)).start()
+                    await self.utils.up_remind(msg.channel.id, "s.up")
 
                 elif "description" in data and \
                         data['description'].startswith("[Top Discord Servers](https://discord-server.com/)"):
-                    for i in range(1):
-                        threading.Thread(target=asyncio.run,
-                                         args=(self.utils.up_remind(msg.channel.id, "!bump"),)).start()
+                    await self.utils.up_remind(msg.channel.id, "!bump")
 
 
 def setup(bot):

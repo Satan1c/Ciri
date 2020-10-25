@@ -24,6 +24,8 @@ class Ciri(cmd.Bot):
         print('-' * 30)
 
     async def on_command_error(self, ctx: cmd.Context, err):
+        if not ctx.command:
+            return print(err)
         embed = discord.Embed(title=ctx.command.name + " error", description=str(err))
         await ctx.send(embed=embed)
 

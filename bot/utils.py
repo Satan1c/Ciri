@@ -6,7 +6,8 @@ class Utils:
     def __init__(self, bot):
         self.bot = bot
 
-    def tm(self, string: str = ""):
+    @staticmethod
+    def tm(string: str = ""):
         hour = str(localtime().tm_hour + 3)
         if int(hour) >= 24:
             hour = str(int(hour) - 24)
