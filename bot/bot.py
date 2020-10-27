@@ -1,4 +1,5 @@
 import os
+from os import name
 
 import discord
 from config import token
@@ -31,6 +32,7 @@ class Ciri(cmd.Bot):
 
     async def on_ready(self):
         self.load()
+        await self.change_presence(status=discord.Status.dnd, activity=discord.Activity(name="prefix -", type=discord.ActivityType.listening))
         print(self.user.name, "is ready")
 
     def run(self):
