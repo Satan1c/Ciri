@@ -9,13 +9,12 @@ class Tasks(cmd.Cog):
     def __init__(self, bot: Ciri):
         self.bot = bot
 
-        for i in range(1):
-            threading.Thread(target=self.time_update.start).start()
+        self.time_update.start()
 
-    @loop(seconds=15)
+    @loop(minutes=1)
     async def time_update(self):
         channel = self.bot.get_channel(770669968329146378)
-        name = self.bot.utils.tm("Время: ")
+        name = self.bot.utils.tm("🕐 Время: ")
         await channel.edit(reason="time", name=name)
 
 

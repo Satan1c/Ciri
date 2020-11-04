@@ -1,5 +1,4 @@
 import os
-from os import name
 
 import discord
 from config import token
@@ -9,7 +8,7 @@ from .utils import Utils
 
 class Ciri(cmd.Bot):
     def __init__(self):
-        super().__init__(command_prefix=":", case_insensitive=True)
+        super().__init__(command_prefix="+", case_insensitive=True, intents=discord.Intents.all())
 
     def load(self):
         self.utils = Utils(self)
