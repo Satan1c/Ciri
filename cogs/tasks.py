@@ -8,7 +8,6 @@ from bot.bot import Ciri
 class Tasks(cmd.Cog):
     def __init__(self, bot: Ciri):
         self.bot = bot
-
         self.time_update.start()
 
     @loop(minutes=1)

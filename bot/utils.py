@@ -8,7 +8,7 @@ class Utils:
 
     @staticmethod
     def tm(string: str = ""):
-        hour = str(localtime().tm_hour)
+        hour = str(localtime().tm_hour + 3)
         if int(hour) >= 24:
             hour = str(int(hour) - 24)
         minu = str(localtime().tm_min)
