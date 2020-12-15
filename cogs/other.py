@@ -8,9 +8,7 @@ class Other(cmd.Cog):
 
     @cmd.command(name="Poll", aliases=["предложение"])
     @cmd.guild_only()
-    @cmd.has_guild_permissions(manage_messages=True)
     async def poll(self, ctx: cmd.Context, *, text: str = None):
-        await ctx.message.delete()
         if not text:
             raise cmd.BadArgument("Give some text")
 
@@ -25,7 +23,6 @@ class Other(cmd.Cog):
     @cmd.command(Name="Test")
     @cmd.is_owner()
     async def test(self, ctx: cmd.Context, mid: int):
-        await ctx.message.delete()
         message = await ctx.channel.fetch_message(mid)
         print(message.embeds[0].to_dict())
 

@@ -1,8 +1,6 @@
-import threading
-
+from bot.bot import Ciri
 from discord.ext import commands as cmd
 from discord.ext.tasks import loop
-from bot.bot import Ciri
 
 
 class Tasks(cmd.Cog):
