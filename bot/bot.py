@@ -5,6 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import discord
 from config import token, mongo
 from discord.ext import commands as cmd
+from . import models
 from .utils import Utils
 
 
@@ -14,6 +15,7 @@ class Ciri(cmd.Bot):
         self.client = AsyncIOMotorClient(mongo)
 
     def load(self):
+        self.models = models
         self.utils = Utils(self)
         self.db = self.client
         self.config = self.client.get_database("config").get_collection("main")

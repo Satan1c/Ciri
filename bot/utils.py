@@ -1,4 +1,5 @@
 import asyncio
+import json
 from time import localtime
 from typing import Union, Tuple, List
 
@@ -78,10 +79,10 @@ class Utils:
 
         return msgs
 
-    def webhook_parser(self, *data: str) -> Tuple[str, List[discord.Embed]]:
+    def webhook_parser(self, *, data: str) -> Tuple[str, List[discord.Embed]]:
         mesage = ""
         embed = []
-        data = dict(data)
+        data = json.loads(data)
 
         if "content" in data:
             mesage = data['content']
@@ -111,10 +112,7 @@ class Paginator:
 
     async def _close_session(self):
         await self.controller.delete()
-        del self.pages
-        del self.reactions
-        del self.current
-        del self.ctx
+        del self.pages, self.reactions, self.current, self.ctx
 
     def add_page(self, embeds: Union[list, tuple]):
         for i in embeds:
@@ -152,7 +150,7 @@ class Paginator:
 
                 response = await self.ctx.bot.wait_for('reaction_add', timeout=self.timeout,
                                                        check=check)
-            except TimeoutError as err:
+            except TimeoutError:
                 break
 
             try:

@@ -37,11 +37,13 @@ from discord.backoff import ExponentialBackoff
 
 log = logging.getLogger(__name__)
 
+
 class Loop:
     """A background task helper that abstracts the loop and reconnection logic for you.
 
     The main interface to create this is through :func:`loop`.
     """
+
     def __init__(self, coro, seconds, hours, minutes, count, reconnect, loop):
         self.coro = coro
         self.reconnect = reconnect
@@ -92,7 +94,7 @@ class Loop:
         self._last_iteration_failed = False
         self._next_iteration = datetime.datetime.now(datetime.timezone.utc)
         try:
-            await asyncio.sleep(0) # allows canceling in before_loop
+            await asyncio.sleep(0)  # allows canceling in before_loop
             while True:
                 if not self._last_iteration_failed:
                     self._last_iteration = self._next_iteration
@@ -135,7 +137,7 @@ class Loop:
             return self
 
         copy = Loop(self.coro, seconds=self.seconds, hours=self.hours, minutes=self.minutes,
-                               count=self.count, reconnect=self.reconnect, loop=self.loop)
+                    count=self.count, reconnect=self.reconnect, loop=self.loop)
         copy._injected = obj
         copy._before_loop = self._before_loop
         copy._after_loop = self._after_loop
@@ -444,6 +446,7 @@ class Loop:
         self.hours = hours
         self.minutes = minutes
 
+
 def loop(*, seconds=0, minutes=0, hours=0, count=None, reconnect=True, loop=None):
     """A decorator that schedules a task in the background for you with
     optional reconnect logic. The decorator returns a :class:`Loop`.
@@ -474,6 +477,7 @@ def loop(*, seconds=0, minutes=0, hours=0, count=None, reconnect=True, loop=None
     TypeError
         The function was not a coroutine.
     """
+
     def decorator(func):
         kwargs = {
             'seconds': seconds,
@@ -484,4 +488,5 @@ def loop(*, seconds=0, minutes=0, hours=0, count=None, reconnect=True, loop=None
             'loop': loop
         }
         return Loop(func, **kwargs)
+
     return decorator

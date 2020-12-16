@@ -1,15 +1,16 @@
 import discord
+from bot.bot import Ciri
 from discord.ext import commands as cmd
 
 
 class Events(cmd.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Ciri):
         self.bot = bot
         self.utils = bot.utils
         self.owner = self.bot.get_user(348444859360608256)
 
     @cmd.Cog.listener("on_member_join")
-    async def member_join(self, member):
+    async def member_join(self, member: discord.Member):
         channel = self.bot.get_channel(639709192042709002)
         first = self.bot.get_channel(684010692571037706)
         second = self.bot.get_channel(542005378049638403)
@@ -31,6 +32,10 @@ class Events(cmd.Cog):
 
         await member.add_roles(role, reason="new user")
         await channel.send(embed=embed)
+
+        prf = await self.bot.client.profiles.find_one({"_id": member.id})
+        if not prf:
+            await self.bot.profiles.insert_one(self.bot.models.User.get_data(member)[0])
 
     @cmd.Cog.listener("on_member_remove")
     async def on_member_remove(self, member):

@@ -54,17 +54,6 @@ class Economics(cmd.Cog):
 
         await ctx.send(embed=embed)
 
-    # @cmd.command(name="Shop", aliases=["buy", "магазин", "магаз", "купить", "куп"])
-    # @cmd.guild_only()
-    # async def shop(self, ctx: cmd.Context, index: int):
-    #     ctx.author.tag = str(ctx.author)
-    #     shop = await self.bot.server.get_collection("shop").find_one()
-    #     config = await self.bot.config.find_one()
-    #     config = config['shop']
-    #     field = config['embeds'][0]
-    #     embeds = []
-    #     items = []
-
     @cmd.command(name="Timely", aliases=['bonus', "free", "халява", "дань"], usage="дань")
     @cmd.guild_only()
     @cmd.cooldown(type=cmd.BucketType.user, per=86400, rate=1)
@@ -95,6 +84,7 @@ class Economics(cmd.Cog):
     async def pay(self, ctx: cmd.Context, user: discord.Member, amount: int):
         if amount not in range(1, 10000):
             raise cmd.BadArgument("Amount is out of range")
+
         ctx.author.tag = str(ctx.author)
         config = await self.bot.config.find_one()
         config = config['pay']

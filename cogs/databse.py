@@ -15,29 +15,21 @@ class DataBase(cmd.Cog):
         content = self.bot.db_enumeration.get(data['content'])
         data['content'] = None
 
-        if action == "create":
-            db = self.bot.db.get_database("config").get_collection(address)
-            _ = await db.find_one({"_id": content})
+        db = self.bot.db.get_database("config").get_collection(address)
+        _ = await db.find_one({"_id": content})
 
-            if _:
-                return await db.update_one({"_id": content}, {"$set": data})
-            db.insert_one({"_id": content, "data": data})
-
-        elif action == "edit":
-            db = self.bot.db.get_database("config").get_collection(address)
-            _ = await db.find_one({"_id": content})
-
+        if action in ["create", "edit"]:
             if _:
                 return await db.update_one({"_id": content}, {"$set": data})
             db.insert_one({"_id": content, "data": data})
 
         elif action == "delete":
-            db = self.bot.db.get_database("config").get_collection(address)
-            _ = await db.find_one({"_id": content})
-
             if _:
                 return await db.delete_one({"_id": content}, {"$set": data})
             raise cmd.BadArgument("No config found")
+
+        else:
+            raise cmd.BadArgument("Invalid action")
 
 
 def setup(bot):
