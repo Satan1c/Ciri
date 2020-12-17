@@ -1,9 +1,10 @@
 import discord
+from bot.bot import Ciri
 from discord.ext import commands as cmd
 
 
 class Other(cmd.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Ciri):
         self.bot = bot
 
     @cmd.command(name="Poll", aliases=["предложение"])
@@ -20,11 +21,11 @@ class Other(cmd.Cog):
         for i in ["⬆️", "⬇️"]:
             await msg.add_reaction(i)
 
-    @cmd.command(Name="Test")
+    @cmd.command(Name="Test", hidden=True)
     @cmd.is_owner()
-    async def test(self, ctx: cmd.Context, mid: int):
-        message = await ctx.channel.fetch_message(mid)
-        print(message.embeds[0].to_dict())
+    async def test(self, ctx: cmd.Context):
+        res = await self.bot.profiles.find_one({"_id": 548854261144879124})
+        print(res)
 
 
 def setup(bot):

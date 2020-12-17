@@ -24,6 +24,8 @@ class Arts(cmd.Cog):
         for i in msgs:
             await i.add_reaction(emoji=self.art_emoji)
 
+        await ctx.message.delete()
+
     @cmd.command(name="Meme post", aliases=["meme_post", "memepost", "мем_пост", "мемпост", "мп", "mp"])
     @cmd.guild_only()
     async def meme(self, ctx: cmd.Context, *urls):
@@ -32,14 +34,14 @@ class Arts(cmd.Cog):
         urls = urls if urls and not ctx.message.attachments else \
             ctx.message.attachments if ctx.message.attachments and not urls else \
                 list(urls) + ctx.message.attachments
-        print(urls)
         urls = urls if len(urls) >= 2 else urls[0] if len(urls) >= 1 else None
-        print(urls)
 
         msgs = await self.bot.utils.post_to(urls, channel, ctx)
 
         for i in msgs:
             await i.add_reaction(emoji=self.meme_emoji)
+
+        await ctx.message.delete()
 
     @cmd.command(name="NSFW post",
                  aliases=["ero_post", "eropost", "еро_пост", "эро_пост", "еропост", "эропост", "ep", "еп", "эп"])
@@ -56,6 +58,8 @@ class Arts(cmd.Cog):
 
         for i in msgs:
             await i.add_reaction(emoji=self.ero_emoji)
+
+        await ctx.message.delete()
 
 
 def setup(bot):

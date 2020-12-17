@@ -8,23 +8,23 @@ class DataBase(cmd.Cog):
     def __init__(self, bot: Ciri):
         self.bot = bot
 
-    @cmd.command(name="Config edit", alises=['config', "cfg"])
-    @cmd.is_owner()
-    async def config_command(self, ctx: cmd.Context, action: str, address: str, *, data: str):
+    @cmd.command(name="Config edit", aliases=['config', "cfg"])
+    @cmd.has_guild_permissions(manage_messages=True)
+    @cmd.guild_only()
+    async def config_command(self, ctx: cmd.Context, action: str, *, data: str):
         data = json.loads(data)
         content = self.bot.db_enumeration.get(data['content'])
         data['content'] = None
 
-        db = self.bot.db.get_database("config").get_collection(address)
-        _ = await db.find_one({"_id": content})
+        db = await self.bot.config.find_one({"_id": content})
 
         if action in ["create", "edit"]:
-            if _:
+            if db:
                 return await db.update_one({"_id": content}, {"$set": data})
-            db.insert_one({"_id": content, "data": data})
+            self.bot.config.insert_one({"_id": content})
 
         elif action == "delete":
-            if _:
+            if db:
                 return await db.delete_one({"_id": content}, {"$set": data})
             raise cmd.BadArgument("No config found")
 

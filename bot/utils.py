@@ -1,5 +1,6 @@
+import ast
 import asyncio
-import json
+import re
 from time import localtime
 from typing import Union, Tuple, List
 
@@ -47,7 +48,6 @@ class Utils:
 
     async def post_to(self, url_or_file: Union[List[Union[str, discord.Attachment]], str, discord.Attachment],
                       channel: Union[int, discord.TextChannel], ctx: cmd.Context) -> List[discord.Message]:
-        print(url_or_file)
 
         urls = []
         if not url_or_file:
@@ -60,8 +60,6 @@ class Utils:
             for i in url_or_file:
                 i = i if isinstance(i, str) else i.url
                 urls.append(i)
-
-        print(urls)
 
         channel = None if not channel else channel if isinstance(channel,
                                                                  discord.TextChannel) else self.bot.get_channel(channel)
@@ -79,13 +77,12 @@ class Utils:
 
         return msgs
 
-    def webhook_parser(self, *, data: str) -> Tuple[str, List[discord.Embed]]:
-        mesage = ""
+    def webhook_parser(self, data: dict) -> Tuple[str, List[discord.Embed]]:
+        message = ""
         embed = []
-        data = json.loads(data)
 
         if "content" in data:
-            mesage = data['content']
+            message = data['content']
 
         if "embeds" in data:
             if len(data['embeds']):
@@ -95,7 +92,35 @@ class Utils:
 
         if not len(embed):
             embed.append(discord.Embed())
-        return mesage, embed
+        return message, embed
+
+    def formatter(self, config: dict, profile: dict, ctx: cmd.Context):
+        for k, v in profile.items():
+            if v is None:
+                profile[k] = "нету"
+
+        s = re.sub(r"{'", "~'", str(config))
+        s = re.sub(r"'}", "'~", s)
+        s = re.sub(r"]}", "]~", s)
+        s = re.sub(r"}]", "~]", s)
+        s = re.sub(r"None}", "None~", s)
+        s = re.sub(r"True}", "True~", s)
+
+        # cmds = [i.aliases[0] for j in self.bot.cogs for i in self.bot.cogs[j].walk_commands() if not i.hidden]
+
+        config = str(s).format(user=ctx.author,
+                               prefix=self.bot.command_prefix,
+                               ctx=ctx,
+                               **profile)
+
+        s = re.sub(r"'~", "'}", str(config))
+        s = re.sub(r"]~", "]}", s)
+        s = re.sub(r"~]", "}]", s)
+        s = re.sub(r"None~", "None}", s)
+        s = re.sub(r"True~", "True}", s)
+        s = re.sub(r"~'", "{'", s)
+
+        return ast.literal_eval(s)
 
 
 class Paginator:
