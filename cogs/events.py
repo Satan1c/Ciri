@@ -34,6 +34,7 @@ class Events(cmd.Cog):
         await channel.send(embed=embed)
 
         prf = await self.bot.profiles.find_one({"_id": member.id})
+        
         if not prf:
             await self.bot.profiles.insert_one(self.bot.models.User.get_data(member)[0])
 
