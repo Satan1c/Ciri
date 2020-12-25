@@ -1,0 +1,10 @@
+aiohttp
+cchardet
+aiodns
+motor
+setuptools>=40.3.0
+wheel
+asyncio
+websockets
+requests
+dnspython

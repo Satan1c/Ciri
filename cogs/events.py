@@ -34,11 +34,12 @@ class Events(cmd.Cog):
         await channel.send(embed=embed)
 
         prf = await self.bot.profiles.find_one({"_id": member.id})
+        
         if not prf:
             await self.bot.profiles.insert_one(self.bot.models.User.get_data(member)[0])
 
     @cmd.Cog.listener("on_member_remove")
-    async def member_remove(self, member):
+    async def on_member_remove(self, member):
         channel = self.bot.get_channel(639709192042709002)
 
         embed = discord.Embed(colour=discord.Colour.from_rgb(54, 57, 63),
