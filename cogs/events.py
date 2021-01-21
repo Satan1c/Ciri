@@ -57,8 +57,8 @@ class Events(cmd.Cog):
     async def message(self, msg: discord.Message):
         if msg.type == discord.MessageType.premium_guild_subscription:
             em = discord.Embed(
-                title=f"{msg.author}\n**Забустил сервер**\n{msg.guild.get_role(709738102394191984).mention}",
-                description="Огромное спасибо, что помогаете серверу!!")
+                title=f"{msg.author}\n**Забустил сервер**",
+                description=f"{msg.guild.get_role(709738102394191984).mention}\nОгромное спасибо, что помогаете серверу!!")
             em.set_thumbnail(url=msg.author.avatar_url_as(static_format='png', size=512))
             em.set_image(url="https://thumbs.gfycat.com/ClumsyExcellentLeveret-size_restricted.gif")
             em.set_footer(text=f"{str(self.owner)}",

@@ -24,8 +24,6 @@ class Arts(cmd.Cog):
         for i in msgs:
             await i.add_reaction(emoji=self.art_emoji)
 
-        await ctx.message.delete()
-
     @cmd.command(name="Meme post", aliases=["meme_post", "memepost", "мем_пост", "мемпост", "мп", "mp"])
     @cmd.guild_only()
     async def meme(self, ctx: cmd.Context, *urls):
@@ -40,8 +38,6 @@ class Arts(cmd.Cog):
 
         for i in msgs:
             await i.add_reaction(emoji=self.meme_emoji)
-
-        await ctx.message.delete()
 
     @cmd.command(name="NSFW post",
                  aliases=["ero_post", "eropost", "еро_пост", "эро_пост", "еропост", "эропост", "ep", "еп", "эп"])
@@ -58,8 +54,6 @@ class Arts(cmd.Cog):
 
         for i in msgs:
             await i.add_reaction(emoji=self.ero_emoji)
-
-        await ctx.message.delete()
 
 
 def setup(bot):

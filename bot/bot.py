@@ -51,7 +51,7 @@ class Ciri(cmd.Bot):
 
     async def get_prefix(self, message: discord.Message):
         if not message.author.bot:
-            return "t+"
+            return "+"
 
     # async def on_command_error(self, ctx: cmd.Context, err):
     #     if not ctx.command:
