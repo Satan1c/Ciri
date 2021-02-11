@@ -66,16 +66,16 @@ class Events(cmd.Cog):
 
             await msg.guild.get_channel(684011135287951392).send(embed=em)
 
-        if msg.author.id in [315926021457051650, 464272403766444044]:
-            if len(msg.embeds) > 0:
-                data = msg.embeds[0].to_dict()
-
-                if "title" in data and data['title'] == "Сервер Up":
-                    await self.utils.up_remind(msg.channel.id, "s.up")
-
-                elif "description" in data and \
-                        data['description'].startswith("[Top Discord Servers](https://discord-server.com/)"):
-                    await self.utils.up_remind(msg.channel.id, "!bump")
+        # if msg.author.id in [315926021457051650, 464272403766444044]:
+        #     if len(msg.embeds) > 0:
+        #         data = msg.embeds[0].to_dict()
+        #
+        #         if "title" in data and data['title'] == "Сервер Up":
+        #             await self.utils.up_remind(msg.channel.id, "s.up")
+        #
+        #         elif "description" in data and \
+        #                 data['description'].startswith("[Top Discord Servers](https://discord-server.com/)"):
+        #             await self.utils.up_remind(msg.channel.id, "!bump")
 
 
 def setup(bot):
