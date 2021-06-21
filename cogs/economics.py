@@ -1,12 +1,12 @@
 import discord
-from bot.bot import Ciri
 from discord.ext import commands as cmd
+
+from bot.bot import Ciri
 
 
 class Economics(cmd.Cog):
     def __init__(self, bot: Ciri):
         self.bot = bot
-        self.profiles = bot.profiles
 
     @cmd.command(name="Balance", aliases=['bal', 'баланс', "бал"], usage="баланс")
     @cmd.guild_only()

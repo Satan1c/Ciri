@@ -1,12 +1,12 @@
 import ast
-import asyncio
 import re
 from time import localtime
 from typing import Union, Tuple, List
 
 import discord
 from discord.ext import commands as cmd
-
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+from config import mongo
 
 class Utils:
     def __init__(self, bot):
@@ -40,11 +40,11 @@ class Utils:
 
         return str(tm)
 
-    async def up_remind(self, channel: int, command: str):
-        await asyncio.sleep(delay=4 * 60 * 60)
-
-        role = self.bot.get_guild(542005378049638400).get_role(709306526094983209)
-        await self.bot.get_channel(channel).send(f":exclamation: {role.mention} время писать {command}")
+    # async def up_remind(self, channel: int, command: str):
+    #     await asyncio.sleep(delay=4 * 60 * 60)
+    #
+    #     role = self.bot.get_guild(542005378049638400).get_role(709306526094983209)
+    #     await self.bot.get_channel(channel).send(f":exclamation: {role.mention} время писать {command}")
 
     async def post_to(self, url_or_file: Union[List[Union[str, discord.Attachment]], str, discord.Attachment],
                       channel: Union[int, discord.TextChannel], ctx: cmd.Context) -> List[discord.Message]:
@@ -77,7 +77,8 @@ class Utils:
 
         return msgs
 
-    def webhook_parser(self, data: dict) -> Tuple[str, List[discord.Embed]]:
+    @staticmethod
+    def webhook_parser(data: dict) -> Tuple[str, List[discord.Embed]]:
         message = ""
         embed = []
 
@@ -94,33 +95,91 @@ class Utils:
             embed.append(discord.Embed())
         return message, embed
 
-    def formatter(self, config: dict, profile: dict, ctx: cmd.Context):
+    def formatter(self, config: dict, profile: dict, ctx: cmd.Context) -> dict:
         for k, v in profile.items():
             if v is None:
-                profile[k] = "нету"
+                profile[k] = "нет"
 
-        s = re.sub(r"{'", "~'", str(config))
-        s = re.sub(r"'}", "'~", s)
-        s = re.sub(r"]}", "]~", s)
-        s = re.sub(r"}]", "~]", s)
-        s = re.sub(r"None}", "None~", s)
-        s = re.sub(r"True}", "True~", s)
+        return ast.literal_eval(
+            self.__reg_sub(
+                self.__reg_sub(
+                    str(config)).format(user=ctx.author,
+                                        prefix=self.bot.command_prefix,
+                                        ctx=ctx,
+                                        **profile)))
 
-        # cmds = [i.aliases[0] for j in self.bot.cogs for i in self.bot.cogs[j].walk_commands() if not i.hidden]
-
-        config = str(s).format(user=ctx.author,
-                               prefix=self.bot.command_prefix,
-                               ctx=ctx,
-                               **profile)
-
-        s = re.sub(r"'~", "'}", str(config))
+    def __reg_sub(self, text: str) -> str:
+        s = re.sub(r"'~", "'}", text)
         s = re.sub(r"]~", "]}", s)
         s = re.sub(r"~]", "}]", s)
         s = re.sub(r"None~", "None}", s)
         s = re.sub(r"True~", "True}", s)
         s = re.sub(r"~'", "{'", s)
 
-        return ast.literal_eval(s)
+        return s
+
+class DataBaseAccess:
+    def __init__(self):
+        self.client = AsyncIOMotorClient(mongo)
+        self.server = self.client.get_database("server")
+        self.profiles = self.client.get_database("users").get_collection("profiles")
+        self.config = self.client.get_database("cfg").get_collection("main")
+
+    async def _find_one(self, collection: AsyncIOMotorCollection, query: dict, *, error: Exception = None) -> Union[dict, None]:
+        doc: Union[dict, None] = await collection.find_one(query)
+
+        if not doc and error:
+            raise error
+
+        return doc
+
+    async def get_one_config(self, query: dict, can_none: bool = True, none_form: dict = None) -> Union[dict, None]:
+        if not can_none and not none_form:
+            return await self._find_one(self.config, query, error=cmd.BadArgument("No config found"))
+
+        if not can_none:
+            await self.config.insert_one(none_form)
+            return none_form
+
+        return await self._find_one(self.config, query)
+
+    async def update_one_config(self, query: dict, data: dict) -> None:
+        cfg = await self.config.update_one(query, data if "$set" in data else {"$set": data})
+
+        if not cfg:
+            query.update(data)
+            await self.config.insert_one(query)
+
+    async def delete_one_config(self, query: dict) -> None:
+        cfg = await self.config.find_one_and_delete(query)
+
+        if not cfg:
+            raise cmd.BadArgument("No config found")
+
+    async def get_one_profile(self, query: dict, can_none: bool = True, none_form: dict = None) -> Union[dict, None]:
+        if not can_none and not none_form:
+            return await self._find_one(self.profiles, query, error=cmd.BadArgument("No profile found"))
+
+        prf = await self._find_one(self.profiles, query)
+
+        if not prf and not can_none:
+            await self.profiles.insert_one(none_form)
+            return none_form
+
+        return prf
+
+    async def update_one_profile(self, query: dict, data: dict) -> None:
+        cfg = await self.profiles.update_one(query, data if "$set" in data else {"$set": data})
+
+        if not cfg:
+            query.update(data)
+            await self.profiles.insert_one(query)
+
+    async def delete_one_profile(self, query: dict) -> None:
+        cfg = await self.profiles.find_one_and_delete(query)
+
+        if not cfg:
+            raise cmd.BadArgument("No profile found")
 
 
 class Paginator:

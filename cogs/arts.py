@@ -1,5 +1,6 @@
-from bot.bot import Ciri
 from discord.ext import commands as cmd
+
+from bot.bot import Ciri
 
 
 class Arts(cmd.Cog):

@@ -1,6 +1,10 @@
+import datetime
+
 import discord
-from bot.bot import Ciri
 from discord.ext import commands as cmd
+
+from bot import models
+from bot.bot import Ciri
 
 
 class Events(cmd.Cog):
@@ -8,6 +12,36 @@ class Events(cmd.Cog):
         self.bot = bot
         self.utils = bot.utils
         self.owner = self.bot.get_user(348444859360608256)
+
+    @cmd.Cog.listener("on_voice_state_update")
+    async def voice_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        if member.bot \
+                or after.channel and isinstance(after.channel, discord.StageChannel) \
+                or before.channel and isinstance(before.channel, discord.StageChannel):
+            return
+
+        cfg: dict = await self.bot.db.get_one_config({"_id": self.bot.db_enumeration.get("private_rooms")}, False)
+        prf: models.User = models.User(
+            (await self.bot.db.get_one_profile({"_id": member.id}, False, models.User.get_data(member)[0])))
+
+        if after.channel and after.channel.id in list(cfg["channels"]):
+            channel = await member.guild.get_channel(after.channel.category_id) \
+                .create_voice_channel(f"{member.display_name}",
+                                      user_limit=5,
+                                      overwrites={
+                                          member.guild.me: discord.PermissionOverwrite(manage_channels=True),
+                                          member: discord.PermissionOverwrite(manage_channels=True),
+                                      })
+
+            await member.move_to(channel)
+
+            prf.join_voice = datetime.datetime.utcnow()
+            await self.bot.db.update_one_profile({"_id": member.id}, dict(prf.__dict__()))
+
+        if before.channel and before.channel.id not in list(cfg['channels']) and before.channel.category_id in list(cfg['categories']) and not (before.channel.members and [i for i in before.channel.members if not i.bot]):
+            prf.join_voice = None
+            await self.bot.db.update_one_profile({"_id": member.id}, dict(prf.__dict__()))
+            await before.channel.delete()
 
     @cmd.Cog.listener("on_member_join")
     async def member_join(self, member: discord.Member):
@@ -33,13 +67,8 @@ class Events(cmd.Cog):
         await member.add_roles(role, reason="new user")
         await channel.send(embed=embed)
 
-        prf = await self.bot.profiles.find_one({"_id": member.id})
-        
-        if not prf:
-            await self.bot.profiles.insert_one(self.bot.models.User.get_data(member)[0])
-
     @cmd.Cog.listener("on_member_remove")
-    async def on_member_remove(self, member):
+    async def member_remove(self, member):
         channel = self.bot.get_channel(639709192042709002)
 
         embed = discord.Embed(colour=discord.Colour.from_rgb(54, 57, 63),
@@ -65,17 +94,6 @@ class Events(cmd.Cog):
                           icon_url=self.owner.avatar_url_as(size=4096, static_format="png"))
 
             await msg.guild.get_channel(684011135287951392).send(embed=em)
-
-        # if msg.author.id in [315926021457051650, 464272403766444044]:
-        #     if len(msg.embeds) > 0:
-        #         data = msg.embeds[0].to_dict()
-        #
-        #         if "title" in data and data['title'] == "Сервер Up":
-        #             await self.utils.up_remind(msg.channel.id, "s.up")
-        #
-        #         elif "description" in data and \
-        #                 data['description'].startswith("[Top Discord Servers](https://discord-server.com/)"):
-        #             await self.utils.up_remind(msg.channel.id, "!bump")
 
 
 def setup(bot):

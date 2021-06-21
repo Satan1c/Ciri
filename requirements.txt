@@ -1,10 +1,11 @@
+discord.py
 aiohttp
 cchardet
 aiodns
-motor
+motor~=2.4.0
 setuptools>=40.3.0
 wheel
-asyncio
+asyncio~=3.4.3
 websockets
 requests
 dnspython
