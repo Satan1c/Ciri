@@ -10,7 +10,7 @@ namespace Ciri.Modules;
 [EnabledInDm(false)]
 public class Cinema : InteractionModuleBase<SocketInteractionContext>
 {
-	private readonly Regex m_shikimoriRegex = new (@"((http|https):\/\/|)shikimori\.(one|org)\/animes\/(\d+)", RegexOptions.Compiled | RegexOptions.Singleline);
+	private readonly Regex m_shikimoriRegex = new (@"((http|https):\/\/|)shikimori\.(one|org)\/animes\/(\w+)", RegexOptions.Compiled | RegexOptions.Singleline);
 	private readonly ShikimoriClient m_shikimoriClient;
 
 	public Cinema(ShikimoriClient shikimoriClient)
@@ -30,7 +30,7 @@ public class Cinema : InteractionModuleBase<SocketInteractionContext>
 	{
 		var embed = new EmbedBuilder()
 			.WithColor(3093046)
-			.WithAuthor(modal.Title, url: modal.Url)
+			.WithAuthor(modal.Name, url: modal.Url)
 			.WithDescription($"Запросил: {Context.User.Mention}\n{modal.Description}");
 		
 		var match = m_shikimoriRegex.Match(modal.Url);
