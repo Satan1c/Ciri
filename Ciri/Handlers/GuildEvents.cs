@@ -1,7 +1,6 @@
 ﻿using Ciri.Modules.Utils;
 using Discord;
 using Discord.WebSocket;
-using Serilog;
 
 namespace Ciri.Handlers;
 
@@ -42,6 +41,8 @@ public class GuildEvents
 
 		if (await m_client.Rest.GetGuildAsync(542005378049638400, true) is not IGuild guild)
 			return;
+		
+		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {m_client.GetGuild(guild.Id).MemberCount.ToString()}");
 		
 		var role = guild.GetRole(812189549295566889);
 		if (role is not null)

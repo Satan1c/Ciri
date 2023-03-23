@@ -53,7 +53,6 @@ public class ClientEvents
 	{
 		m_client.Ready -= OnReady;
 		
-		await GuildEvents.m_membersCount.ModifyAsync(x => x.Name = $"🌹: {m_client.Guilds.First().MemberCount.ToString()}");
 		await m_interactionHandler.Init();
 		await m_guildEvents.Init();
 
