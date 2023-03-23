@@ -10,7 +10,7 @@ namespace Ciri.Modules;
 [EnabledInDm(false)]
 public class Cinema : InteractionModuleBase<SocketInteractionContext>
 {
-	private readonly Regex m_shikimoriRegex = new (@"((http|https):\/\/|)shikimori\.(one|org)\/animes\/(\w+)", RegexOptions.Compiled | RegexOptions.Singleline);
+	private readonly Regex m_shikimoriRegex = new (@"(?:https?:\/\/)?shikimori\.(?:one|org)\/animes\/(?:[^0-9]*)(\d+)", RegexOptions.Compiled | RegexOptions.Singleline);
 	private readonly ShikimoriClient m_shikimoriClient;
 
 	public Cinema(ShikimoriClient shikimoriClient)
@@ -34,7 +34,7 @@ public class Cinema : InteractionModuleBase<SocketInteractionContext>
 			.WithDescription($"Запросил: {Context.User.Mention}\n{modal.Description}");
 		
 		var match = m_shikimoriRegex.Match(modal.Url);
-		if (match is { Success: true, Groups.Count: > 1 } && int.TryParse(match.Groups[4].Value, out var animeId))
+		if (match is { Success: true, Groups.Count: > 1 } && int.TryParse(match.Groups[1].Value, out var animeId))
 		{
 			var anime = await m_shikimoriClient.Animes.GetAnime(animeId);
 			embed.WithAuthor(Context.User);
