@@ -29,7 +29,11 @@ public static class EventsExtensions
 		await context.Interaction.RespondAsync("Sent event", ephemeral: true);
 		
 		if (message.Channel is ITextChannel channel)
-			await channel.CreateThreadAsync("Обсуждение", autoArchiveDuration: ThreadArchiveDuration.OneDay, message: message);
+			await channel.CreateThreadAsync(
+				"Обсуждение",
+				channel.GetChannelType() == ChannelType.News ? ThreadType.NewsThread : ThreadType.PublicThread,
+				ThreadArchiveDuration.OneDay,
+				message);
 	}
 	
 	private static string GetTitle(string name, long time)
