@@ -1,4 +1,4 @@
 .idea/*
-bin/[Dd]ebug/
-bin/[Rr]elease/
+bin/*
+!bin/Localizations/
 obj/
