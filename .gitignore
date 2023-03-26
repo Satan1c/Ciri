@@ -1,4 +1,5 @@
 .idea/*
-bin/*
-!bin/Localizations/
+/**/bin/Release
+/**/bin/Debug
+/**/obj/
 obj/
