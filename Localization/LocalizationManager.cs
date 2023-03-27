@@ -30,8 +30,8 @@ public class LocalizationManager
 	{
 		foreach (var filesPath in filesPaths)
 		{
-			var path = filesPath.Replace('/', '\\');
-			var split = path.Split('\\')[^1].Split('.');
+			var path = filesPath.Replace('\\', '/');
+			var split = path.Split('/')[^1].Split('.');
 			var category = split[0];
 			var name = split[1];
 			var file = File.ReadAllText(path);
