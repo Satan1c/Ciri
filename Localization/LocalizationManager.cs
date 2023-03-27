@@ -32,8 +32,9 @@ public class LocalizationManager
 	
 	private void Load(string[] filesPaths)
 	{
-		foreach (var path in filesPaths)
+		foreach (var filesPath in filesPaths)
 		{
+			var path = filesPath.Replace('/', '\\');
 			var split = path.Split('\\')[^1].Split('.');
 			var category = split[0];
 			var name = split[1];
