@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using Ciri.Modules.Utils;
+﻿using Ciri.Modules.Utils;
 using Discord;
 using Discord.Interactions;
 using Newtonsoft.Json;
@@ -12,7 +11,13 @@ namespace Ciri.Modules;
 public class Events : InteractionModuleBase<SocketInteractionContext>
 {
 	[SlashCommand("send_event", "sends event")]
-	public Task SendEvent(long time, EventName eventName, IUser? eventer = null)
+	public Task SendEvent(
+		[Summary("time", "time of event beginning")]
+		long time,
+		[Summary("event_name")]
+		EventName eventName,
+		[Summary("eventer", "user who will host the event")]
+		IUser? eventer = null)
 	{
 		eventer ??= Context.User;
 		var embed = eventName switch
@@ -36,7 +41,7 @@ public enum EventName
 {
 	Mafia,
 	Alias,
-	[EnumMember(Value = "Who I ?")]
+	[ChoiceDisplay("Who I ?")]
 	WhoI,
 	Crocodile,
 	Jackbox,

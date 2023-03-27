@@ -53,6 +53,7 @@ public class GuildEvents
 	{
 		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {member.Guild.MemberCount.ToString()}");
 		await m_logChannel.SendMessageAsync(embed: member.GetWelcomeEmbed());
+		await member.AddRoleAsync(542012055775870976);
 		await ClientEvents.OnLog(new LogMessage(LogSeverity.Info, nameof(OnMemberJoined), $"User {member.Username} joined the guild"));
 	}
 	
@@ -68,12 +69,11 @@ public class GuildEvents
 
 	public async Task OnMessageReceived(SocketMessage message)
 	{
-		if (message is not
-		    { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription })
+		if ((message is not { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription })
+		    || (message.Author is not SocketGuildUser member))
 			return;
-
-		var member = (message.Author as SocketGuildUser) ?? (message.MentionedUsers.First()! as SocketGuildUser)!;
-		await m_client.Rest.AddRoleAsync(542005378049638400, member.Id, 709738102394191984);
+		
+		await member.AddRoleAsync(542005378049638400);
 		await ClientEvents.OnLog(new LogMessage(
 			LogSeverity.Info,
 			nameof(OnMessageReceived),

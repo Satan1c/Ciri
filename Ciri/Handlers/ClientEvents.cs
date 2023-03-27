@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 
@@ -12,12 +13,12 @@ public class ClientEvents
 	private readonly GuildEvents m_guildEvents;
 	private static ILogger? m_logger;
 
-	public ClientEvents(DiscordSocketClient client, InteractionHandler interactionHandler, GuildEvents guildEvents, ILogger logger)
+	public ClientEvents(IServiceProvider serviceProvider)
 	{
-		m_client = client;
-		m_interactionHandler = interactionHandler;
-		m_guildEvents = guildEvents;
-		m_logger = logger;
+		m_client = serviceProvider.GetRequiredService<DiscordSocketClient>();
+		m_interactionHandler = serviceProvider.GetRequiredService<InteractionHandler>();
+		m_guildEvents = serviceProvider.GetRequiredService<GuildEvents>();
+		m_logger = serviceProvider.GetRequiredService<ILogger>();
 
 		m_client.Ready += OnReady;
 		m_client.Log += OnLog;

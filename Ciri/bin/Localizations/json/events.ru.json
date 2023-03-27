@@ -1,0 +1,34 @@
+﻿{
+	"events": {
+		"name": "",
+		"description": "",
+		
+		"send_event": {
+			"name": "отправить_ивент",
+			"description": "отправляет информацию о начале ивента",
+			
+			"time": {
+				"name": "время",
+				"description": "время, когда начнется",
+			},
+			
+			"event_name": {
+				
+				"choices": {
+					"Mafia": "Мафия",
+					"Alias": "Синонимы",
+					"Who I ?": "Кто Я ?",
+					"Crocodile": "Крокодил",
+					"Jackbox": "Jackbox",
+					"Tabletop": "Настолки",
+					"Moments": "Моменты",
+				}
+			},
+			
+			"eventer": {
+				"name": "ивентер",
+				"description": "пользователь, который проводит ивент",
+			},
+		}
+	}
+}

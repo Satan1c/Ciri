@@ -1,5 +1,4 @@
-﻿using Ciri.Models;
-using Ciri.Models.Modals.Requests;
+﻿using Ciri.Models.Modals.Requests;
 using Ciri.Modules.Configs.Requests;
 using Ciri.Modules.Utils;
 using Discord;
@@ -32,7 +31,7 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 	public Task Update(IMessage message)
 		=> Context.Interaction.RespondWithModalAsync<UpdateModal>($"update_webhook_{message.Channel.Id}_{message.Id}");
 
-	[SlashCommand("send", "sends a webhook")]
+	[SlashCommand("send", "sends information to channel")]
 	public Task Send(ITextChannel channel)
 		=> Context.Interaction.RespondWithModalAsync<SendModal>($"send_webhook_{channel.Id}");
 

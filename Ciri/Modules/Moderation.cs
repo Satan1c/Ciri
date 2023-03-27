@@ -1,5 +1,4 @@
-﻿using Ciri.Models;
-using Ciri.Models.Modals.Moderation;
+﻿using Ciri.Models.Modals.Moderation;
 using Discord;
 using Discord.Interactions;
 

@@ -1,4 +1,6 @@
 ﻿using Discord;
+using static Ciri.Modules.Configs.EmojiConfig;
+using static Ciri.Modules.Configs.ImagesConfig;
 using static Ciri.Modules.Utils.Extensions;
 
 namespace Ciri.Modules.Utils;
@@ -6,17 +8,6 @@ namespace Ciri.Modules.Utils;
 public static class EventsExtensions
 {
 	private const string c_eventChannel = "https://discord.com/channels/542005378049638400/700739189477474334";
-	private const string c_heartVal = "<:heartftvalyta:779022997331378196>";
-	private const string c_star = "<a:zvezdochka:785687625285238784>";
-	
-	private const string c_mafiaImage = "https://images-ext-2.discordapp.net/external/HHcqJf83OAtgxlAMK5DWnoJE0HyJcn_cBn3JgevCM8M/https/images-ext-1.discordapp.net/external/8CfeMCv8vAqqbbbQ1Eqaf0o7seLGp4Vxrqyj3ZYNURI/%253Fwidth%253D1216%2526height%253D684/https/media.discordapp.net/attachments/767725811905593346/779325292954124298/-1.png?width=1214&height=683";
-	private const string c_aliasImage = "https://images-ext-2.discordapp.net/external/o2c-iffYr-FdMEt4rPs6dsEFG2DCCqzwPN-82FQqArk/%3Fwidth%3D1186%26height%3D683/https/images-ext-2.discordapp.net/external/0G0tUp_W8cbm0rGqEFiBjW4pSDqAD8B36Otqlr1TzbY/%253Fwidth%253D1188%2526height%253D684/https/media.discordapp.net/attachments/691511839942508554/710512695241211995/238_20200514192314.png";
-	private const string c_whoIImage = "https://media.discordapp.net/attachments/691511839942508554/718420458923491388/308_20200605150614.png?width=1186&height=683";
-	private const string c_crocodileImage = "https://images-ext-1.discordapp.net/external/VEc5oQLU_znJ2ygkpt5eUkt0FrKr_ZLGXREJGi3Iw94/https/i.ibb.co/4gGQNcr/crocodile.png?width=1368&height=683";
-	private const string c_jackboxImage = "https://media.discordapp.net/attachments/767725811905593346/779741553634574366/JackBox4-revive.png?width=1094&height=683";
-	private const string c_tabletopImage = "https://media.discordapp.net/attachments/699990941439754371/1082293035095834624/nastolkievent.png?width=1368&height=683";
-	private const string c_momentsImage = "https://media.discordapp.net/attachments/669887782117703701/781572552580530216/5ee6b1c039ce0f6b.png?width=1214&height=683";
-	//private const string whoIImage = "";
 	
 	public static async Task SendEventEmbedAsync(this IInteractionContext context, Embed embed)
 	{
@@ -42,7 +33,7 @@ public static class EventsExtensions
 	}
 	private static string GetDescription(string name, string description, ulong eventer)
 	{
-		return $"{c_star}**- Ведущий:** <@{eventer}>\n\n*Приглашаем тебя сыграть в [{name}]({c_eventChannel})*.\n{description}";
+		return $"{Star}**- Ведущий:** <@{eventer}>\n\n*Приглашаем тебя сыграть в [{name}]({c_eventChannel})*.\n{description}";
 	}
 
 	public static Embed GetMafiaEmbed(this IUser user, long time)
@@ -56,10 +47,12 @@ public static class EventsExtensions
 				"членов организованного меньшинства с неорганизованным большинством.",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_mafiaImage)
-			.AddField(Empty, $"**мафии - 100{c_heartVal}**", true)
-			.AddField(Empty, $"**мирных - 50{c_heartVal}**", true)
-			.AddField(Empty, $"**участие - 20{c_heartVal}**", true)
+			.AddPrizes(MafiaImage, new []
+			{
+				new Prize("мафия", 100),
+				new Prize("мирные", 50),
+				new Prize("участие", 20)
+			})
 			.Build();
 	}
 
@@ -74,9 +67,7 @@ public static class EventsExtensions
 				"не используя однокоренные и созвучные слова",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_aliasImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  50{c_heartVal}", $"**участие - 20{c_heartVal}**", true)
+			.AddPrizes(AliasImage)
 			.Build();
 	}
 
@@ -88,9 +79,7 @@ public static class EventsExtensions
 				"Вы играете каждый сам за себя, вы видите слова у других игроков, а сам(а) у себя нет, и должны отгадать его, и так кто быстрее.",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_whoIImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  60{c_heartVal}", $"**участие - 40{c_heartVal}**", true)
+			.AddPrizes(WhoIImage)
 			.Build();
 	}
 	
@@ -102,9 +91,7 @@ public static class EventsExtensions
 				"Игра, где нужно отгадывать слова, которые изображают другие игроки с помощью кисти и набора красок.",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_crocodileImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  60{c_heartVal}", $"**участие - 40{c_heartVal}**", true)
+			.AddPrizes(CrocodileImage)
 			.Build();
 	}
 	
@@ -117,9 +104,7 @@ public static class EventsExtensions
 				"Остальным достаточно видеть экран и подключиться с других устройств через специальный [сайт](https://jackbox.fun/).",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_jackboxImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  60{c_heartVal}", $"**участие - 40{c_heartVal}**", true)
+			.AddPrizes(JackboxImage)
 			.Build();
 	}
 	
@@ -131,9 +116,7 @@ public static class EventsExtensions
 				"Старые добрые настольные игры в новой обертке.",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_tabletopImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  60{c_heartVal}", $"**участие - 40{c_heartVal}**", true)
+			.AddPrizes(TabletopImage)
 			.Build();
 	}
 	
@@ -146,9 +129,72 @@ public static class EventsExtensions
 				"Ведущий будет кидать, заранее заготовленные скрины в ветку, кто первый скажет название аниме, тот выиграет.",
 				user.Id))
 			.WithColor(3093046)
-			.WithImageUrl(c_momentsImage)
-			.AddField($"1 место - 150{c_heartVal}", $"**2 место - 100{c_heartVal}**", true)
-			.AddField($"3 место -  60{c_heartVal}", $"**участие - 40{c_heartVal}**", true)
+			.AddPrizes(MomentsImage)
 			.Build();
 	}
+
+	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image, Prize[] prizes)
+	{
+		embed.WithImageUrl(image);
+		
+		var first = prizes[0];
+		var firstName = first.Name;
+		var firstValue = first.Value.ToString();
+		var second = prizes[1];
+		var secondName = second.Name;
+		var secondValue = second.Value.ToString();
+		var third = prizes[2];
+		var thirdName = third.Name;
+		var thirdValue = third.Value.ToString();
+
+		if (prizes.Length != 4)
+			return embed.AddField(Empty, $"**{firstName} - {firstValue}{HeartVal}**", true)
+				.AddField(Empty, $"**{secondName} - {secondValue}{HeartVal}**", true)
+				.AddField(Empty, $"**{thirdName} - {thirdValue}{HeartVal}**", true);
+		
+		var fourth = prizes[3];
+		var fourthName = fourth.Name;
+		var fourthValue = fourth.Value.ToString();
+		
+		return embed.AddField(Empty,
+				$"**{firstName} - {firstValue}{HeartVal}**\n**{secondName} - {secondValue}{HeartVal}**",
+				true)
+			.AddField(Empty,
+				$"**{thirdName} - {thirdValue}{HeartVal}**\n**{fourthName} - {fourthValue}{HeartVal}**",
+				true);
+	}
+	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image, byte[] prizes)
+	{
+		return embed.AddPrizes(image, new []
+		{
+			new Prize("1 место", prizes[0]),
+			new Prize("2 место", prizes[1]),
+			new Prize("3 место", prizes[2]),
+			new Prize("участие", prizes[3])
+		});
+	}
+	
+	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image)
+	{
+		return embed.AddPrizes(image, new byte[]
+		{
+			150,
+			100,
+			60,
+			40
+		});
+	}
+	
+	private class Prize
+	{
+		public string Name { get; set; }
+		public byte Value { get; set; }
+		
+		public Prize(string name, byte value)
+		{
+			Name = name;
+			Value = value;
+		}
+	}
 }
+
