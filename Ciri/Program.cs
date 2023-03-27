@@ -35,7 +35,7 @@ await using var services = new ServiceCollection()
 		AlwaysResolveStickers = false,
 		MessageCacheSize = 1,
 		GatewayIntents = GatewayIntents.All,
-		LogLevel = LogSeverity.Verbose
+		LogLevel = LogSeverity.Info
 	})
 	.AddSingleton(new InteractionServiceConfig
 	{

@@ -1,7 +1,7 @@
 ﻿{
 	"events": {
-		"name": "",
-		"description": "",
+		"name": "ивенты",
+		"description": "команды ивентов",
 		
 		"send_event": {
 			"name": "отправить_ивент",
@@ -9,7 +9,7 @@
 			
 			"time": {
 				"name": "время",
-				"description": "время, когда начнется",
+				"description": "время, когда начнется"
 			},
 			
 			"event_name": {
@@ -21,14 +21,14 @@
 					"Crocodile": "Крокодил",
 					"Jackbox": "Jackbox",
 					"Tabletop": "Настолки",
-					"Moments": "Моменты",
+					"Moments": "Моменты"
 				}
 			},
 			
 			"eventer": {
 				"name": "ивентер",
-				"description": "пользователь, который проводит ивент",
-			},
+				"description": "пользователь, который проводит ивент"
+			}
 		}
 	}
 }

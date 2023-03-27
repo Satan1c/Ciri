@@ -13,15 +13,13 @@ namespace Ciri.Modules;
 public class Profile : InteractionModuleBase<SocketInteractionContext>
 {
 	private readonly IDataBaseProvider m_dataBaseProvider;
-	private readonly DiscordSocketClient m_client;
 	private readonly Category m_lcalCategory;
 	private const ulong c_femaleRole = 691311950277115904;
 	private const ulong c_maleRole = 691312169836347502;
 
-	public Profile(IDataBaseProvider dataBaseProvider, DiscordSocketClient client, LocalizationManager localizationManager)
+	public Profile(IDataBaseProvider dataBaseProvider, LocalizationManager localizationManager)
 	{
 		m_dataBaseProvider = dataBaseProvider;
-		m_client = client;
 		m_lcalCategory = localizationManager.GetCategory("profile");
 	}
 
