@@ -14,7 +14,7 @@ public class Events : InteractionModuleBase<SocketInteractionContext>
 	public Task SendEvent(
 		[Summary("time", "time of event beginning")]
 		long time,
-		[Summary("event_name")]
+		[Summary("event_name", "name of event")]
 		EventName eventName,
 		[Summary("eventer", "user who will host the event")]
 		IUser? eventer = null)

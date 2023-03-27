@@ -46,6 +46,11 @@ public class LocalizationManager
 	
 	public Category GetCategory(string category)
 	{
-		return m_categories[category];
+		if (m_categories.TryGetValue(category, out var value))
+			return value;
+
+		Console.WriteLine($"Category {category} not found");
+		Console.WriteLine($"Available categories: {string.Join(", ", m_categories.Keys)}");
+		return new Category();
 	}
 }
