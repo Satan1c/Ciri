@@ -14,8 +14,6 @@ public class LocalizationManager
 		if (files.Length > 0)
 		{
 			Load(files);
-			
-			Console.WriteLine($"Single Loaded {files.Length} files from {filesPath}");
 		}
 		else
 		{
@@ -24,8 +22,6 @@ public class LocalizationManager
 			{
 				files = Directory.GetFiles(directory, "*.csv");
 				Load(files);
-				
-				Console.WriteLine($"Multiple Loaded {files.Length} files from {directory}");
 			}
 		}
 	}
@@ -54,8 +50,6 @@ public class LocalizationManager
 		if (m_categories.TryGetValue(category, out var value))
 			return value;
 
-		Console.WriteLine($"Category {category} not found");
-		Console.WriteLine($"Available categories: {string.Join(", ", m_categories.Keys)}");
 		return new Category();
 	}
 }
