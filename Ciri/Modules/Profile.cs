@@ -22,7 +22,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	{
 		m_dataBaseProvider = dataBaseProvider;
 		m_client = client;
-		m_lcalCategory = localizationManager.GetCategory("economy");
+		m_lcalCategory = localizationManager.GetCategory("profile");
 	}
 
 	[SlashCommand("info", "Shows user profile info")]

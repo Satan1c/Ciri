@@ -17,9 +17,11 @@ public class LocalizationManager
 		}
 		else
 		{
-			foreach (var directory in Directory.GetDirectories(filesPath))
+			var directories = Directory.GetDirectories(filesPath);
+			foreach (var directory in directories)
 			{
-				Load(Directory.GetFiles(directory, "*.csv"));
+				files = Directory.GetFiles(directory, "*.csv");
+				Load(files);
 			}
 		}
 	}

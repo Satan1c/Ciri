@@ -26,8 +26,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="bin\Localizations\csv\economy\economy.member_profile.csv" />
-      <Content Include="bin\Localizations\csv\economy\economy.user_profile.csv" />
+      <Content Include="bin\Localizations\csv\profile\profile.member_profile.csv" />
+      <Content Include="bin\Localizations\csv\profile\profile.user_profile.csv" />
       <Content Include="bin\Localizations\json\cinema.ru.json" />
       <Content Include="bin\Localizations\json\profile.ru.json" />
       <Content Include="bin\Localizations\json\events.ru.json" />

@@ -18,6 +18,8 @@ var locals = Path.GetFullPath("../../", AppDomain.CurrentDomain.BaseDirectory) +
 var jsons = locals + "/json";
 var csv = locals + "/csv";
 
+Console.WriteLine(locals);
+
 await using var services = new ServiceCollection()
 	.AddSingleton<Serilog.ILogger>(new LoggerConfiguration()
 		.Enrich.FromLogContext()
