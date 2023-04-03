@@ -54,7 +54,7 @@ public static class Extensions
 
 		var lim = (byte)(5 - count);
 		for (var i = 0; i < lim; i++)
-			builder.WithButton($"[{i + ((count + page * 5) + 1)}]", $"buy_empty_{i}", ButtonStyle.Secondary, disabled: true);
+			builder.WithButton($"[{i + count + page * 5 + 1}]", $"buy_empty_{i}", ButtonStyle.Secondary, disabled: true);
 
 
 		return builder;

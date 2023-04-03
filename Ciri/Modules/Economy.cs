@@ -16,7 +16,7 @@ namespace Ciri.Modules;
 [EnabledInDm(false)]
 public class Economy : InteractionModuleBase<SocketInteractionContext>
 {
-	private readonly DataBaseProvider m_dataBaseProvider;
+	public static DataBaseProvider m_dataBaseProvider;
 	private readonly DiscordSocketClient m_client;
 	private readonly CronTimer m_timer = new("0 0 * * 0", "UTC");
 	private readonly ITextChannel m_channel;

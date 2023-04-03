@@ -1,4 +1,5 @@
-﻿using DataBase.Models;
+﻿using Ciri.Handlers;
+using DataBase.Models;
 using Discord;
 using Discord.Interactions;
 
@@ -43,7 +44,7 @@ public class NullableItemArg<TItem>
 	public sbyte? Discount { get; set; }
 			
 	[ComplexParameterCtor]
-	public NullableItemArg(byte index, TItem? item = default, string? name = null, long? cost = null, sbyte? discount = null)
+	public NullableItemArg([Autocomplete(typeof(ItemAutocomplete))]byte index, TItem? item = default, string? name = null, long? cost = null, sbyte? discount = null)
 	{
 		Index = index;
 		Name = name;

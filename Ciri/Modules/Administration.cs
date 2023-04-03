@@ -1,8 +1,10 @@
-﻿using Ciri.Models;
+﻿using Ciri.Handlers;
+using Ciri.Models;
 using DataBase;
 using DataBase.Models;
 using Discord;
 using Discord.Interactions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ciri.Modules;
 
@@ -80,28 +82,28 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 		}
 		
 		[SlashCommand("remove", "remove shop item command")]
-		public async Task RemoveShopItem(byte index, ShopType type)
+		public async Task RemoveShopItem([Autocomplete(typeof(ItemAutocomplete))]byte index)
 		{
-			var item = await DataBaseProvider.GetItem<object>(type.ShopTypeToString(), index);
+			var item = await DataBaseProvider.GetItem<ulong>("roles", index);
 			if (item == null)
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
 				return;
 			}
 			
-			await DataBaseProvider.RemoveItem<object>(index);
+			await DataBaseProvider.RemoveItem<ulong>(index);
 			await Context.Interaction.RespondAsync($"{item.Name} removed", ephemeral: true);
 		}
 	}
 }
 
-public enum ShopType
+/*public enum ShopType
 {
 	[ChoiceDisplay("roles")]
 	Roles,
-}
+}*/
 
-public static class Extensions
+/*public static class Extensions
 {
 	public static string ShopTypeToString(this ShopType type)
 	{
@@ -111,4 +113,4 @@ public static class Extensions
 			_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 		};
 	}
-}
+}*/
