@@ -1,7 +1,8 @@
 ﻿using Ciri.Models;
+using Ciri.Modules.Configs;
 using Ciri.Modules.Utils;
+using DataBase;
 using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 
 namespace Ciri.Handlers;
@@ -9,21 +10,30 @@ namespace Ciri.Handlers;
 public class GuildEvents
 {
 	private readonly DiscordSocketClient m_client;
-	
+	private readonly DataBaseProvider m_dataBaseProvider;
+
 	public static IVoiceChannel m_membersCount = null;
 	public IReadOnlyDictionary<ulong, ProfitData> Profit;
 	
 	private ITextChannel m_logChannel = null;
 	private ITextChannel m_boostChannel = null;
 	private CronTimer m_timer = new("* * * * *", "UTC");
+	private static readonly Embed m_bumpEmbed = new EmbedBuilder()
+		.WithTitle("Бамп")
+		.WithDescription($"Вы полуили **__50__**{EmojiConfig.HeartVal}")
+		.WithColor(3093046)
+		.Build();
 
-	public GuildEvents(DiscordSocketClient client)
+	public GuildEvents(DiscordSocketClient client, DataBaseProvider dataBaseProvider)
 	{
 		m_client = client;
-		
+		m_dataBaseProvider = dataBaseProvider;
+
 		m_client.UserJoined += OnMemberJoined;
 		m_client.UserLeft += OnMemberLeft;
 		m_client.MessageReceived += OnMessageReceived;
+		m_client.MessageUpdated += OnMessageEdit;
+		m_client.MessageReceived += OnMessageCreate;
 	}
 
 	public async Task Init()
@@ -113,6 +123,25 @@ public class GuildEvents
 			};
 			m_timer.Start();
 		}
+	}
+
+	public async Task OnMessageEdit(Cacheable<IMessage, ulong> _, SocketMessage message, ISocketMessageChannel channel)
+	{
+		if (!message.Author.IsBot || message.Author.Id != 464272403766444044) return;
+		
+		var title = message.Embeds.First().Title.Trim();
+		if (string.IsNullOrEmpty(title) || !title.StartsWith("Успешный Up")) return;
+
+		var reference = (await channel.GetMessageAsync(message.Reference.MessageId.Value))!;
+		var profile = await m_dataBaseProvider.GetProfiles(reference.Author.Id);
+		profile.Hearts += 50;
+		await m_dataBaseProvider.SetProfiles(profile);
+		await channel.SendMessageAsync(embed: m_bumpEmbed, messageReference: message.Reference, allowedMentions: AllowedMentions.None);
+	}
+
+	public async Task OnMessageCreate(SocketMessage message)
+	{
+		if (!message.Author.IsBot) return;
 	}
 
 	public async Task OnMemberJoined(SocketGuildUser member)
