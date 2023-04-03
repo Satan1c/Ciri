@@ -1,14 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 using Ciri.Handlers;
 using Ciri.Modules.Configs;
 using Ciri.Modules.Utils;
 using DataBase;
-using DataBase.Models;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace Ciri.Modules;
 
@@ -46,7 +44,31 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 		};
 		m_timer.Start();
 	}
-	
+
+	[SlashCommand("give", "give hearts to user")]
+	public async Task Give(IUser user, uint amount)
+	{
+		if (user.IsBot)
+		{
+			await RespondAsync("You can't give hearts to bot", ephemeral: true);
+			return;
+		}
+		
+		var myProfile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
+		if (myProfile.Hearts < amount)
+		{
+			await RespondAsync("You don't have enough hearts", ephemeral: true);
+			return;
+		}
+		
+		var userProfile = await m_dataBaseProvider.GetProfiles(user.Id);
+		myProfile.Hearts -= amount;
+		userProfile.Hearts += amount;
+		
+		await m_dataBaseProvider.SetProfiles(new []{myProfile, userProfile});
+		await RespondAsync($"You gave {user.Mention} {amount.ToString()}{EmojiConfig.HeartVal}", ephemeral: true);
+	}
+
 	[SlashCommand("shop", "shop command")]
 	public async Task Shop()
 	{
@@ -59,20 +81,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 		
 		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
 		var embeds = new LinkedList<EmbedBuilder>();
-
-		for (var i = 0; i < shop.Items.Count; i += 5)
-		{
-			var embed = new EmbedBuilder()
-				.WithTitle("Магазин")
-				.WithColor(3093046);
-			
-			foreach (var shopItem in shop.Items.Take(i..(i + 5)))
-			{
-				embed.AddField($"[{shopItem.Index + 1}] {shopItem.Name}", $"{shop.GetCost(shopItem).ToString()}{EmojiConfig.HeartVal}");
-			}
-			
-			embeds.AddLast(embed);
-		}
+		shop.GenerateEmbeds(ref embeds);
 
 		var max = embeds.Count;
 		var first = embeds.First!.Value;
@@ -83,12 +92,9 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			"shop_right",
 		};
 		
-		var items = shop.Items.Select(x => shop.GetCost(x)).ToArray();
-		var currentItems = items.Take(..5).ToArray();
-		
 		var timeout = TimeSpan.FromMinutes(2);
 		var components = new ComponentBuilder()
-			.SetShopControls(1, currentItems, profile.Hearts, ids)
+			.SetShopControls(1, shop, profile, ids)
 			.Build();
 		var closeAt = DateTimeOffset.UtcNow.Add(timeout.Subtract(TimeSpan.FromSeconds(3)));
 
@@ -99,7 +105,6 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 		var current = first;
 		while (DateTimeOffset.UtcNow < closeAt)
 		{
-			
 			var interaction = await InteractionUtility.WaitForInteractionAsync(m_client, timeout, interaction =>
 			{
 				var componentInteraction = interaction as IComponentInteraction;
@@ -119,18 +124,18 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			if (componentInteraction.Data.CustomId == ids[0])
 			{
 				current = current.MoveLeft(ref currentPage, ref max, ref embeds);
-				currentItems = await interaction.UpdateShop(
+				await interaction.UpdateShop(
 					current, currentPage, max,
-					closeAt, items,
-					ids, profile, currentItems);
+					closeAt,
+					ids, profile, shop);
 			}
 			else if (componentInteraction.Data.CustomId == ids[2])
 			{
 				current = current.MoveRight(ref currentPage, ref max, ref embeds);
-				currentItems = await interaction.UpdateShop(
+				await interaction.UpdateShop(
 					current, currentPage, max,
-					closeAt, items,
-					ids, profile, currentItems);
+					closeAt,
+					ids, profile, shop);
 			}
 			else if (componentInteraction.Data.CustomId.StartsWith("buy_"))
 			{
@@ -147,13 +152,13 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				await m_dataBaseProvider.SetProfiles(profile);
 				await Context.Interaction.FollowupAsync($"{item.Name} bought", ephemeral: true);
 				
-				currentItems = await interaction.UpdateShop(
+				await interaction.UpdateShop(
 					current, currentPage, max,
-					closeAt, items,
-					ids, profile, currentItems);
+					closeAt,
+					ids, profile, shop);
 			}
 		}
 		
-		await Context.Interaction.CloseShop(currentPage, current.Fields.Count, ids);
+		await Context.Interaction.CloseShop(shop, currentPage, current.Fields.Count, ids);
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Discord.Interactions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -44,15 +46,18 @@ public sealed class JsonLocalizationManager : ILocalizationManager
 		var values = new Dictionary<string, string>();
 		var files = GetAllFiles();
 
-		foreach (var allFile in files)
+		ref var path = ref MemoryMarshal.GetArrayDataReference(files);
+		ref var end = ref Unsafe.Add(ref path, files.Length);
+
+		while (Unsafe.IsAddressLessThan(ref path, ref end))
 		{
-			var match = m_localeParserRegex.Match(Path.GetFileName(allFile));
+			var match = m_localeParserRegex.Match(Path.GetFileName(path));
 
 			if (!match.Success)
 				continue;
 
 			var key1 = match.Groups["locale"].Value;
-			using var reader1 = new StreamReader(allFile);
+			using var reader1 = new StreamReader(path);
 			using var reader2 = new JsonTextReader(reader1);
 
 			//var token = string.Join(".", key.Select( (Func<string, string>)(x => "['" + x + "']") )) + "." + identifier;
@@ -64,6 +69,8 @@ public sealed class JsonLocalizationManager : ILocalizationManager
 				continue;
 
 			values[key1] = str;
+			
+			path = ref Unsafe.Add(ref path, 1);
 		}
 
 		return values;

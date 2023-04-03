@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI.DataBinder;
 using Ciri.Handlers;
 using Ciri.Modules.Configs;
+using DataBase.Models;
 using Discord;
 using Discord.WebSocket;
 
@@ -23,6 +25,28 @@ public static class Extensions
 	{
 		return user.GetAvatarUrl(format, size) ?? user.GetDefaultAvatarUrl();
 	}
+
+	public static void GenerateEmbeds<TItem>(this Shop<TItem> shop, ref LinkedList<EmbedBuilder> embeds)
+	{
+		var items = CollectionsMarshal.AsSpan(shop.Items);
+		for (var i = 0; i < items.Length; i += 5)
+		{
+			var embed = new EmbedBuilder()
+				.WithTitle("Магазин")
+				.WithColor(3093046);
+			
+			var lim = (items.Length - i) >= 5 ? 5 : items.Length;
+			for (var j = 0; j < lim; j++)
+			{
+				var shopItem = items[i + j];
+				embed.AddField(
+					$"[{(shopItem.Index + 1).ToString()}] {shopItem.Name}",
+					$"{shop.GetCost(shopItem).ToString()}{EmojiConfig.HeartVal}");
+			}
+			
+			embeds.AddLast(embed);
+		}
+	}
 	
 	public static StringBuilder Add(this StringBuilder builder, string value, char separator = '\n')
 	{
@@ -40,21 +64,33 @@ public static class Extensions
 			.WithButton("=>", ids[2], style, disabled: disable);
 	}
 
-	public static ActionRowBuilder AddItems(this ActionRowBuilder builder, int page, long[] itemList, long wallet, bool disabled = false)
+	public static ActionRowBuilder AddItems<TItem>(this ActionRowBuilder builder, int page, Shop<TItem> shop, DataBase.Models.Profile profile, bool disabled = false)
 	{
 		page--;
-		var count = itemList.Length;
+		var items = shop.Items.Take((page * 5)..(page * 5 + 5)).ToArray();
+		var count = items.Length;
 		for (var i = 0; i < count; i++)
+		{
+			var index = i + page * 5;
+			var item = items.First(x => x.Index == index);
 			builder.WithButton(
-				$"[{i + page * 5 + 1}]",
-				$"buy_{i + page * 5}",
-				disabled: disabled ? disabled : wallet < itemList[i]);
-
+				$"[{(index + 1).ToString()}]",
+				$"buy_{index.ToString()}",
+				disabled: disabled
+					? disabled
+					: (profile.Hearts < shop.GetCost(item)
+					   || (profile.Inventory.Count > 0
+					       && profile.Inventory.Contains($"{shop.Name}_{item.Name}_{item.Index.ToString()}"))));
+		}
 		if (count >= 5) return builder;
 
 		var lim = (byte)(5 - count);
 		for (var i = 0; i < lim; i++)
-			builder.WithButton($"[{i + count + page * 5 + 1}]", $"buy_empty_{i}", ButtonStyle.Secondary, disabled: true);
+			builder.WithButton(
+				$"[{(i + count + page * 5 + 1).ToString()}]",
+				$"buy_empty_{i.ToString()}",
+				ButtonStyle.Secondary,
+				disabled: true);
 
 
 		return builder;
@@ -63,39 +99,36 @@ public static class Extensions
 	public static EmbedBuilder SetPage(this EmbedBuilder builder, int current, int max, DateTimeOffset closeAt)
 	{
 		if (max > 1)
-			builder.WithFooter($"Страница {current} / {max}");
-		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds()}:R>");
+			builder.WithFooter($"Страница {current.ToString()} / {max.ToString()}");
+		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>");
 	}
 
-	public static ComponentBuilder SetShopControls(this ComponentBuilder builder, int current, long[] itemList, long wallet, string[] ids, bool disabled = false)
+	public static ComponentBuilder SetShopControls<TItem>(this ComponentBuilder builder, int current, Shop<TItem> shop, DataBase.Models.Profile profile, string[] ids, bool disabled = false)
 	{
 		return builder
 			.AddRow(new ActionRowBuilder().AddPagination(1, ids, disabled))
-			.AddRow(new ActionRowBuilder().AddItems(current, itemList, wallet, disabled));
+			.AddRow(new ActionRowBuilder().AddItems(current, shop, profile, disabled));
 	}
 	
-	public static async Task<long[]> UpdateShop(this SocketInteraction interaction,
+	public static async Task UpdateShop<TItem>(this SocketInteraction interaction,
 		EmbedBuilder current, int currentPage, int max,
-		DateTimeOffset closeAt, long[] items, string[] ids,
-		DataBase.Models.Profile profile, long[] currentItems)
+		DateTimeOffset closeAt, string[] ids,
+		DataBase.Models.Profile profile, Shop<TItem> shop)
 	{
 		current.SetPage(currentPage, max, closeAt);
-		currentItems = items.Take((currentPage * 5)..(currentPage * 5 + 5)).ToArray();
 		await interaction.ModifyOriginalResponseAsync(options =>
 		{
 			options.Embed = current.Build();
 			options.Components = new ComponentBuilder()
-				.SetShopControls(currentPage, currentItems, profile.Hearts, ids).Build();
+				.SetShopControls(currentPage, shop, profile, ids).Build();
 		});
-
-		return currentItems;
 	}
 
-	public static async Task CloseShop(this SocketInteraction interaction, int current, int count, string[] ids)
+	public static async Task CloseShop<TItem>(this SocketInteraction interaction, Shop<TItem> shop, int current, int count, string[] ids)
 	{
 		await interaction.ModifyOriginalResponseAsync(options =>
 		{
-			options.Components = new ComponentBuilder().SetShopControls(current, new long[count], -1, ids, true).Build();
+			options.Components = new ComponentBuilder().SetShopControls(current, shop, new DataBase.Models.Profile(){Hearts = 0}, ids, true).Build();
 		});
 	}
 
