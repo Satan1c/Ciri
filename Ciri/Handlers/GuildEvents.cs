@@ -19,7 +19,7 @@ public class GuildEvents
 
 	private readonly DiscordSocketClient m_client;
 	private readonly DataBaseProvider m_dataBaseProvider;
-	private readonly CronTimer m_timer = new("* * * * *", "UTC");
+	private readonly CronTimer m_timer = new("* * * * *", "Europe/Moscow");
 	private ITextChannel m_boostChannel;
 
 	private ITextChannel m_logChannel;
@@ -100,9 +100,9 @@ public class GuildEvents
 		channel = await guild.GetChannelAsync(770669968329146378);
 		if (channel is IVoiceChannel timeChannel)
 		{
-			m_timer.OnOccurence += async (_, _) =>
+			m_timer.OnOccurence += async (_, time) =>
 			{
-				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {DateTime.UtcNow.AddHours(3).ToString("HH:mm")}");
+				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {time.At.ToString("HH:mm")}");
 			};
 			m_timer.Start();
 		}
