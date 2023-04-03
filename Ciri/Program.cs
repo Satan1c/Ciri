@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Driver;
 using Serilog;
-using Serilog.Extensions.Logging;
 using ShikimoriSharp;
 using ShikimoriSharp.Bases;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -33,7 +32,10 @@ await using var services = new ServiceCollection()
 		AlwaysDownloadDefaultStickers = false,
 		AlwaysResolveStickers = false,
 		MessageCacheSize = 1,
-		GatewayIntents = GatewayIntents.All,
+		GatewayIntents = GatewayIntents.GuildMembers
+		                 | GatewayIntents.GuildMessages
+		                 | GatewayIntents.Guilds
+		                 | GatewayIntents.GuildVoiceStates,
 		LogLevel = LogSeverity.Info
 	})
 	.AddSingleton(new InteractionServiceConfig
@@ -52,7 +54,7 @@ await using var services = new ServiceCollection()
 	.AddSingleton(MongoClientSettings.FromConnectionString("mongodb+srv://Ciri:Atlas23Game@cluster0.fdfr9.mongodb.net/?retryWrites=true&w=majority"))
 	.AddSingleton(new LocalizationManager(csv))
 	.AddSingleton<IMongoClient, MongoClient>()
-	.AddSingleton<IDataBaseProvider, DataBaseProvider>()
+	.AddSingleton<DataBaseProvider, DataBaseProvider>()
 	
 	.AddSingleton<DiscordSocketClient>()
 	.AddSingleton<InteractionService>()

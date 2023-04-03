@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.UI.DataBinder;
 using Ciri.Handlers;
 using Ciri.Modules.Configs;
@@ -23,6 +24,113 @@ public static class Extensions
 		return user.GetAvatarUrl(format, size) ?? user.GetDefaultAvatarUrl();
 	}
 	
+	public static StringBuilder Add(this StringBuilder builder, string value, char separator = '\n')
+	{
+		return builder.Length == 0
+			? builder.Append(value)
+			: builder.Append(separator).Append(value);
+	}
+
+	public static ActionRowBuilder AddPagination(this ActionRowBuilder builder, byte max, string[] ids, bool disabled = false)
+	{
+		var disable = disabled ? disabled : max == 1;
+		var style = disable ? ButtonStyle.Secondary : ButtonStyle.Primary;
+		return builder.WithButton("<=", ids[0], style, disabled: disable)
+			.WithButton("[X]", ids[1], ButtonStyle.Danger, disabled: disabled)
+			.WithButton("=>", ids[2], style, disabled: disable);
+	}
+
+	public static ActionRowBuilder AddItems(this ActionRowBuilder builder, int page, long[] itemList, long wallet, bool disabled = false)
+	{
+		page--;
+		var count = itemList.Length;
+		for (var i = 0; i < count; i++)
+			builder.WithButton(
+				$"[{i + page * 5 + 1}]",
+				$"buy_{i + page * 5}",
+				disabled: disabled ? disabled : wallet < itemList[i]);
+
+		if (count >= 5) return builder;
+
+		var lim = (byte)(5 - count);
+		for (var i = 0; i < lim; i++)
+			builder.WithButton($"[{i + ((count + page * 5) + 1)}]", $"buy_empty_{i}", ButtonStyle.Secondary, disabled: true);
+
+
+		return builder;
+	}
+
+	public static EmbedBuilder SetPage(this EmbedBuilder builder, int current, int max, DateTimeOffset closeAt)
+	{
+		if (max > 1)
+			builder.WithFooter($"Страница {current} / {max}");
+		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds()}:R>");
+	}
+
+	public static ComponentBuilder SetShopControls(this ComponentBuilder builder, int current, long[] itemList, long wallet, string[] ids, bool disabled = false)
+	{
+		return builder
+			.AddRow(new ActionRowBuilder().AddPagination(1, ids, disabled))
+			.AddRow(new ActionRowBuilder().AddItems(current, itemList, wallet, disabled));
+	}
+	
+	public static async Task<long[]> UpdateShop(this SocketInteraction interaction,
+		EmbedBuilder current, int currentPage, int max,
+		DateTimeOffset closeAt, long[] items, string[] ids,
+		DataBase.Models.Profile profile, long[] currentItems)
+	{
+		current.SetPage(currentPage, max, closeAt);
+		currentItems = items.Take((currentPage * 5)..(currentPage * 5 + 5)).ToArray();
+		await interaction.ModifyOriginalResponseAsync(options =>
+		{
+			options.Embed = current.Build();
+			options.Components = new ComponentBuilder()
+				.SetShopControls(currentPage, currentItems, profile.Hearts, ids).Build();
+		});
+
+		return currentItems;
+	}
+
+	public static async Task CloseShop(this SocketInteraction interaction, int current, int count, string[] ids)
+	{
+		await interaction.ModifyOriginalResponseAsync(options =>
+		{
+			options.Components = new ComponentBuilder().SetShopControls(current, new long[count], -1, ids, true).Build();
+		});
+	}
+
+	public static EmbedBuilder MoveLeft(this EmbedBuilder current, ref int currentPage, ref int max, ref LinkedList<EmbedBuilder> embeds)
+	{
+		if (currentPage == 1)
+		{
+			current = embeds.Last!.Value;
+			currentPage = max;
+		}
+		else
+		{
+			current = embeds.Find(current)!.Previous!.Value;
+			currentPage--;
+		}
+
+		return current;
+	}
+	public static EmbedBuilder MoveRight(this EmbedBuilder current, ref int currentPage, ref int max, ref LinkedList<EmbedBuilder> embeds)
+	{
+		if (currentPage == max)
+		{
+			current = embeds.First!.Value;
+			currentPage = 1;
+		}
+		else
+		{
+			current = embeds.Find(current)!.Next!.Value;
+			currentPage++;
+		}
+		
+		return current;
+	}
+	
+
 	public static string FormatWith<T>(this string format, T source)
 		where T : class
 	{
@@ -45,7 +153,7 @@ public static class Extensions
 
 			try
 			{
-				values.Add((propertyName.Value == "0")
+				values.Add(propertyName.Value == "0"
 					? source
 					: DataBinder.Eval(source, propertyName.Value));
 			}

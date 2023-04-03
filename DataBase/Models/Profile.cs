@@ -11,6 +11,8 @@ public class Profile
 	[BsonElement("messages")] public ulong Messages { get; set; } = 0;
 	[BsonElement("lover")] public ulong Lover { get; set; } = 0;
 	[BsonElement("voice")] public DateTime Voice { get; set; } = new();
+	
+	public static readonly Profile Default = GetDefault(0);
 
 	public static Profile GetDefault(ulong id)
 	{

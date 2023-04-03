@@ -28,18 +28,16 @@ public class InteractionHandler
 		await m_service.RegisterCommandsGloballyAsync();
 
 		m_client.InteractionCreated += InteractionCreate;
-		m_service.InteractionExecuted += InteractionExecuted;
+		//m_service.InteractionExecuted += InteractionExecuted;
 		m_service.Log += ClientEvents.OnLog;
 	}
 
-	private static Task InteractionExecuted(ICommandInfo command, IInteractionContext ctx, IResult result)
+	/*private static Task InteractionExecuted(ICommandInfo command, IInteractionContext ctx, IResult result)
 	{
 		if (result.ErrorReason is null) return Task.CompletedTask;
-		
-		Console.WriteLine($"{command?.Name}: {result?.Error} {result?.ErrorReason}");
-		
+
 		return Task.CompletedTask;
-	}
+	}*/
 
 	public Task InteractionCreate(SocketInteraction interaction)
 	{

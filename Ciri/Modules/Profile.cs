@@ -12,12 +12,12 @@ namespace Ciri.Modules;
 [EnabledInDm(false)]
 public class Profile : InteractionModuleBase<SocketInteractionContext>
 {
-	private readonly IDataBaseProvider m_dataBaseProvider;
+	private readonly DataBaseProvider m_dataBaseProvider;
 	private readonly Category m_lcalCategory;
 	private const ulong c_femaleRole = 691311950277115904;
 	private const ulong c_maleRole = 691312169836347502;
 
-	public Profile(IDataBaseProvider dataBaseProvider, LocalizationManager localizationManager)
+	public Profile(DataBaseProvider dataBaseProvider, LocalizationManager localizationManager)
 	{
 		m_dataBaseProvider = dataBaseProvider;
 		m_lcalCategory = localizationManager.GetCategory("profile");
@@ -27,7 +27,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	public async Task Info([Summary("user", "user whose profile info to show")]IUser? user = null)
 	{
 		user ??= Context.User;
-		var profile = await m_dataBaseProvider.GetProfile(user.Id, false);
+		var profile = await m_dataBaseProvider.GetProfiles(user.Id);
 		var member = Context.Guild.GetUser(user.Id);
 		if (member != null)
 		{

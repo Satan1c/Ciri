@@ -11,14 +11,14 @@ public class ClientEvents
 	private readonly DiscordSocketClient m_client;
 	private readonly InteractionHandler m_interactionHandler;
 	private readonly GuildEvents m_guildEvents;
-	private static ILogger? m_logger;
+	private static ILogger? s_logger;
 
 	public ClientEvents(IServiceProvider serviceProvider)
 	{
 		m_client = serviceProvider.GetRequiredService<DiscordSocketClient>();
 		m_interactionHandler = serviceProvider.GetRequiredService<InteractionHandler>();
 		m_guildEvents = serviceProvider.GetRequiredService<GuildEvents>();
-		m_logger = serviceProvider.GetRequiredService<ILogger>();
+		s_logger = serviceProvider.GetRequiredService<ILogger>();
 
 		m_client.Ready += OnReady;
 		m_client.Log += OnLog;
@@ -26,12 +26,14 @@ public class ClientEvents
 
 	public static Task OnLog(LogMessage message)
 	{
-		m_logger?.Write(SeverityToLevel(
-				message.Severity),
+		s_logger?.Write(
+			SeverityToLevel(message.Severity),
 			message.Exception,
-			"[{Source}]\t{Message}",
+			"[{Source}]\t{Message} {Trace} {InnerTrace}",
 			message.Source,
-			message.Message);
+			message.Message,
+			message.Exception != null ? $"\n{message.Exception.StackTrace?.Replace("\n", "\n\t\t\t")}" : "",
+			message.Exception is { StackTrace: { } } ? $"\n{message.Exception.StackTrace.Replace("\n", "\n\t\t\t")}" : "");
 		
 		return Task.CompletedTask;
 	}
@@ -54,8 +56,8 @@ public class ClientEvents
 	{
 		m_client.Ready -= OnReady;
 		
-		await m_interactionHandler.Init();
 		await m_guildEvents.Init();
+		await m_interactionHandler.Init();
 
 		await OnLog(new LogMessage(LogSeverity.Verbose, nameof(OnReady), "end of ready event"));
 	}

@@ -4,7 +4,7 @@ using Discord.Interactions;
 
 namespace Ciri.Modules;
 
-[Group("moderation", "moderation commands")]
+/*[Group("moderation", "moderation commands")]
 [EnabledInDm(false)]
 public class Moderation : InteractionModuleBase<SocketInteractionContext>
 {
@@ -29,4 +29,4 @@ public class Moderation : InteractionModuleBase<SocketInteractionContext>
 	{
 		return Ban(user, modal.Reason);
 	}
-}
+}*/

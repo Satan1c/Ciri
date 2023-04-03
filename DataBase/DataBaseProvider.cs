@@ -4,19 +4,32 @@ using MongoDB.Driver;
 
 namespace DataBase;
 
-public class DataBaseProvider : IDataBaseProvider
+public class DataBaseProvider
 {
-	private readonly ICacheManager<Profile> m_cache;
+	private readonly ICacheManager<Profile> m_profileCache;
+	private readonly ICacheManager<object> m_shopCache;
+	private readonly ICacheManager<object> m_shopItemCache;
+	
+	private readonly IMongoDatabase m_database;
 	private readonly IMongoCollection<Profile> m_profiles;
 
 	public DataBaseProvider(MongoClient client) : this(client as IMongoClient) { }
 	public DataBaseProvider(IMongoClient client)
 	{
-		m_cache = CacheFactory.Build<Profile>(part =>
-			part.WithMicrosoftMemoryCacheHandle().WithExpiration(ExpirationMode.Sliding, TimeSpan.FromMinutes(60)));
+		m_profileCache = CacheFactory.Build<Profile>(part =>
+			part.WithMicrosoftMemoryCacheHandle()
+				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromMinutes(60)));
 		
-		var database = client.GetDatabase("main");
-		m_profiles = database.GetCollection<Profile>("profiles");
+		m_shopCache = CacheFactory.Build(settings =>
+			settings.WithMicrosoftMemoryCacheHandle()
+				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromDays(7)));
+		
+		m_shopItemCache = CacheFactory.Build(part =>
+			part.WithMicrosoftMemoryCacheHandle()
+				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromDays(3)));
+		
+		m_database = client.GetDatabase("main");
+		m_profiles = m_database.GetCollection<Profile>("profiles");
 	}
 
 	public async Task SyncCache()
@@ -28,47 +41,140 @@ public class DataBaseProvider : IDataBaseProvider
 		{
 			foreach (var profile in cursor.Current)
 			{
-				m_cache.Put(profile.Id.ToString(), profile);
+				m_profileCache.Put(profile.Id.ToString(), profile);
 			}
 		}
 	}
 	
 	public async Task<bool> HasProfile(ulong id)
 	{
-		var exists = m_cache.Exists(id.ToString());
-		if (exists) return exists;
+		var exists = m_profileCache.Exists(id.ToString());
+		if (exists) return true;
 		
-		var finded = await (await m_profiles.FindAsync(profile => profile.Id == id)).FirstOrDefaultAsync();
+		var profile = await GetProfiles(id);
 		
-		if (finded == null) return exists;
+		if (profile == Profile.Default) return false;
 		exists = true;
-		
-		m_cache.Put(finded.Id.ToString(), finded);
 
 		return exists;
 	}
 	
-	public async Task<Profile> GetProfile(ulong id, bool fetch = true)
+	public async Task<Profile> GetProfiles(ulong id)
 	{
-		var profile = Profile.GetDefault(id);
-		
-		if (m_cache.TryGetOrAdd(id.ToString(), s => profile, out profile))
+		var profileId = id.ToString();
+		if (m_profileCache.Exists(profileId))
 		{
-			return profile;
+			return m_profileCache.Get(profileId);
+		}
+
+		var filter = await (await m_profiles.FindAsync(profile1 => profile1.Id == id)).FirstOrDefaultAsync();
+		if (filter == null) return Profile.GetDefault(id);
+		
+		m_profileCache.Put(profileId, filter);
+
+		return filter;
+	}
+	public async Task<Profile[]> GetProfiles(ulong[] ids)
+	{
+		var profiles = new LinkedList<Profile>();
+		foreach (var id in ids)
+		{
+			var profileId = id.ToString();
+			if (m_profileCache.Exists(profileId))
+			{
+				profiles.AddLast(m_profileCache.Get(profileId));
+			}
 		}
 		
-		if (!fetch) return profile;
+		if (profiles.Count == ids.Length) return profiles.ToArray();
+
+		var filter = await m_profiles.FindAsync(profile1 => ids.Contains(profile1.Id) && !profiles.Contains(profile1));
+		foreach (var profile in await filter.ToListAsync())
+		{
+			profiles.AddLast(profile);
+			m_profileCache.Put(profile.Id.ToString(), profile);
+		}
+
+		return profiles.ToArray();
+	}
+
+	public async Task<Shop<TItem>?> GetShop<TItem>(string name = "roles")
+	{
+		if (m_shopCache.Exists(name, "shop"))
+		{
+			return (Shop<TItem>?) m_shopCache.Get(name, "shop");
+		}
+
+		var filter = await (await m_database.GetCollection<Shop<TItem>>("shop")
+				.FindAsync(shop => shop.Name == name)
+			).FirstOrDefaultAsync();
 		
-		var filter = await (await m_profiles.FindAsync(profile1 => profile1.Id == id)).FirstOrDefaultAsync();
-		if (filter != null)
-			profile = filter;
+		if (filter == null) return default;
 		
-		return profile;
+		m_shopCache.Put(name, filter, "shop");
+
+		return filter;
+	}
+
+	public async Task<ShopItem<TItem>?> GetItem<TItem>(string name = "roles", byte index = 0)
+	{
+		if (m_shopItemCache.Exists(index.ToString(), name))
+		{
+			return (ShopItem<TItem>?) m_shopItemCache.Get(index.ToString(), name);
+		}
+		
+		var shop = await GetShop<TItem>(name);
+		
+		if (shop == null || shop.Items.Count < index) return default;
+		
+		return shop.Items[index];
+	}
+
+	public async Task SetItem<TItem>(ShopItem<TItem> item, byte index = 0, string name = "roles")
+	{
+		if (item.Index != index) await RemoveItem<TItem>(item.Index, name);
+		
+		var shop = await GetShop<TItem>(name);
+		if (shop == null) return;
+		if (shop.Items.Capacity < index)
+		{
+			var list = new List<ShopItem<TItem>>(index + 1);
+			list.AddRange(shop.Items);
+			shop.Items = list;
+		}
+		shop.Items.Insert(index, item);
+
+		m_shopItemCache.Put(item.Index.ToString(), name);
+		
+		await SetShop(shop);
 	}
 	
-	public async Task AddOrUpdateProfile(Profile profile)
+	public async Task RemoveItem<TItem>(byte index = 0, string name = "roles")
 	{
-		m_cache.Put(profile.Id.ToString(), profile);
+		var shop = (await GetShop<TItem>(name))!;
+		var item = (await GetItem<TItem>(name, index))!;
+		
+		shop.Items.Remove(item);
+		m_shopItemCache.Remove(index.ToString(), name);
+		
+		await SetShop(shop);
+	}
+
+	public async Task SetProfiles(Profile[] profiles)
+	{
+		foreach (var profile in profiles)
+		{
+			m_profileCache.Put(profile.Id.ToString(), profile);
+			
+			if (await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile) == null)
+			{
+				await m_profiles.InsertOneAsync(profile);
+			}
+		}
+	}
+	public async Task SetProfiles(Profile profile)
+	{
+		m_profileCache.Put(profile.Id.ToString(), profile);
 		
 		if (await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile) != null)
 		{
@@ -76,5 +182,18 @@ public class DataBaseProvider : IDataBaseProvider
 		}
 		
 		await m_profiles.InsertOneAsync(profile);
+	}
+
+	public async Task SetShop<TItem>(Shop<TItem> shop)
+	{
+		m_shopCache.Put(shop.Name, shop, "shop");
+		
+		var collection = m_database.GetCollection<Shop<TItem>>("shop");
+		if (await collection.FindOneAndReplaceAsync(shop1 => shop1.Name == shop.Name, shop) != null)
+		{
+			return;
+		}
+		
+		await collection.InsertOneAsync(shop);
 	}
 }
