@@ -12,7 +12,8 @@ public class InteractionHandler
 	private readonly InteractionService m_service;
 	private readonly IServiceProvider m_serviceProvider;
 
-	public InteractionHandler(DiscordSocketClient client, InteractionService service, IServiceProvider serviceProvider, ILogger logger)
+	public InteractionHandler(DiscordSocketClient client, InteractionService service, IServiceProvider serviceProvider,
+		ILogger logger)
 	{
 		m_client = client;
 		m_service = service;
@@ -22,7 +23,7 @@ public class InteractionHandler
 	public async Task Init()
 	{
 		m_service.AddTypeConverter<ulong>(new UlongTypeConverter());
-		
+
 		await m_service.AddModulesAsync(Assembly.GetEntryAssembly(), m_serviceProvider);
 		await m_service.RegisterCommandsGloballyAsync();
 

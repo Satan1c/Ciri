@@ -19,15 +19,16 @@ public static class UnsafeExtensions
 			var id = start.ToString();
 			if (profileCache.Exists(id))
 				startResult = profileCache.Get(id);
-			
+
 			start = ref Unsafe.Add(ref start, 1);
 			startResult = ref Unsafe.Add(ref startResult, 1);
 		}
 
 		return result.ToArray();
 	}
-	
-	public static void GetProfilesUnsafe(this ICacheManager<Profile> profileCache, ref Profile[] profiles, ref List<Profile> fetched)
+
+	public static void GetProfilesUnsafe(this ICacheManager<Profile> profileCache, ref Profile[] profiles,
+		ref List<Profile> fetched)
 	{
 		var result = new Profile[profiles.Length + fetched.Count];
 		profiles.CopyTo(result, 0);
@@ -48,7 +49,7 @@ public static class UnsafeExtensions
 
 		profiles = result;
 	}
-	
+
 	public static void UpdateUnsafe<TItem>(this Profile[] profiles,
 		ref string oldId, ref string shopName, ShopItem<TItem>? newItem = null)
 	{
@@ -62,7 +63,7 @@ public static class UnsafeExtensions
 		}
 
 		if (newItem == null) return;
-		
+
 		var newId = $"{shopName}_{newItem.Name}_{newItem.Index}";
 		start = ref MemoryMarshal.GetArrayDataReference(profiles);
 		end = ref Unsafe.Add(ref start, profiles.Length);

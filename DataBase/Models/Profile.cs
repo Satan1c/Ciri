@@ -4,7 +4,8 @@ namespace DataBase.Models;
 
 public class Profile
 {
-	[BsonElement("_id")] public ulong Id { get; set; } = 0;
+	public static readonly Profile Default = GetDefault(0);
+	[BsonElement("_id")] public ulong Id { get; set; }
 	[BsonElement("bio")] public string Bio { get; set; } = "";
 	[BsonElement("hearts")] public long Hearts { get; set; } = 0;
 	[BsonElement("reputation")] public long Reputation { get; set; } = 0;
@@ -12,8 +13,6 @@ public class Profile
 	[BsonElement("lover")] public ulong? Lover { get; set; } = null;
 	[BsonElement("inventory")] public List<string> Inventory { get; set; } = new();
 	[BsonElement("voice")] public DateTime Voice { get; set; } = new();
-	
-	public static readonly Profile Default = GetDefault(0);
 
 	public static Profile GetDefault(ulong id)
 	{

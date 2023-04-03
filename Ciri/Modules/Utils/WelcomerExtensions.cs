@@ -28,7 +28,7 @@ public static class WelcomerExtensions
 			.WithThumbnailUrl(member.GetDisplayAvatarUrl() ?? member.GetDefaultAvatarUrl())
 			.Build();
 	}
-	
+
 	public static Embed GetGoodbyeEmbed(this SocketUser user)
 	{
 		return new EmbedBuilder()

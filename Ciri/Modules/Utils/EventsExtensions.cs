@@ -8,7 +8,7 @@ namespace Ciri.Modules.Utils;
 public static class EventsExtensions
 {
 	private const string c_eventChannel = "https://discord.com/channels/542005378049638400/700739189477474334";
-	
+
 	public static async Task SendEventEmbedAsync(this IInteractionContext context, Embed embed)
 	{
 		var message = (await context.Channel.SendMessageAsync(
@@ -18,7 +18,7 @@ public static class EventsExtensions
 				.WithButton("Голосовой канал", style: ButtonStyle.Link, url: "https://discord.gg/tC6eFDr")
 				.Build()))!;
 		await context.Interaction.RespondAsync("Sent event", ephemeral: true);
-		
+
 		if (message.Channel is ITextChannel channel)
 			await channel.CreateThreadAsync(
 				"Обсуждение",
@@ -26,14 +26,16 @@ public static class EventsExtensions
 				ThreadArchiveDuration.OneDay,
 				message);
 	}
-	
+
 	private static string GetTitle(string name, long time)
 	{
 		return $"{name} | <t:{time}:t>";
 	}
+
 	private static string GetDescription(string name, string description, ulong eventer)
 	{
-		return $"{Star}**- Ведущий:** <@{eventer}>\n\n*Приглашаем тебя сыграть в [{name}]({c_eventChannel})*.\n{description}";
+		return
+			$"{Star}**- Ведущий:** <@{eventer}>\n\n*Приглашаем тебя сыграть в [{name}]({c_eventChannel})*.\n{description}";
 	}
 
 	public static Embed GetMafiaEmbed(this IUser user, long time)
@@ -47,7 +49,7 @@ public static class EventsExtensions
 				"членов организованного меньшинства с неорганизованным большинством.",
 				user.Id))
 			.WithColor(3093046)
-			.AddPrizes(MafiaImage, new []
+			.AddPrizes(MafiaImage, new[]
 			{
 				new Prize("мафия", 100),
 				new Prize("мирные", 50),
@@ -82,7 +84,7 @@ public static class EventsExtensions
 			.AddPrizes(WhoIImage)
 			.Build();
 	}
-	
+
 	public static Embed GetCrocodileEmbed(this IUser user, long time)
 	{
 		return new EmbedBuilder()
@@ -94,7 +96,7 @@ public static class EventsExtensions
 			.AddPrizes(CrocodileImage)
 			.Build();
 	}
-	
+
 	public static Embed GetJackboxEmbed(this IUser user, long time)
 	{
 		return new EmbedBuilder()
@@ -107,7 +109,7 @@ public static class EventsExtensions
 			.AddPrizes(JackboxImage)
 			.Build();
 	}
-	
+
 	public static Embed GetTabletopEmbed(this IUser user, long time)
 	{
 		return new EmbedBuilder()
@@ -119,7 +121,7 @@ public static class EventsExtensions
 			.AddPrizes(TabletopImage)
 			.Build();
 	}
-	
+
 	public static Embed GetMomentsEmbed(this IUser user, long time)
 	{
 		return new EmbedBuilder()
@@ -136,7 +138,7 @@ public static class EventsExtensions
 	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image, Prize[] prizes)
 	{
 		embed.WithImageUrl(image);
-		
+
 		var first = prizes[0];
 		var firstName = first.Name;
 		var firstValue = first.Value.ToString();
@@ -151,11 +153,11 @@ public static class EventsExtensions
 			return embed.AddField(Empty, $"**{firstName} - {firstValue}{HeartVal}**", true)
 				.AddField(Empty, $"**{secondName} - {secondValue}{HeartVal}**", true)
 				.AddField(Empty, $"**{thirdName} - {thirdValue}{HeartVal}**", true);
-		
+
 		var fourth = prizes[3];
 		var fourthName = fourth.Name;
 		var fourthValue = fourth.Value.ToString();
-		
+
 		return embed.AddField(Empty,
 				$"**{firstName} - {firstValue}{HeartVal}**\n**{secondName} - {secondValue}{HeartVal}**",
 				true)
@@ -163,9 +165,10 @@ public static class EventsExtensions
 				$"**{thirdName} - {thirdValue}{HeartVal}**\n**{fourthName} - {fourthValue}{HeartVal}**",
 				true);
 	}
+
 	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image, byte[] prizes)
 	{
-		return embed.AddPrizes(image, new []
+		return embed.AddPrizes(image, new[]
 		{
 			new Prize("1 место", prizes[0]),
 			new Prize("2 место", prizes[1]),
@@ -173,7 +176,7 @@ public static class EventsExtensions
 			new Prize("участие", prizes[3])
 		});
 	}
-	
+
 	private static EmbedBuilder AddPrizes(this EmbedBuilder embed, string image)
 	{
 		return embed.AddPrizes(image, new byte[]
@@ -184,17 +187,16 @@ public static class EventsExtensions
 			40
 		});
 	}
-	
+
 	private class Prize
 	{
-		public string Name { get; set; }
-		public byte Value { get; set; }
-		
 		public Prize(string name, byte value)
 		{
 			Name = name;
 			Value = value;
 		}
+
+		public string Name { get; }
+		public byte Value { get; }
 	}
 }
-

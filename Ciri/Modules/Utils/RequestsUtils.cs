@@ -15,17 +15,17 @@ public static class RequestsUtils
 			_ => throw new ArgumentOutOfRangeException()
 		};
 	}
-	
+
 	public static MessageProperties SendStaffRequestHook(string data)
 	{
 		return RequestsConfig.RequestsMessageProperties;
 	}
-	
+
 	public static MessageProperties SendCinemaHook(string data)
 	{
 		var titles = data.Split(":-:");
-		
-		return new MessageProperties()
+
+		return new MessageProperties
 		{
 			Embed = new EmbedBuilder()
 				.WithColor(3093046)
@@ -38,13 +38,14 @@ public static class RequestsUtils
 	private static EmbedFieldBuilder[] GetFields(string[] raw)
 	{
 		var res = new EmbedFieldBuilder[raw.Length];
-		
+
 		for (byte i = 0; i < raw.Length; i++)
 		{
-			var data = raw[i].Split('\n').Where(x => !string.IsNullOrEmpty(x) && !string.IsNullOrWhiteSpace(x)).ToArray();
+			var data = raw[i].Split('\n').Where(x => !string.IsNullOrEmpty(x) && !string.IsNullOrWhiteSpace(x))
+				.ToArray();
 			var name = RequestsConfig.Dates[i];
 			var value = "\u200b";
-			
+
 			if (data.Length >= 2)
 				value = $"[{data[0]}]({data[1]})";
 

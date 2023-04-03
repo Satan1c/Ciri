@@ -65,11 +65,9 @@ public sealed class JsonLocalizationManager : ILocalizationManager
 			var token = string.Join(".", select) + "." + identifier;
 			var str = JObject.Load(reader2).SelectToken(token)?.ToString() ?? null;
 
-			if (str == null)
-				continue;
+			if (str != null)
+				values[key1] = str;
 
-			values[key1] = str;
-			
 			path = ref Unsafe.Add(ref path, 1);
 		}
 

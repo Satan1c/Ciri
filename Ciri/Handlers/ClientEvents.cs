@@ -8,10 +8,10 @@ namespace Ciri.Handlers;
 
 public class ClientEvents
 {
-	private readonly DiscordSocketClient m_client;
-	private readonly InteractionHandler m_interactionHandler;
-	private readonly GuildEvents m_guildEvents;
 	private static ILogger? s_logger;
+	private readonly DiscordSocketClient m_client;
+	private readonly GuildEvents m_guildEvents;
+	private readonly InteractionHandler m_interactionHandler;
 
 	public ClientEvents(IServiceProvider serviceProvider)
 	{
@@ -33,8 +33,10 @@ public class ClientEvents
 			message.Source,
 			message.Message,
 			message.Exception != null ? $"\n{message.Exception.StackTrace?.Replace("\n", "\n\t\t\t")}" : "",
-			message.Exception is { StackTrace: { } } ? $"\n{message.Exception.StackTrace.Replace("\n", "\n\t\t\t")}" : "");
-		
+			message.Exception is { StackTrace: { } }
+				? $"\n{message.Exception.StackTrace.Replace("\n", "\n\t\t\t")}"
+				: "");
+
 		return Task.CompletedTask;
 	}
 
@@ -55,7 +57,7 @@ public class ClientEvents
 	public async Task OnReady()
 	{
 		m_client.Ready -= OnReady;
-		
+
 		await m_guildEvents.Init();
 		await m_interactionHandler.Init();
 

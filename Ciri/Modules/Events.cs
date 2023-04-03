@@ -31,7 +31,7 @@ public class Events : InteractionModuleBase<SocketInteractionContext>
 			EventName.Moments => eventer.GetMomentsEmbed(time),
 			_ => throw new ArgumentOutOfRangeException(nameof(eventName), eventName, null)
 		};
-		
+
 		return Context.SendEventEmbedAsync(embed);
 	}
 }
@@ -41,10 +41,9 @@ public enum EventName
 {
 	Mafia,
 	Alias,
-	[ChoiceDisplay("Who I ?")]
-	WhoI,
+	[ChoiceDisplay("Who I ?")] WhoI,
 	Crocodile,
 	Jackbox,
 	Tabletop,
-	Moments,
+	Moments
 }

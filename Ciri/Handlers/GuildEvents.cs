@@ -9,20 +9,21 @@ namespace Ciri.Handlers;
 
 public class GuildEvents
 {
-	private readonly DiscordSocketClient m_client;
-	private readonly DataBaseProvider m_dataBaseProvider;
+	public static IVoiceChannel m_membersCount;
 
-	public static IVoiceChannel m_membersCount = null;
-	public IReadOnlyDictionary<ulong, ProfitData> Profit;
-	
-	private ITextChannel m_logChannel = null;
-	private ITextChannel m_boostChannel = null;
-	private CronTimer m_timer = new("* * * * *", "UTC");
 	private static readonly Embed m_bumpEmbed = new EmbedBuilder()
 		.WithTitle("Бамп")
 		.WithDescription($"Вы полуили **__50__**{EmojiConfig.HeartVal}")
 		.WithColor(3093046)
 		.Build();
+
+	private readonly DiscordSocketClient m_client;
+	private readonly DataBaseProvider m_dataBaseProvider;
+	private readonly CronTimer m_timer = new("* * * * *", "UTC");
+	private ITextChannel m_boostChannel;
+
+	private ITextChannel m_logChannel;
+	public IReadOnlyDictionary<ulong, ProfitData> Profit;
 
 	public GuildEvents(DiscordSocketClient client, DataBaseProvider dataBaseProvider)
 	{
@@ -40,7 +41,7 @@ public class GuildEvents
 	{
 		if (await m_client.Rest.GetGuildAsync(542005378049638400, true) is not IGuild guild)
 			return;
-		
+
 		var admins = new LinkedList<ulong>();
 		var dev = new LinkedList<ulong>();
 		var moder = new LinkedList<ulong>();
@@ -50,41 +51,22 @@ public class GuildEvents
 		var closeMod = new LinkedList<ulong>();
 		var prManager = new LinkedList<ulong>();
 		foreach (var member in await guild.GetUsersAsync())
-		{
 			if (member.RoleIds.Contains<ulong>(542017661341794304))
-			{
 				admins.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(698496217671401482))
-			{
 				dev.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(542017417837281280))
-			{
 				moder.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(803921489443029002))
-			{
 				preModer.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(686895612020654108))
-			{
 				eventer.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(639707864591630337))
-			{
 				helper.AddLast(member.Id);
-			}
 			else if (member.RoleIds.Contains<ulong>(1091762902945505301))
-			{
 				closeMod.AddLast(member.Id);
-			}
-			else if (member.RoleIds.Contains<ulong>(789431764514504724))
-			{
-				prManager.AddLast(member.Id);
-			}
-		}
-		
+			else if (member.RoleIds.Contains<ulong>(789431764514504724)) prManager.AddLast(member.Id);
+
 		Profit = new Dictionary<ulong, ProfitData>
 		{
 			{ 542017661341794304, new ProfitData(300, admins) },
@@ -96,23 +78,24 @@ public class GuildEvents
 			{ 1091762902945505301, new ProfitData(200, closeMod) },
 			{ 789431764514504724, new ProfitData(50, prManager) }
 		}.AsReadOnly();
-		
+
 		var channel = await guild.GetChannelAsync(639709192042709002) as IChannel;
-		
+
 		if (channel is ITextChannel logChannel)
 			m_logChannel = logChannel;
-		
+
 		channel = await guild.GetChannelAsync(684011135287951392);
-		
+
 		if (channel is ITextChannel boostChannel)
 			m_boostChannel = boostChannel;
-		
+
 		channel = await guild.GetChannelAsync(714345605467471914);
-		
+
 		if (channel is IVoiceChannel membersCount)
 			m_membersCount = membersCount;
 
-		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {m_client.GetGuild(542005378049638400).MemberCount.ToString()}");
+		await m_membersCount.ModifyAsync(x =>
+			x.Name = $"🌹: {m_client.GetGuild(542005378049638400).MemberCount.ToString()}");
 
 		channel = await guild.GetChannelAsync(770669968329146378);
 		if (channel is IVoiceChannel timeChannel)
@@ -128,7 +111,7 @@ public class GuildEvents
 	public async Task OnMessageEdit(Cacheable<IMessage, ulong> _, SocketMessage message, ISocketMessageChannel channel)
 	{
 		if (!message.Author.IsBot || message.Author.Id != 464272403766444044) return;
-		
+
 		var title = message.Embeds.First().Title.Trim();
 		if (string.IsNullOrEmpty(title) || !title.StartsWith("Успешный Up")) return;
 
@@ -136,7 +119,8 @@ public class GuildEvents
 		var profile = await m_dataBaseProvider.GetProfiles(reference.Author.Id);
 		profile.Hearts += 50;
 		await m_dataBaseProvider.SetProfiles(profile);
-		await channel.SendMessageAsync(embed: m_bumpEmbed, messageReference: message.Reference, allowedMentions: AllowedMentions.None);
+		await channel.SendMessageAsync(embed: m_bumpEmbed, messageReference: message.Reference,
+			allowedMentions: AllowedMentions.None);
 	}
 
 	public async Task OnMessageCreate(SocketMessage message)
@@ -150,9 +134,10 @@ public class GuildEvents
 		await m_logChannel.SendMessageAsync(embed: member.GetWelcomeEmbed());
 		//newcomer role
 		await member.AddRoleAsync(542012055775870976);
-		await ClientEvents.OnLog(new LogMessage(LogSeverity.Info, nameof(OnMemberJoined), $"User {member.Username} joined the guild"));
+		await ClientEvents.OnLog(new LogMessage(LogSeverity.Info, nameof(OnMemberJoined),
+			$"User {member.Username} joined the guild"));
 	}
-	
+
 	public async Task OnMemberLeft(SocketGuild guild, SocketUser user)
 	{
 		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {guild.MemberCount.ToString()}");
@@ -165,7 +150,8 @@ public class GuildEvents
 
 	public async Task OnMessageReceived(SocketMessage message)
 	{
-		if (message is not { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription }
+		if (message is not
+			    { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription }
 		    || message.Author is not SocketGuildUser member)
 			return;
 		//booster role add
@@ -174,7 +160,7 @@ public class GuildEvents
 			LogSeverity.Info,
 			nameof(OnMessageReceived),
 			$"User {member.Username} boosted the guild"));
-		
+
 		await m_boostChannel.SendMessageAsync(embed: new EmbedBuilder()
 			.WithTitle($"{member.Username}\nЗабустил сервер!")
 			.WithDescription($"<@&{812189549295566889}>\nОгромное спасибо, что помогаете серверу!!")

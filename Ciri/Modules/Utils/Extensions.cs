@@ -12,15 +12,18 @@ namespace Ciri.Modules.Utils;
 
 public static class Extensions
 {
+	public const string Empty = "\u200b";
+
 	private static readonly Regex s_formatRegex =
 		new(@"(?<start>\{)+(?<property>[\w\.\[\]]+)(?<format>:[^}]+)?(?<end>\})+",
 			RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-	public const string Empty = "\u200b";
 
-	public static string GetDisplayAvatar(this IGuildUser member, ImageFormat format = ImageFormat.Auto, ushort size = 512)
+	public static string GetDisplayAvatar(this IGuildUser member, ImageFormat format = ImageFormat.Auto,
+		ushort size = 512)
 	{
 		return member.GetDisplayAvatarUrl(format, size) ?? member.GetDefaultAvatarUrl();
 	}
+
 	public static string GetDisplayAvatarUrl(this IUser user, ImageFormat format = ImageFormat.Auto, ushort size = 512)
 	{
 		return user.GetAvatarUrl(format, size) ?? user.GetDefaultAvatarUrl();
@@ -34,8 +37,8 @@ public static class Extensions
 			var embed = new EmbedBuilder()
 				.WithTitle("Магазин")
 				.WithColor(3093046);
-			
-			var lim = (items.Length - i) >= 5 ? 5 : items.Length;
+
+			var lim = items.Length - i >= 5 ? 5 : items.Length;
 			for (var j = 0; j < lim; j++)
 			{
 				var shopItem = items[i + j];
@@ -43,11 +46,11 @@ public static class Extensions
 					$"[{(shopItem.Index + 1).ToString()}] {shopItem.Name}",
 					$"{shop.GetCost(shopItem).ToString()}{EmojiConfig.HeartVal}");
 			}
-			
+
 			embeds.AddLast(embed);
 		}
 	}
-	
+
 	public static StringBuilder Add(this StringBuilder builder, string value, char separator = '\n')
 	{
 		return builder.Length == 0
@@ -55,7 +58,8 @@ public static class Extensions
 			: builder.Append(separator).Append(value);
 	}
 
-	public static ActionRowBuilder AddPagination(this ActionRowBuilder builder, byte max, string[] ids, bool disabled = false)
+	public static ActionRowBuilder AddPagination(this ActionRowBuilder builder, byte max, string[] ids,
+		bool disabled = false)
 	{
 		var disable = disabled ? disabled : max == 1;
 		var style = disable ? ButtonStyle.Secondary : ButtonStyle.Primary;
@@ -64,7 +68,8 @@ public static class Extensions
 			.WithButton("=>", ids[2], style, disabled: disable);
 	}
 
-	public static ActionRowBuilder AddItems<TItem>(this ActionRowBuilder builder, int page, Shop<TItem> shop, DataBase.Models.Profile profile, bool disabled = false)
+	public static ActionRowBuilder AddItems<TItem>(this ActionRowBuilder builder, int page, Shop<TItem> shop,
+		DataBase.Models.Profile profile, bool disabled = false)
 	{
 		page--;
 		var items = shop.Items.Take((page * 5)..(page * 5 + 5)).ToArray();
@@ -78,10 +83,11 @@ public static class Extensions
 				$"buy_{index.ToString()}",
 				disabled: disabled
 					? disabled
-					: (profile.Hearts < shop.GetCost(item)
-					   || (profile.Inventory.Count > 0
-					       && profile.Inventory.Contains($"{shop.Name}_{item.Name}_{item.Index.ToString()}"))));
+					: profile.Hearts < shop.GetCost(item)
+					  || (profile.Inventory.Count > 0
+					      && profile.Inventory.Contains($"{shop.Name}_{item.Name}_{item.Index.ToString()}")));
 		}
+
 		if (count >= 5) return builder;
 
 		var lim = (byte)(5 - count);
@@ -103,13 +109,14 @@ public static class Extensions
 		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>");
 	}
 
-	public static ComponentBuilder SetShopControls<TItem>(this ComponentBuilder builder, int current, Shop<TItem> shop, DataBase.Models.Profile profile, string[] ids, bool disabled = false)
+	public static ComponentBuilder SetShopControls<TItem>(this ComponentBuilder builder, int current, Shop<TItem> shop,
+		DataBase.Models.Profile profile, string[] ids, bool disabled = false)
 	{
 		return builder
 			.AddRow(new ActionRowBuilder().AddPagination(1, ids, disabled))
 			.AddRow(new ActionRowBuilder().AddItems(current, shop, profile, disabled));
 	}
-	
+
 	public static async Task UpdateShop<TItem>(this SocketInteraction interaction,
 		EmbedBuilder current, int currentPage, int max,
 		DateTimeOffset closeAt, string[] ids,
@@ -124,15 +131,18 @@ public static class Extensions
 		});
 	}
 
-	public static async Task CloseShop<TItem>(this SocketInteraction interaction, Shop<TItem> shop, int current, int count, string[] ids)
+	public static async Task CloseShop<TItem>(this SocketInteraction interaction, Shop<TItem> shop, int current,
+		int count, string[] ids)
 	{
 		await interaction.ModifyOriginalResponseAsync(options =>
 		{
-			options.Components = new ComponentBuilder().SetShopControls(current, shop, new DataBase.Models.Profile(){Hearts = 0}, ids, true).Build();
+			options.Components = new ComponentBuilder()
+				.SetShopControls(current, shop, new DataBase.Models.Profile { Hearts = 0 }, ids, true).Build();
 		});
 	}
 
-	public static EmbedBuilder MoveLeft(this EmbedBuilder current, ref int currentPage, ref int max, ref LinkedList<EmbedBuilder> embeds)
+	public static EmbedBuilder MoveLeft(this EmbedBuilder current, ref int currentPage, ref int max,
+		ref LinkedList<EmbedBuilder> embeds)
 	{
 		if (currentPage == 1)
 		{
@@ -147,7 +157,9 @@ public static class Extensions
 
 		return current;
 	}
-	public static EmbedBuilder MoveRight(this EmbedBuilder current, ref int currentPage, ref int max, ref LinkedList<EmbedBuilder> embeds)
+
+	public static EmbedBuilder MoveRight(this EmbedBuilder current, ref int currentPage, ref int max,
+		ref LinkedList<EmbedBuilder> embeds)
 	{
 		if (currentPage == max)
 		{
@@ -159,23 +171,23 @@ public static class Extensions
 			current = embeds.Find(current)!.Next!.Value;
 			currentPage++;
 		}
-		
+
 		return current;
 	}
-	
+
 
 	public static string FormatWith<T>(this string format, T source)
 		where T : class
 	{
 		return format.FormatWith(source, null);
 	}
-	
+
 	public static string FormatWith<T>(this string format, T source, IFormatProvider? provider)
-	where T: class
+		where T : class
 	{
 		if (format == null)
 			throw new ArgumentNullException(nameof(format));
-		
+
 		var values = new List<object>();
 		var rewrittenFormat = s_formatRegex.Replace(format, m =>
 		{
@@ -194,7 +206,7 @@ public static class Extensions
 			{
 				values.Add(DataBinder.Eval(EmojiConfig.Instance, propertyName.Value));
 			}
-			
+
 			return new string('{', leftBracket.Captures.Count) +
 			       (values.Count - 1) +
 			       formatGroup.Value +

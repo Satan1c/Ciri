@@ -9,7 +9,7 @@ public class WebhookMessageProperties : Discord.Webhook.WebhookMessageProperties
 		get => base.Content.IsSpecified ? base.Content.Value : null;
 		set => base.Content = new Optional<string>(value!);
 	}
-	
+
 	public new MessageComponent? Components
 	{
 		get => base.Components.IsSpecified ? base.Components.Value : null;
@@ -21,5 +21,4 @@ public class WebhookMessageProperties : Discord.Webhook.WebhookMessageProperties
 		get => base.Embeds.IsSpecified ? base.Embeds.Value : null;
 		set => base.Embeds = new Optional<IEnumerable<Embed>>(value!);
 	}
-	
 }

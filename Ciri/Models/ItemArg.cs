@@ -6,12 +6,6 @@ namespace Ciri.Models;
 
 public class ItemArg<TItem>
 {
-	public byte Index { get; set; }
-	public string Name { get; set; }
-	public long Cost { get; set; }
-	public TItem Item { get; set; }
-	public sbyte Discount { get; set; }
-			
 	[ComplexParameterCtor]
 	public ItemArg(byte index, string name, long cost, TItem item, sbyte discount = 0)
 	{
@@ -21,7 +15,13 @@ public class ItemArg<TItem>
 		Item = item;
 		Discount = discount;
 	}
-	
+
+	public byte Index { get; set; }
+	public string Name { get; set; }
+	public long Cost { get; set; }
+	public TItem Item { get; set; }
+	public sbyte Discount { get; set; }
+
 	public ShopItem<T> CreateShopItem<T>(T item)
 	{
 		return new ShopItem<T>
@@ -34,16 +34,12 @@ public class ItemArg<TItem>
 		};
 	}
 }
+
 public class NullableItemArg<TItem>
 {
-	public byte Index { get; set; }
-	public string? Name { get; set; }
-	public long? Cost { get; set; }
-	public TItem? Item { get; set; }
-	public sbyte? Discount { get; set; }
-			
 	[ComplexParameterCtor]
-	public NullableItemArg([Autocomplete(typeof(ItemAutocomplete))]byte index, TItem? item = default, string? name = null, long? cost = null, sbyte? discount = null)
+	public NullableItemArg([Autocomplete(typeof(ItemAutocomplete))] byte index, TItem? item = default,
+		string? name = null, long? cost = null, sbyte? discount = null)
 	{
 		Index = index;
 		Name = name;
@@ -51,7 +47,13 @@ public class NullableItemArg<TItem>
 		Item = item;
 		Discount = discount;
 	}
-	
+
+	public byte Index { get; set; }
+	public string? Name { get; set; }
+	public long? Cost { get; set; }
+	public TItem? Item { get; set; }
+	public sbyte? Discount { get; set; }
+
 	public ShopItem<T> CreateShopItem<T>(T item, ShopItem<T>? old = null)
 	{
 		return new ShopItem<T>

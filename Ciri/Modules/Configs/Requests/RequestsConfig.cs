@@ -9,18 +9,21 @@ public static class RequestsConfig
 	public const ulong EventersThread = 1081311794603241515;
 	public const string Tabs = "\t\t";
 
-	public static readonly string[] Dates = { "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "\u200b", "Суббота", "Воскресенье", "\u200b" };
+	public static readonly string[] Dates =
+		{ "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "\u200b", "Суббота", "Воскресенье", "\u200b" };
 
 	public static readonly ButtonBuilder RequestButton = new ButtonBuilder()
 		.WithLabel("Подать заявку")
 		.WithStyle(ButtonStyle.Primary);
+
 	public static readonly MessageProperties RequestsMessageProperties = new()
 	{
 		Embeds = new[]
 		{
 			new EmbedBuilder()
 				.WithColor(3093046)
-				.WithImageUrl("https://cdn.discordapp.com/attachments/689528587917066282/1080551361013354607/688e69382967bbf5.png")
+				.WithImageUrl(
+					"https://cdn.discordapp.com/attachments/689528587917066282/1080551361013354607/688e69382967bbf5.png")
 				.Build(),
 			new EmbedBuilder()
 				.WithColor(3093046)
@@ -46,12 +49,12 @@ public static class RequestsConfig
 						new SelectMenuOptionBuilder()
 							.WithLabel("Ивентер")
 							.WithEmote(new Emoji("🎈"))
-							.WithValue("eventer"),
+							.WithValue("eventer")
 					})
 				))
 			.Build()
 	};
-	
+
 	public static readonly MessageProperties EventersRequestMessageProperties = new()
 	{
 		Embed = new EmbedBuilder()
@@ -79,14 +82,15 @@ public static class RequestsConfig
 {Tabs}{Tabs}**Нажимай на кнопку ниже!**
 """[1..^2])
 			.WithFooter("Будем ждать тебя в нашем дружном коллективе !")
-			.WithImageUrl("https://cdn.discordapp.com/attachments/689528587917066282/1081260389079207966/iventerr-recruitment.png")
+			.WithImageUrl(
+				"https://cdn.discordapp.com/attachments/689528587917066282/1081260389079207966/iventerr-recruitment.png")
 			.Build(),
-		
+
 		Components = new ComponentBuilder()
 			.WithButton(RequestButton.WithCustomId("eventer_request"))
 			.Build()
 	};
-	
+
 	public static readonly MessageProperties ModersRequestMessageProperties = new()
 	{
 		Embed = new EmbedBuilder()
@@ -115,9 +119,10 @@ public static class RequestsConfig
 {Tabs}{Tabs}**Нажимай на кнопку ниже!**
 """[1..^2])
 			.WithFooter("Будем ждать тебя в нашем дружном коллективе !")
-			.WithImageUrl("https://cdn.discordapp.com/attachments/689528587917066282/1081260690792272012/moderator-recruitment.png")
+			.WithImageUrl(
+				"https://cdn.discordapp.com/attachments/689528587917066282/1081260690792272012/moderator-recruitment.png")
 			.Build(),
-		
+
 		Components = new ComponentBuilder()
 			.WithButton(RequestButton.WithCustomId("moder_request"))
 			.Build()

@@ -20,7 +20,7 @@ public class LocalizationManager
 		else
 		{
 			var directories = Directory.GetDirectories(filesPath);
-			
+
 			ref var directory = ref MemoryMarshal.GetArrayDataReference(directories);
 			ref var end = ref Unsafe.Add(ref directory, directories.Length);
 
@@ -28,12 +28,12 @@ public class LocalizationManager
 			{
 				files = Directory.GetFiles(directory, "*.csv");
 				Load(files);
-				
+
 				directory = ref Unsafe.Add(ref directory, 1);
 			}
 		}
 	}
-	
+
 	private void Load(string[] filesPaths)
 	{
 		ref var filesPath = ref MemoryMarshal.GetArrayDataReference(filesPaths);
@@ -52,11 +52,11 @@ public class LocalizationManager
 				value.Add(name, lines);
 			else
 				m_categories[category] = new Category(name, lines);
-			
+
 			filesPath = ref Unsafe.Add(ref filesPath, 1);
 		}
 	}
-	
+
 	public Category GetCategory(string category)
 	{
 		return m_categories.TryGetValue(category, out var value) ? value : new Category();

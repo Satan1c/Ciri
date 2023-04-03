@@ -9,7 +9,7 @@ public class MessageProperties : Discord.MessageProperties
 		get => base.Content.IsSpecified ? base.Content.Value : null;
 		set => base.Content = new Optional<string>(value!);
 	}
-	
+
 	public new MessageComponent? Components
 	{
 		get => base.Components.IsSpecified ? base.Components.Value : null;

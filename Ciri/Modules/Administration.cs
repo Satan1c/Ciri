@@ -13,12 +13,12 @@ namespace Ciri.Modules;
 public class Administration : InteractionModuleBase<SocketInteractionContext>
 {
 	public static DataBaseProvider DataBaseProvider = null!;
-	
+
 	public Administration(DataBaseProvider dataBaseProvider)
 	{
-		Administration.DataBaseProvider = dataBaseProvider;
+		DataBaseProvider = dataBaseProvider;
 	}
-	
+
 	[Group("profile", "profile commands")]
 	public class Profile : InteractionModuleBase<SocketInteractionContext>
 	{
@@ -30,41 +30,37 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 				await Context.Interaction.RespondAsync("You must specify at least one parameter", ephemeral: true);
 				return;
 			}
-			
+
 			var profile = newProfile.EditProfile(await DataBaseProvider.GetProfiles(user.Id));
-			
+
 			await DataBaseProvider.SetProfiles(profile);
 			await Context.Interaction.RespondAsync($"<@{user.Id}> profile edited", ephemeral: true);
 		}
 	}
-	
+
 	[Group("shop", "shop commands")]
 	public class Shop : InteractionModuleBase<SocketInteractionContext>
 	{
 		[SlashCommand("add", "add shop item command")]
 		public async Task AddShopItem(
-			[ComplexParameter]
-			ItemArg<IRole> item)
+			[ComplexParameter] ItemArg<IRole> item)
 		{
 			var shop = await DataBaseProvider.GetShop<ulong>();
 			if (shop == null)
-			{
 				await DataBaseProvider.SetShop(new Shop<ulong>
 				{
 					Discount = 0,
 					Items = new List<ShopItem<ulong>>(),
 					Name = "roles"
 				});
-			}
-			
+
 			await DataBaseProvider.SetItem(item.CreateShopItem(item.Item.Id));
 			await Context.Interaction.RespondAsync($"{item.Name} added", ephemeral: true);
 		}
-		
+
 		[SlashCommand("edit", "edit shop item command")]
 		public async Task EditShopItem(
-			[ComplexParameter]
-			NullableItemArg<IRole> item, 
+			[ComplexParameter] NullableItemArg<IRole> item,
 			byte newIndex = 0)
 		{
 			var find = await DataBaseProvider.GetItem<ulong>(index: item.Index);
@@ -79,9 +75,9 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 			await DataBaseProvider.SetItem(find, newIndex);
 			await Context.Interaction.RespondAsync($"{item.Name} edited", ephemeral: true);
 		}
-		
+
 		[SlashCommand("remove", "remove shop item command")]
-		public async Task RemoveShopItem([Autocomplete(typeof(ItemAutocomplete))]byte index)
+		public async Task RemoveShopItem([Autocomplete(typeof(ItemAutocomplete))] byte index)
 		{
 			var item = await DataBaseProvider.GetItem<ulong>("roles", index);
 			if (item == null)
@@ -101,7 +97,6 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 	[ChoiceDisplay("roles")]
 	Roles,
 }*/
-
 /*public static class UnsafeExtensions
 {
 	public static string ShopTypeToString(this ShopType type)

@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 using Ciri.Handlers;
 using Ciri.Modules.Configs;
 using Ciri.Modules.Utils;
@@ -17,11 +16,10 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 	public static DataBaseProvider m_dataBaseProvider;
 	private readonly DiscordSocketClient m_client;
 	private readonly CronTimer m_timer = new("0 0 * * 0", "UTC");
-	private readonly ITextChannel m_channel;
 
 	public Economy(DataBaseProvider dataBaseProvider, GuildEvents guildEvents, DiscordSocketClient client)
 	{
-		m_channel = client.GetGuild(542005378049638400).GetTextChannel(684011228531654658);
+		ITextChannel channel = client.GetGuild(542005378049638400).GetTextChannel(684011228531654658);
 		m_dataBaseProvider = dataBaseProvider;
 		m_client = client;
 		m_timer.OnOccurence += async (_, _) =>
@@ -31,14 +29,14 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			{
 				var profiles = await m_dataBaseProvider.GetProfiles(profit.Members);
 				Array.ForEach(profiles, profile => profile.Hearts += profit.Hearts);
-				
+
 				await m_dataBaseProvider.SetProfiles(profiles);
 
 				description.Add(
 					$"<&{role}> получила зарплату в количестве **__{profit.Hearts}__**{EmojiConfig.HeartVal}");
 			}
 
-			await m_channel.SendMessageAsync(embed: new EmbedBuilder()
+			await channel.SendMessageAsync(embed: new EmbedBuilder()
 				.WithDescription(description.ToString())
 				.WithColor(3093046).Build());
 		};
@@ -53,19 +51,19 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			await RespondAsync("You can't give hearts to bot", ephemeral: true);
 			return;
 		}
-		
+
 		var myProfile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
 		if (myProfile.Hearts < amount)
 		{
 			await RespondAsync("You don't have enough hearts", ephemeral: true);
 			return;
 		}
-		
+
 		var userProfile = await m_dataBaseProvider.GetProfiles(user.Id);
 		myProfile.Hearts -= amount;
 		userProfile.Hearts += amount;
-		
-		await m_dataBaseProvider.SetProfiles(new []{myProfile, userProfile});
+
+		await m_dataBaseProvider.SetProfiles(new[] { myProfile, userProfile });
 		await RespondAsync($"You gave {user.Mention} {amount.ToString()}{EmojiConfig.HeartVal}", ephemeral: true);
 	}
 
@@ -78,29 +76,30 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			await Context.Interaction.RespondAsync("Shop not found", ephemeral: true);
 			return;
 		}
-		
+
 		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
 		var embeds = new LinkedList<EmbedBuilder>();
 		shop.GenerateEmbeds(ref embeds);
 
 		var max = embeds.Count;
 		var first = embeds.First!.Value;
-		var ids = new []
+		var ids = new[]
 		{
 			"shop_left",
 			"shop_close",
-			"shop_right",
+			"shop_right"
 		};
-		
+
 		var timeout = TimeSpan.FromMinutes(2);
 		var components = new ComponentBuilder()
 			.SetShopControls(1, shop, profile, ids)
 			.Build();
 		var closeAt = DateTimeOffset.UtcNow.Add(timeout.Subtract(TimeSpan.FromSeconds(3)));
 
-		await Context.Interaction.RespondAsync(embed: first.SetPage(1, max, closeAt).Build(), components: components, ephemeral: true);
+		await Context.Interaction.RespondAsync(embed: first.SetPage(1, max, closeAt).Build(), components: components,
+			ephemeral: true);
 
-		
+
 		var currentPage = 1;
 		var current = first;
 		while (DateTimeOffset.UtcNow < closeAt)
@@ -109,17 +108,15 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			{
 				var componentInteraction = interaction as IComponentInteraction;
 				return interaction.Type == InteractionType.MessageComponent && componentInteraction != null &&
-				       (ids.Contains(componentInteraction.Data.CustomId) || componentInteraction.Data.CustomId.StartsWith("buy_"));
+				       (ids.Contains(componentInteraction.Data.CustomId) ||
+				        componentInteraction.Data.CustomId.StartsWith("buy_"));
 			});
 			var componentInteraction = (interaction as IComponentInteraction)!;
 			closeAt = DateTimeOffset.UtcNow.Add(timeout);
-			
+
 			await componentInteraction.DeferAsync(true);
-			
-			if (componentInteraction.Data.CustomId == ids[1])
-			{
-				break;
-			}
+
+			if (componentInteraction.Data.CustomId == ids[1]) break;
 
 			if (componentInteraction.Data.CustomId == ids[0])
 			{
@@ -141,24 +138,24 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			{
 				var index = byte.Parse(componentInteraction.Data.CustomId.Split("_")[^1]);
 				var item = await m_dataBaseProvider.GetItem<ulong>(index: index);
-				
+
 				if (item == null)
 				{
 					await Context.Interaction.FollowupAsync("Item not found", ephemeral: true);
 					return;
 				}
-				
+
 				profile.Hearts -= shop.GetCost(item);
 				await m_dataBaseProvider.SetProfiles(profile);
 				await Context.Interaction.FollowupAsync($"{item.Name} bought", ephemeral: true);
-				
+
 				await interaction.UpdateShop(
 					current, currentPage, max,
 					closeAt,
 					ids, profile, shop);
 			}
 		}
-		
+
 		await Context.Interaction.CloseShop(shop, currentPage, current.Fields.Count, ids);
 	}
 }

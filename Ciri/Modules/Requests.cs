@@ -26,22 +26,31 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 			components: properties.Components,
 			ephemeral: true);
 	}
-	
+
 	[MessageCommand("Update")]
 	public Task Update(IMessage message)
-		=> Context.Interaction.RespondWithModalAsync<UpdateModal>($"update_webhook_{message.Channel.Id}_{message.Id}");
+	{
+		return Context.Interaction.RespondWithModalAsync<UpdateModal>(
+			$"update_webhook_{message.Channel.Id}_{message.Id}");
+	}
 
 	[SlashCommand("send", "sends information to channel")]
 	public Task Send(ITextChannel channel)
-		=> Context.Interaction.RespondWithModalAsync<SendModal>($"send_webhook_{channel.Id}");
+	{
+		return Context.Interaction.RespondWithModalAsync<SendModal>($"send_webhook_{channel.Id}");
+	}
 
 	[ComponentInteraction("moder_request", true)]
 	public Task ModerRequest()
-		=> Context.Interaction.RespondWithModalAsync<ModerRequestModal>("moder_modal");
+	{
+		return Context.Interaction.RespondWithModalAsync<ModerRequestModal>("moder_modal");
+	}
 
 	[ComponentInteraction("eventer_request", true)]
 	public Task EventerRequest()
-		=> Context.Interaction.RespondWithModalAsync<EventerRequestModal>("eventer_modal");
+	{
+		return Context.Interaction.RespondWithModalAsync<EventerRequestModal>("eventer_modal");
+	}
 
 	[ModalInteraction("update_webhook_*_*", true)]
 	public async Task UpdateWebhook(ITextChannel channel, ulong messageId, UpdateModal modal)
@@ -54,7 +63,7 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 
 		var props = RequestsUtils.GetProperties(modal.Topic, modal.Data);
 
-		await channel.ModifyMessageAsync(messageId, (properties) =>
+		await channel.ModifyMessageAsync(messageId, properties =>
 		{
 			properties.Content = props.Content;
 			properties.Embed = props.Embed;
@@ -68,7 +77,7 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 	public async Task SendWebhook(ITextChannel channel, SendModal modal)
 	{
 		var props = RequestsUtils.GetProperties(modal.Topic, modal.Data);
-		
+
 		await channel.SendMessageAsync(
 			props.Content,
 			embed: props.Embed,
@@ -88,7 +97,7 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 				.Build());
 		await Context.Interaction.RespondAsync("Sent", ephemeral: true);
 	}
-	
+
 	[ModalInteraction("eventer_modal", true)]
 	public async Task EventerModal(EventerRequestModal modal)
 	{

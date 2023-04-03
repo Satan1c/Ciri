@@ -11,6 +11,7 @@ using Serilog;
 using ShikimoriSharp;
 using ShikimoriSharp.Bases;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using JsonLocalizationManager = Localization.JsonLocalizationManager;
 using Logger = Microsoft.Extensions.Logging.Logger<Microsoft.Extensions.Logging.ILogger>;
 
 var locals = Path.GetFullPath("../../", AppDomain.CurrentDomain.BaseDirectory) + "Localizations";
@@ -43,29 +44,27 @@ await using var services = new ServiceCollection()
 		UseCompiledLambda = true,
 		DefaultRunMode = RunMode.Async,
 		LogLevel = LogSeverity.Verbose,
-		LocalizationManager = new Localization.JsonLocalizationManager(jsons)
+		LocalizationManager = new JsonLocalizationManager(jsons)
 	})
 	.AddSingleton(new ClientSettings(
-		"Geno",
-		"mkGRM2ud5xmOqUl5bvZkUbFV-zqjQimkQ-W5hhPBFR0",
-		"OlOUNsD14GN2TM6WHwaUaEuqrkFS7LGKJfwtHvyf6Ck"
+			"Geno",
+			"mkGRM2ud5xmOqUl5bvZkUbFV-zqjQimkQ-W5hhPBFR0",
+			"OlOUNsD14GN2TM6WHwaUaEuqrkFS7LGKJfwtHvyf6Ck"
 		)
 	)
-	.AddSingleton(MongoClientSettings.FromConnectionString("mongodb+srv://Ciri:Atlas23Game@cluster0.fdfr9.mongodb.net/?retryWrites=true&w=majority"))
+	.AddSingleton(MongoClientSettings.FromConnectionString(
+		"mongodb+srv://Ciri:Atlas23Game@cluster0.fdfr9.mongodb.net/?retryWrites=true&w=majority"))
 	.AddSingleton(new LocalizationManager(csv))
 	.AddSingleton<IMongoClient, MongoClient>()
 	.AddSingleton<DataBaseProvider, DataBaseProvider>()
-	
 	.AddSingleton<DiscordSocketClient>()
 	.AddSingleton<InteractionService>()
 	.AddSingleton<InteractionHandler>()
 	.AddSingleton<ClientEvents>()
 	.AddSingleton<GuildEvents>()
-	
 	.AddSingleton<ShikimoriClient>()
-	
 	.BuildServiceProvider();
-	
+
 var bot = services.GetRequiredService<DiscordSocketClient>();
 services.GetRequiredService<ClientEvents>();
 
