@@ -67,35 +67,26 @@ public class DataBaseProvider
 			return m_profileCache.Get(profileId);
 		}
 
-		var filter = await (await m_profiles.FindAsync(profile1 => profile1.Id == id)).FirstOrDefaultAsync();
+		var filter = await m_profiles.Find(profile1 => profile1.Id == id).FirstOrDefaultAsync();
 		if (filter == null) return Profile.GetDefault(id);
 		
 		m_profileCache.Put(profileId, filter);
 
 		return filter;
 	}
+	
 	public async Task<Profile[]> GetProfiles(ulong[] ids)
 	{
-		var profiles = new LinkedList<Profile>();
-		foreach (var id in ids)
-		{
-			var profileId = id.ToString();
-			if (m_profileCache.Exists(profileId))
-			{
-				profiles.AddLast(m_profileCache.Get(profileId));
-			}
-		}
-		
-		if (profiles.Count == ids.Length) return profiles.ToArray();
+		var profiles = m_profileCache.GetProfilesUnsafe(ref ids);
+		if (profiles.Length == ids.Length) return profiles;
 
-		var filter = await m_profiles.FindAsync(profile1 => ids.Contains(profile1.Id) && !profiles.Contains(profile1));
-		foreach (var profile in await filter.ToListAsync())
-		{
-			profiles.AddLast(profile);
-			m_profileCache.Put(profile.Id.ToString(), profile);
-		}
+		var filter = await m_profiles
+			.Find(profile1 => ids.Contains(profile1.Id) && !profiles.Contains(profile1))
+			.ToListAsync();
 
-		return profiles.ToArray();
+		m_profileCache.GetProfilesUnsafe(ref profiles, ref filter);
+
+		return profiles;
 	}
 
 	public async Task<Shop<TItem>?> GetShop<TItem>(string name = "roles")
@@ -105,9 +96,8 @@ public class DataBaseProvider
 			return (Shop<TItem>?) m_shopCache.Get(name, "shop");
 		}
 
-		var filter = await (await m_database.GetCollection<Shop<TItem>>("shop")
-				.FindAsync(shop => shop.Name == name)
-			).FirstOrDefaultAsync();
+		var filter = await m_database.GetCollection<Shop<TItem>>("shop")
+			.Find(shop => shop.Name == name).FirstOrDefaultAsync();
 		
 		if (filter == null) return default;
 		
@@ -132,10 +122,16 @@ public class DataBaseProvider
 
 	public async Task SetItem<TItem>(ShopItem<TItem> item, byte index = 0, string name = "roles")
 	{
-		if (item.Index != index) await RemoveItem<TItem>(item.Index, name);
-		
 		var shop = await GetShop<TItem>(name);
 		if (shop == null) return;
+		
+		var oldItem = await GetItem<TItem>(name, item.Index);
+		if (oldItem != null && (oldItem.Index != index || oldItem.Name != item.Name))
+			await UpdateInventories(name, oldItem, item);
+		
+		if (item.Index != index) await RemoveItem<TItem>(item.Index, false, name);
+		
+		
 		if (shop.Items.Capacity < index)
 		{
 			var list = new List<ShopItem<TItem>>(index + 1);
@@ -149,17 +145,29 @@ public class DataBaseProvider
 		await SetShop(shop);
 	}
 	
-	public async Task RemoveItem<TItem>(byte index = 0, string name = "roles")
+	public async Task RemoveItem<TItem>(byte index = 0, bool remove = true, string name = "roles")
 	{
 		var shop = (await GetShop<TItem>(name))!;
 		var item = (await GetItem<TItem>(name, index))!;
+
+		if (remove)
+		{
+			await UpdateInventories(name, item);
+		}
 		
 		shop.Items.Remove(item);
 		m_shopItemCache.Remove(index.ToString(), name);
-		
 		await SetShop(shop);
 	}
 
+	public async Task UpdateInventories<TItem>(string shopName, ShopItem<TItem> oldItem, ShopItem<TItem>? newItem = null)
+	{
+		var oldId = $"{shopName}_{oldItem.Name}_{oldItem.Index}";
+		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync()).ToArray();
+		profiles.UpdateUnsafe(ref oldId, ref shopName, newItem);
+		await SetProfiles(profiles);
+	}
+	
 	public async Task SetProfiles(Profile[] profiles)
 	{
 		foreach (var profile in profiles)
@@ -175,8 +183,8 @@ public class DataBaseProvider
 	public async Task SetProfiles(Profile profile)
 	{
 		m_profileCache.Put(profile.Id.ToString(), profile);
-		
-		if (await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile) != null)
+		profile = await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile);
+		if (profile != null)
 		{
 			return;
 		}
@@ -189,7 +197,8 @@ public class DataBaseProvider
 		m_shopCache.Put(shop.Name, shop, "shop");
 		
 		var collection = m_database.GetCollection<Shop<TItem>>("shop");
-		if (await collection.FindOneAndReplaceAsync(shop1 => shop1.Name == shop.Name, shop) != null)
+		shop = await collection.FindOneAndReplaceAsync(shop1 => shop1.Name == shop.Name, shop);
+		if (shop != null)
 		{
 			return;
 		}

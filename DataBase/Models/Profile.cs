@@ -9,7 +9,8 @@ public class Profile
 	[BsonElement("hearts")] public long Hearts { get; set; } = 0;
 	[BsonElement("reputation")] public long Reputation { get; set; } = 0;
 	[BsonElement("messages")] public ulong Messages { get; set; } = 0;
-	[BsonElement("lover")] public ulong Lover { get; set; } = 0;
+	[BsonElement("lover")] public ulong? Lover { get; set; } = null;
+	[BsonElement("inventory")] public List<string> Inventory { get; set; } = new();
 	[BsonElement("voice")] public DateTime Voice { get; set; } = new();
 	
 	public static readonly Profile Default = GetDefault(0);
