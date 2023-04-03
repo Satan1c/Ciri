@@ -1,6 +1,5 @@
 ﻿using Ciri.Handlers;
 using DataBase.Models;
-using Discord;
 using Discord.Interactions;
 
 namespace Ciri.Models;

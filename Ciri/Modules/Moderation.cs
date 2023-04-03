@@ -1,8 +1,4 @@
-﻿using Ciri.Models.Modals.Moderation;
-using Discord;
-using Discord.Interactions;
-
-namespace Ciri.Modules;
+﻿namespace Ciri.Modules;
 
 /*[Group("moderation", "moderation commands")]
 [EnabledInDm(false)]

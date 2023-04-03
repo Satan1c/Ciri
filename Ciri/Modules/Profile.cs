@@ -2,7 +2,6 @@
 using DataBase;
 using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using Localization;
 using Localization.Models;
 
@@ -38,6 +37,47 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		await RespondAsync(embed: GetEmbed(user, profile).Build());
 	}
 
+	[SlashCommand("about_me", "change your profile bio")]
+	public async Task AboutMe(
+		[Summary("text", "new bio text"),
+		 MinLength(0), MaxLength(127)]
+		string text)
+	{
+		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
+		profile.Bio = text;
+		
+		await m_dataBaseProvider.SetProfiles(profile);
+		await RespondAsync("Profile bio changed", ephemeral: true);
+	}
+
+	[SlashCommand("lover", "change your lover")]
+	public async Task Lover(IUser? user = null)
+	{
+		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
+		profile.Lover += user?.Id ?? null;
+		
+		await m_dataBaseProvider.SetProfiles(profile);
+		await RespondAsync("Profile lover changed", ephemeral: true);
+	}
+
+	[SlashCommand("rep", "give reputation to user")]
+	public async Task Rep(IUser user, RepMode mode = RepMode.Add)
+	{
+		var profile = await m_dataBaseProvider.GetProfiles(user.Id);
+		profile.Reputation += mode == RepMode.Add ? 1 : -1;
+		
+		await m_dataBaseProvider.SetProfiles(profile);
+		await RespondAsync("Rep changed", ephemeral: true);
+	}
+	
+	public enum RepMode
+	{
+		[ChoiceDisplay("add")]
+		Add,
+		[ChoiceDisplay("remove")]
+		Remove
+	}
+
 	private EmbedBuilder GetEmbed(IGuildUser member, DataBase.Models.Profile profile)
 	{
 		var embed = GetEmbed((IUser) member, profile);
@@ -50,7 +90,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		var rolesValue = data["roles_value"].FormatWith(new{member.RoleIds.Count});
 		
 		var joinedTitle = data["joined_title"];
-		var joinedValue = data["joined_value"].FormatWith(new {JoinedAt = $"<t:{member.JoinedAt?.ToUnixTimeSeconds() ?? 0}:R>"});
+		var joinedValue = data["joined_value"].FormatWith(new {JoinedAt = $"<t:{(member.JoinedAt?.ToUnixTimeSeconds() ?? 0).ToString()}:R>"});
 
 		return embed
 			.WithTitle(title)
@@ -84,23 +124,12 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		return new EmbedBuilder()
 			.WithThumbnailUrl(user.GetDisplayAvatarUrl())
 			.WithTitle(title.FormatWith(user))
-			//.WithUrl($"discord://-/users/{user.Id}")
-			.WithUrl($"https://discord.com/users/{user.Id}")
+			.WithUrl($"https://discord.com/users/{user.Id.ToString()}")
 			.WithDescription(description)
 			.AddField(voiceTitle, voiceValue, true)
 			.AddField(messagesTitle, messagesValue, true)
 			.AddField(reputationTitle, reputationValue, true)
 			.AddField(loverTitle, loverValue, true)
 			.AddField(balanceTitle, balanceValue, true);
-	}
-
-	private static string GetGender(IReadOnlyCollection<IRole> roles)
-	{
-		if (roles.Any(r => r.Id == c_femaleRole))
-			return "female";
-		
-		return roles.Any(r => r.Id == c_maleRole)
-			? "male"
-			: "other";
 	}
 }
