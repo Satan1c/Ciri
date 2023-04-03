@@ -1,26 +1,4 @@
 ﻿{
-	"Mafia": {
-		"name": "Мафия"
-	},
-	"Alias": {
-		"name": "Синонимы"
-	},
-	"Who I ?": {
-		"name": "Кто я ?"
-	},
-	"Crocodile": {
-		"name": "Крокодил"
-	},
-	"Jackbox": {
-		"name": "Jackbox"
-	},
-	"Tabletop": {
-		"name": "Настолки"
-	},
-	"Moments": {
-		"name": "Моменты"
-	},
-	
 	"events": {
 		"name": "ивенты",
 		"description": "команды ивентов",
@@ -35,7 +13,29 @@
 			},
 			"event_name": {
 				"name": "название_ивента",
-				"description": "название ивента"
+				"description": "название ивента",
+
+				"Mafia": {
+					"name": "Мафия"
+				},
+				"Alias": {
+					"name": "Синонимы"
+				},
+				"Who I ?": {
+					"name": "Кто я ?"
+				},
+				"Crocodile": {
+					"name": "Крокодил"
+				},
+				"Jackbox": {
+					"name": "Jackbox"
+				},
+				"Tabletop": {
+					"name": "Настолки"
+				},
+				"Moments": {
+					"name": "Моменты"
+				}
 			},
 			"eventer": {
 				"name": "ивентер",
