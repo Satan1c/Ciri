@@ -4,7 +4,6 @@ using DataBase;
 using DataBase.Models;
 using Discord;
 using Discord.Interactions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Ciri.Modules;
 
@@ -66,7 +65,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 		public async Task EditShopItem(
 			[ComplexParameter]
 			NullableItemArg<IRole> item, 
-			byte? newIndex = null)
+			byte newIndex = 0)
 		{
 			var find = await DataBaseProvider.GetItem<ulong>(index: item.Index);
 			if (find == null)
@@ -77,7 +76,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 
 			find = item.CreateShopItem(item.Item?.Id ?? find.Item, find);
 
-			await DataBaseProvider.SetItem(find);
+			await DataBaseProvider.SetItem(find, newIndex);
 			await Context.Interaction.RespondAsync($"{item.Name} edited", ephemeral: true);
 		}
 		
@@ -90,7 +89,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
 				return;
 			}
-			
+
 			await DataBaseProvider.RemoveItem<ulong>(index);
 			await Context.Interaction.RespondAsync($"{item.Name} removed", ephemeral: true);
 		}
@@ -103,7 +102,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 	Roles,
 }*/
 
-/*public static class Extensions
+/*public static class UnsafeExtensions
 {
 	public static string ShopTypeToString(this ShopType type)
 	{
