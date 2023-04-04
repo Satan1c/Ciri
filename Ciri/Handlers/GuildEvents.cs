@@ -19,7 +19,6 @@ public class GuildEvents
 
 	private readonly DiscordSocketClient m_client;
 	private readonly DataBaseProvider m_dataBaseProvider;
-	private readonly CronTimer m_timer = new("*/5 * * * *", "UTC");
 	private ITextChannel m_boostChannel;
 
 	private ITextChannel m_logChannel;
@@ -96,17 +95,6 @@ public class GuildEvents
 
 		await m_membersCount.ModifyAsync(x =>
 			x.Name = $"🌹: {m_client.GetGuild(542005378049638400).MemberCount.ToString()}");
-
-		channel = await guild.GetChannelAsync(770669968329146378);
-		if (channel is IVoiceChannel timeChannel)
-		{
-			m_timer.OnOccurence += async (_, _) =>
-			{
-				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {DateTime.UtcNow.AddHours(3).ToString("HH:mm")}");
-			};
-			
-			m_timer.Start();
-		}
 	}
 
 	public async Task OnMessageEdit(Cacheable<IMessage, ulong> _, SocketMessage message, ISocketMessageChannel channel)
