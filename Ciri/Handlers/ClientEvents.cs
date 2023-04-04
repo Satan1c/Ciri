@@ -58,8 +58,8 @@ public class ClientEvents
 	{
 		m_client.Ready -= OnReady;
 
-		await m_guildEvents.Init();
-		await m_interactionHandler.Init();
+		await m_guildEvents.Init().ConfigureAwait(false);
+		await m_interactionHandler.Init().ConfigureAwait(false);
 
 		await OnLog(new LogMessage(LogSeverity.Verbose, nameof(OnReady), "end of ready event"));
 	}

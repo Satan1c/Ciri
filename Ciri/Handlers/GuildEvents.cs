@@ -19,7 +19,7 @@ public class GuildEvents
 
 	private readonly DiscordSocketClient m_client;
 	private readonly DataBaseProvider m_dataBaseProvider;
-	private readonly CronTimer m_timer = new("* * * * *", "Europe/Moscow");
+	private readonly CronTimer m_timer = new("*/5 * * * *", "UTC");
 	private ITextChannel m_boostChannel;
 
 	private ITextChannel m_logChannel;

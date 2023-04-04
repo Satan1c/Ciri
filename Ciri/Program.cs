@@ -67,6 +67,6 @@ await using var services = new ServiceCollection()
 var bot = services.GetRequiredService<DiscordSocketClient>();
 services.GetRequiredService<ClientEvents>();
 
-await bot.LoginAsync(TokenType.Bot, "Njk5NjczMzUzMDE1MDAxMTE4.GKFBr3.w0mntSHnjL4RS5oZvRQ4FSSpk3xB5Ly3O-84QI", false);
-await bot.StartAsync();
+await bot.LoginAsync(TokenType.Bot, "Njk5NjczMzUzMDE1MDAxMTE4.GKFBr3.w0mntSHnjL4RS5oZvRQ4FSSpk3xB5Ly3O-84QI", false).ConfigureAwait(false);
+await bot.StartAsync().ConfigureAwait(false);
 await Task.Delay(Timeout.Infinite);

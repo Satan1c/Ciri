@@ -7,8 +7,11 @@ namespace DataBase;
 
 public static class UnsafeExtensions
 {
-	private static readonly ShopItem? NullItem = null;
-
+	public static bool AreSame<T>(this T left, T right)
+	{
+		return EqualityComparer<T>.Default.Equals(left, right);
+	}
+	
 	public static Profile[] GetProfilesUnsafe(this ICacheManager<Profile> profileCache, ref ulong[] ids)
 	{
 		var result = new Profile[ids.Length];
@@ -55,7 +58,7 @@ public static class UnsafeExtensions
 
 	public static void UpdateUnsafe(this Profile[] profiles,
 		ref string oldId,
-		ref ShopItem? newItem)
+		ref ShopItem newItem)
 	{
 		ref var start = ref MemoryMarshal.GetArrayDataReference(profiles);
 		ref var end = ref Unsafe.Add(ref start, profiles.Length);
@@ -66,7 +69,7 @@ public static class UnsafeExtensions
 			start = ref Unsafe.Add(ref start, 1);
 		}
 
-		if (newItem is null) return;
+		if (newItem.AreSame(default)) return;
 
 		var newId = $"shop_{newItem.Name}_{newItem.Index}";
 		start = ref MemoryMarshal.GetArrayDataReference(profiles);

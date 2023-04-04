@@ -2,17 +2,24 @@
 
 namespace DataBase.Models;
 
-public class ShopItem
+public struct ShopItem
 {
-	[BsonElement("index")] public byte Index { get; set; }
+	public ShopItem()
+	{
+		Index = 0;
+		Cost = 0;
+		Discount = 0;
+	}
+
+	[BsonElement("index")] public byte Index { get; set; } = 0;
 
 	[BsonElement("name")] public string Name { get; set; } = string.Empty;
 
-	[BsonElement("cost")] public long Cost { get; set; }
+	[BsonElement("cost")] public long Cost { get; set; } = 0;
 
 	[BsonElement("item")] public ulong Item { get; set; } = default!;
 
-	[BsonElement("discount")] public sbyte Discount { get; set; }
+	[BsonElement("discount")] public sbyte Discount { get; set; } = 0;
 
 	public long GetCost()
 	{

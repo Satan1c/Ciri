@@ -46,7 +46,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 			[ComplexParameter] ItemArg item)
 		{
 			var shop = await DataBaseProvider.GetShop();
-			if (shop == null)
+			if (shop.AreSame(default))
 				await DataBaseProvider.SetShop(new DataBase.Models.Shop
 				{
 					Discount = 0,
@@ -64,7 +64,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 			byte newIndex = 0)
 		{
 			var find = await DataBaseProvider.GetItem(item.Index);
-			if (find == null)
+			if (find.AreSame(default))
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
 				return;
@@ -80,7 +80,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 		public async Task RemoveShopItem([Autocomplete(typeof(ItemAutocomplete))] byte index)
 		{
 			var item = await DataBaseProvider.GetItem(index);
-			if (item == null)
+			if (item.AreSame(default))
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
 				return;

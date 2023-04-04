@@ -2,10 +2,16 @@
 
 namespace DataBase.Models;
 
-public class Profile
+public struct Profile
 {
 	public static readonly Profile Default = GetDefault(0);
-	[BsonElement("_id")] public ulong Id { get; set; }
+
+	public Profile()
+	{
+		Id = 0;
+	}
+
+	[BsonElement("_id")] public ulong Id { get; set; } = 0;
 	[BsonElement("bio")] public string Bio { get; set; } = "";
 	[BsonElement("hearts")] public long Hearts { get; set; } = 0;
 	[BsonElement("reputation")] public long Reputation { get; set; } = 0;

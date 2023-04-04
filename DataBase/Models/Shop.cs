@@ -2,11 +2,15 @@
 
 namespace DataBase.Models;
 
-public class Shop
+public struct Shop
 {
+	public Shop()
+	{
+	}
+
 	[BsonElement("_id")] public string Name { get; set; } = string.Empty;
 
-	[BsonElement("discount")] public sbyte Discount { get; set; }
+	[BsonElement("discount")] public sbyte Discount { get; set; } = 0;
 
 	[BsonElement("items")] public List<ShopItem> Items { get; set; } = new();
 

@@ -71,7 +71,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 	public async Task Shop()
 	{
 		var shop = await m_dataBaseProvider.GetShop();
-		if (shop == null)
+		if (shop.AreSame(default))
 		{
 			await Context.Interaction.RespondAsync("Shop not found", ephemeral: true);
 			return;
@@ -138,7 +138,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				var index = byte.Parse(componentInteraction.Data.CustomId.Split("_")[^1]);
 				var item = await m_dataBaseProvider.GetItem(index);
 
-				if (item == null)
+				if (item.AreSame(default))
 				{
 					await Context.Interaction.FollowupAsync("Item not found", ephemeral: true);
 					return;
