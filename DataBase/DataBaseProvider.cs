@@ -9,8 +9,10 @@ public class DataBaseProvider
 	private readonly IMongoDatabase m_database;
 	private readonly ICacheManager<Profile> m_profileCache;
 	private readonly IMongoCollection<Profile> m_profiles;
-	private readonly ICacheManager<object> m_shopCache;
-	private readonly ICacheManager<object> m_shopItemCache;
+	private readonly IMongoCollection<Shop> m_shop;
+	
+	private readonly ICacheManager<Shop> m_shopCache;
+	private readonly ICacheManager<ShopItem> m_shopItemCache;
 
 	public DataBaseProvider(MongoClient client) : this(client as IMongoClient)
 	{
@@ -22,16 +24,17 @@ public class DataBaseProvider
 			part.WithMicrosoftMemoryCacheHandle()
 				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromMinutes(60)));
 
-		m_shopCache = CacheFactory.Build(settings =>
+		m_shopCache = CacheFactory.Build<Shop>(settings =>
 			settings.WithMicrosoftMemoryCacheHandle()
 				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromDays(7)));
 
-		m_shopItemCache = CacheFactory.Build(part =>
+		m_shopItemCache = CacheFactory.Build<ShopItem>(part =>
 			part.WithMicrosoftMemoryCacheHandle()
-				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromDays(3)));
+				.WithExpiration(ExpirationMode.Sliding, TimeSpan.FromDays(1)));
 
 		m_database = client.GetDatabase("main");
 		m_profiles = m_database.GetCollection<Profile>("profiles");
+		m_shop = m_database.GetCollection<Shop>("shop");
 	}
 
 	public async Task SyncCache()
@@ -84,76 +87,74 @@ public class DataBaseProvider
 		return profiles;
 	}
 
-	public async Task<Shop<TItem>?> GetShop<TItem>(string name = "roles")
+	public async Task<Shop?> GetShop()
 	{
-		if (m_shopCache.Exists(name, "shop")) return (Shop<TItem>?)m_shopCache.Get(name, "shop");
+		if (m_shopCache.Exists("shop")) return (Shop?)m_shopCache.Get("shop");
 
-		var filter = await m_database.GetCollection<Shop<TItem>>("shop")
-			.Find(shop => shop.Name == name).FirstOrDefaultAsync();
+		var filter = await m_shop.Find(x => x.Name == "shop").FirstOrDefaultAsync();
 
 		if (filter == null) return default;
 
-		m_shopCache.Put(name, filter, "shop");
+		m_shopCache.Put("shop", filter);
 
 		return filter;
 	}
 
-	public async Task<ShopItem<TItem>?> GetItem<TItem>(string name = "roles", byte index = 0)
+	public async Task<ShopItem?> GetItem( byte index = 0)
 	{
-		if (m_shopItemCache.Exists(index.ToString(), name))
-			return (ShopItem<TItem>?)m_shopItemCache.Get(index.ToString(), name);
+		if (m_shopItemCache.Exists(index.ToString()))
+			return m_shopItemCache.Get(index.ToString());
 
-		var shop = await GetShop<TItem>(name);
+		var shop = await GetShop();
 
 		if (shop == null || shop.Items.Count < index + 1) return default;
 
 		return shop.Items[index];
 	}
 
-	public async Task SetItem<TItem>(ShopItem<TItem> item, byte index = 0, string name = "roles")
+	public async Task SetItem(ShopItem item, byte index = 0)
 	{
-		var shop = await GetShop<TItem>(name);
+		var shop = await GetShop();
 		if (shop == null) return;
 
-		var oldItem = await GetItem<TItem>(name, item.Index);
+		var oldItem = await GetItem(item.Index);
 		if (oldItem != null && (oldItem.Index != index || oldItem.Name != item.Name))
-			await UpdateInventories(name, oldItem, item);
+			await UpdateInventories(oldItem, item);
 
-		if (item.Index != index) await RemoveItem<TItem>(item.Index, false, name);
+		if (item.Index != index) await RemoveItem(item.Index, false);
 
 
 		if (shop.Items.Capacity < index)
 		{
-			var list = new List<ShopItem<TItem>>(index + 1);
+			var list = new List<ShopItem>(index + 1);
 			list.AddRange(shop.Items);
 			shop.Items = list;
 		}
 
 		shop.Items.Insert(index, item);
 
-		m_shopItemCache.Put(item.Index.ToString(), name);
+		m_shopItemCache.Put(item.Index.ToString(), item);
 
 		await SetShop(shop);
 	}
 
-	public async Task RemoveItem<TItem>(byte index = 0, bool remove = true, string name = "roles")
+	public async Task RemoveItem(byte index = 0, bool remove = true)
 	{
-		var shop = (await GetShop<TItem>(name))!;
-		var item = (await GetItem<TItem>(name, index))!;
+		var shop = (await GetShop())!;
+		var item = (await GetItem(index))!;
 
-		if (remove) await UpdateInventories(name, item);
+		if (remove) await UpdateInventories(item);
 
 		shop.Items.Remove(item);
-		m_shopItemCache.Remove(index.ToString(), name);
+		m_shopItemCache.Remove(index.ToString());
 		await SetShop(shop);
 	}
 
-	public async Task UpdateInventories<TItem>(string shopName, ShopItem<TItem> oldItem,
-		ShopItem<TItem>? newItem = null)
+	public async Task UpdateInventories(ShopItem oldItem, ShopItem? newItem = null)
 	{
-		var oldId = $"{shopName}_{oldItem.Name}_{oldItem.Index}";
+		var oldId = $"shop_{oldItem.Name}_{oldItem.Index}";
 		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync()).ToArray();
-		profiles.UpdateUnsafe(ref oldId, ref shopName, newItem);
+		profiles.UpdateUnsafe(ref oldId, ref newItem);
 		await SetProfiles(profiles);
 	}
 
@@ -176,13 +177,12 @@ public class DataBaseProvider
 		await m_profiles.InsertOneAsync(profile);
 	}
 
-	public async Task SetShop<TItem>(Shop<TItem> shop)
+	public async Task SetShop(Shop shop)
 	{
-		m_shopCache.Put(shop.Name, shop, "shop");
+		m_shopCache.Put("shop", shop);
 
-		var collection = m_database.GetCollection<Shop<TItem>>("shop");
-		if (await collection.FindOneAndReplaceAsync(shop1 => shop1.Name == shop.Name, shop) != null) return;
+		if (await m_shop.FindOneAndReplaceAsync(shop1 => shop1.Name == "shop", shop) != null) return;
 
-		await collection.InsertOneAsync(shop);
+		await m_shop.InsertOneAsync(shop);
 	}
 }

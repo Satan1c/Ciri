@@ -7,6 +7,8 @@ namespace DataBase;
 
 public static class UnsafeExtensions
 {
+	private static readonly ShopItem? NullItem = null;
+	
 	public static Profile[] GetProfilesUnsafe(this ICacheManager<Profile> profileCache, ref ulong[] ids)
 	{
 		var result = new Profile[ids.Length];
@@ -50,8 +52,8 @@ public static class UnsafeExtensions
 		profiles = result;
 	}
 
-	public static void UpdateUnsafe<TItem>(this Profile[] profiles,
-		ref string oldId, ref string shopName, ShopItem<TItem>? newItem = null)
+	public static void UpdateUnsafe(this Profile[] profiles,
+		ref string oldId, ref ShopItem? newItem)
 	{
 		ref var start = ref MemoryMarshal.GetArrayDataReference(profiles);
 		ref var end = ref Unsafe.Add(ref start, profiles.Length);
@@ -62,9 +64,9 @@ public static class UnsafeExtensions
 			start = ref Unsafe.Add(ref start, 1);
 		}
 
-		if (newItem == null) return;
+		if (newItem is null) return;
 
-		var newId = $"{shopName}_{newItem.Name}_{newItem.Index}";
+		var newId = $"shop_{newItem.Name}_{newItem.Index}";
 		start = ref MemoryMarshal.GetArrayDataReference(profiles);
 		end = ref Unsafe.Add(ref start, profiles.Length);
 

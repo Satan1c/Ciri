@@ -22,7 +22,7 @@ public class ItemAutocomplete : AutocompleteHandler
 
 		try
 		{
-			var items = (await s_dataBaseProvider.GetShop<ulong>())!.Items;
+			var items = (await s_dataBaseProvider.GetShop())!.Items;
 			var userInput = autocompleteInteraction.Data.Current.Value.ToString()!.Trim();
 
 			return AutocompletionResult.FromSuccess(items.GetAutocompleteResults(ref userInput));
@@ -36,7 +36,7 @@ public class ItemAutocomplete : AutocompleteHandler
 
 public static class UnsafeExtensions
 {
-	public static IEnumerable<AutocompleteResult> GetAutocompleteResults(this List<ShopItem<ulong>> shopItems,
+	public static IEnumerable<AutocompleteResult> GetAutocompleteResults(this List<ShopItem> shopItems,
 		ref string userInput)
 	{
 		var itemsRaw = shopItems.ToArray();

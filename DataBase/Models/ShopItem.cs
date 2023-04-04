@@ -2,7 +2,7 @@
 
 namespace DataBase.Models;
 
-public class ShopItem<TItem>
+public class ShopItem
 {
 	[BsonElement("index")] public byte Index { get; set; }
 
@@ -10,7 +10,7 @@ public class ShopItem<TItem>
 
 	[BsonElement("cost")] public long Cost { get; set; }
 
-	[BsonElement("item")] public TItem Item { get; set; } = default!;
+	[BsonElement("item")] public ulong Item { get; set; } = default!;
 
 	[BsonElement("discount")] public sbyte Discount { get; set; }
 

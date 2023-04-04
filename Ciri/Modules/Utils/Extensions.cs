@@ -29,7 +29,7 @@ public static class Extensions
 		return user.GetAvatarUrl(format, size) ?? user.GetDefaultAvatarUrl();
 	}
 
-	public static void GenerateEmbeds<TItem>(this Shop<TItem> shop, ref LinkedList<EmbedBuilder> embeds)
+	public static void GenerateEmbeds(this Shop shop, ref LinkedList<EmbedBuilder> embeds)
 	{
 		var items = CollectionsMarshal.AsSpan(shop.Items);
 		for (var i = 0; i < items.Length; i += 5)
@@ -68,7 +68,7 @@ public static class Extensions
 			.WithButton("=>", ids[2], style, disabled: disable);
 	}
 
-	public static ActionRowBuilder AddItems<TItem>(this ActionRowBuilder builder, int page, Shop<TItem> shop,
+	public static ActionRowBuilder AddItems(this ActionRowBuilder builder, int page, Shop shop,
 		DataBase.Models.Profile profile, bool disabled = false)
 	{
 		page--;
@@ -109,7 +109,7 @@ public static class Extensions
 		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>");
 	}
 
-	public static ComponentBuilder SetShopControls<TItem>(this ComponentBuilder builder, int current, Shop<TItem> shop,
+	public static ComponentBuilder SetShopControls(this ComponentBuilder builder, int current, Shop shop,
 		DataBase.Models.Profile profile, string[] ids, bool disabled = false)
 	{
 		return builder
@@ -117,10 +117,10 @@ public static class Extensions
 			.AddRow(new ActionRowBuilder().AddItems(current, shop, profile, disabled));
 	}
 
-	public static async Task UpdateShop<TItem>(this SocketInteraction interaction,
+	public static async Task UpdateShop(this SocketInteraction interaction,
 		EmbedBuilder current, int currentPage, int max,
 		DateTimeOffset closeAt, string[] ids,
-		DataBase.Models.Profile profile, Shop<TItem> shop)
+		DataBase.Models.Profile profile, Shop shop)
 	{
 		current.SetPage(currentPage, max, closeAt);
 		await interaction.ModifyOriginalResponseAsync(options =>
@@ -131,7 +131,7 @@ public static class Extensions
 		});
 	}
 
-	public static async Task CloseShop<TItem>(this SocketInteraction interaction, Shop<TItem> shop, int current,
+	public static async Task CloseShop(this SocketInteraction interaction, Shop shop, int current,
 		int count, string[] ids)
 	{
 		await interaction.ModifyOriginalResponseAsync(options =>

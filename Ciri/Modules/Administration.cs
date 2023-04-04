@@ -7,7 +7,7 @@ using Discord.Interactions;
 
 namespace Ciri.Modules;
 
-[Group("administration", "administration commands")]
+[Group("admin", "administration commands")]
 [DefaultMemberPermissions(GuildPermission.Administrator)]
 [EnabledInDm(false)]
 public class Administration : InteractionModuleBase<SocketInteractionContext>
@@ -43,14 +43,14 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 	{
 		[SlashCommand("add", "add shop item command")]
 		public async Task AddShopItem(
-			[ComplexParameter] ItemArg<IRole> item)
+			[ComplexParameter] ItemArg item)
 		{
-			var shop = await DataBaseProvider.GetShop<ulong>();
+			var shop = await DataBaseProvider.GetShop();
 			if (shop == null)
-				await DataBaseProvider.SetShop(new Shop<ulong>
+				await DataBaseProvider.SetShop(new DataBase.Models.Shop
 				{
 					Discount = 0,
-					Items = new List<ShopItem<ulong>>(),
+					Items = new List<ShopItem>(),
 					Name = "roles"
 				});
 
@@ -60,10 +60,10 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 
 		[SlashCommand("edit", "edit shop item command")]
 		public async Task EditShopItem(
-			[ComplexParameter] NullableItemArg<IRole> item,
+			[ComplexParameter] NullableItemArg item,
 			byte newIndex = 0)
 		{
-			var find = await DataBaseProvider.GetItem<ulong>(index: item.Index);
+			var find = await DataBaseProvider.GetItem(index: item.Index);
 			if (find == null)
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
@@ -79,14 +79,14 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 		[SlashCommand("remove", "remove shop item command")]
 		public async Task RemoveShopItem([Autocomplete(typeof(ItemAutocomplete))] byte index)
 		{
-			var item = await DataBaseProvider.GetItem<ulong>("roles", index);
+			var item = await DataBaseProvider.GetItem(index);
 			if (item == null)
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
 				return;
 			}
 
-			await DataBaseProvider.RemoveItem<ulong>(index);
+			await DataBaseProvider.RemoveItem(index);
 			await Context.Interaction.RespondAsync($"{item.Name} removed", ephemeral: true);
 		}
 	}

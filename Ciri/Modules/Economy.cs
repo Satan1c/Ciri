@@ -70,7 +70,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 	[SlashCommand("shop", "shop command")]
 	public async Task Shop()
 	{
-		var shop = await m_dataBaseProvider.GetShop<ulong>();
+		var shop = await m_dataBaseProvider.GetShop();
 		if (shop == null)
 		{
 			await Context.Interaction.RespondAsync("Shop not found", ephemeral: true);
@@ -137,7 +137,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			else if (componentInteraction.Data.CustomId.StartsWith("buy_"))
 			{
 				var index = byte.Parse(componentInteraction.Data.CustomId.Split("_")[^1]);
-				var item = await m_dataBaseProvider.GetItem<ulong>(index: index);
+				var item = await m_dataBaseProvider.GetItem(index: index);
 
 				if (item == null)
 				{
@@ -146,6 +146,9 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				}
 
 				profile.Hearts -= shop.GetCost(item);
+				profile.Inventory.Add($"{shop.Name}_{item.Name}_{item.Index}");
+				await Context.Guild.GetUser(Context.User.Id).AddRoleAsync(item.Item);
+				
 				await m_dataBaseProvider.SetProfiles(profile);
 				await Context.Interaction.FollowupAsync($"{item.Name} bought", ephemeral: true);
 
