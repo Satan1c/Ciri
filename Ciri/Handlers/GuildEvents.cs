@@ -100,15 +100,9 @@ public class GuildEvents
 		channel = await guild.GetChannelAsync(770669968329146378);
 		if (channel is IVoiceChannel timeChannel)
 		{
-			m_timer.OnOccurence += async (_, time) =>
+			m_timer.OnOccurence += async (_, _) =>
 			{
-				await ClientEvents.OnLog(new LogMessage(LogSeverity.Verbose,
-					$"{nameof(m_timer)}.{nameof(CronTimer.OnOccurence)}",
-					$"Before change"));
-				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {time.At.ToString("HH:mm")}");
-				await ClientEvents.OnLog(new LogMessage(LogSeverity.Verbose,
-					$"{nameof(m_timer)}.{nameof(CronTimer.OnOccurence)}",
-					$"Time changed to {time.At.ToString("HH:mm:ss t z")}"));
+				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {DateTime.UtcNow.AddHours(3).ToString("HH:mm")}");
 			};
 			
 			m_timer.Start();
