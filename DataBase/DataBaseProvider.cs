@@ -10,7 +10,7 @@ public class DataBaseProvider
 	private readonly ICacheManager<Profile> m_profileCache;
 	private readonly IMongoCollection<Profile> m_profiles;
 	private readonly IMongoCollection<Shop> m_shop;
-	
+
 	private readonly ICacheManager<Shop> m_shopCache;
 	private readonly ICacheManager<ShopItem> m_shopItemCache;
 
@@ -100,7 +100,7 @@ public class DataBaseProvider
 		return filter;
 	}
 
-	public async Task<ShopItem?> GetItem( byte index = 0)
+	public async Task<ShopItem?> GetItem(byte index = 0)
 	{
 		if (m_shopItemCache.Exists(index.ToString()))
 			return m_shopItemCache.Get(index.ToString());
@@ -122,7 +122,6 @@ public class DataBaseProvider
 			await UpdateInventories(oldItem, item);
 
 		if (item.Index != index) await RemoveItem(item.Index, false);
-
 
 		if (shop.Items.Capacity < index)
 		{

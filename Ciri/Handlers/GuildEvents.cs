@@ -102,9 +102,15 @@ public class GuildEvents
 		{
 			m_timer.OnOccurence += async (_, time) =>
 			{
+				await ClientEvents.OnLog(new LogMessage(LogSeverity.Verbose,
+					$"{nameof(m_timer)}.{nameof(CronTimer.OnOccurence)}",
+					$"Before change"));
 				await timeChannel.ModifyAsync(x => x.Name = $"🕒 {time.At.ToString("HH:mm")}");
-				await ClientEvents.OnLog(new LogMessage(LogSeverity.Verbose, $"{nameof(m_timer)}.{nameof(CronTimer.OnOccurence)}", $"Time changed to {time.At.ToString("HH:mm:ss t z")}"));
+				await ClientEvents.OnLog(new LogMessage(LogSeverity.Verbose,
+					$"{nameof(m_timer)}.{nameof(CronTimer.OnOccurence)}",
+					$"Time changed to {time.At.ToString("HH:mm:ss t z")}"));
 			};
+			
 			m_timer.Start();
 		}
 	}

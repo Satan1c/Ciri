@@ -6,7 +6,10 @@ namespace Ciri.Models;
 public class ProfileArg
 {
 	[ComplexParameterCtor]
-	public ProfileArg(string? bio = null, long? hearts = null, long? reputation = null, ulong? lover = null,
+	public ProfileArg(string? bio = null,
+		long? hearts = null,
+		long? reputation = null,
+		ulong? lover = null,
 		ulong? messages = null)
 	{
 		Bio = bio;

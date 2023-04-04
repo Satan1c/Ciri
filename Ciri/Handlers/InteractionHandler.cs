@@ -12,7 +12,9 @@ public class InteractionHandler
 	private readonly InteractionService m_service;
 	private readonly IServiceProvider m_serviceProvider;
 
-	public InteractionHandler(DiscordSocketClient client, InteractionService service, IServiceProvider serviceProvider,
+	public InteractionHandler(DiscordSocketClient client,
+		InteractionService service,
+		IServiceProvider serviceProvider,
 		ILogger logger)
 	{
 		m_client = client;

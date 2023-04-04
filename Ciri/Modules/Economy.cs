@@ -99,7 +99,6 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 		await Context.Interaction.RespondAsync(embed: first.SetPage(1, max, closeAt).Build(), components: components,
 			ephemeral: true);
 
-
 		var currentPage = 1;
 		var current = first;
 		while (DateTimeOffset.UtcNow < closeAt)
@@ -137,7 +136,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			else if (componentInteraction.Data.CustomId.StartsWith("buy_"))
 			{
 				var index = byte.Parse(componentInteraction.Data.CustomId.Split("_")[^1]);
-				var item = await m_dataBaseProvider.GetItem(index: index);
+				var item = await m_dataBaseProvider.GetItem(index);
 
 				if (item == null)
 				{
@@ -148,7 +147,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				profile.Hearts -= shop.GetCost(item);
 				profile.Inventory.Add($"{shop.Name}_{item.Name}_{item.Index}");
 				await Context.Guild.GetUser(Context.User.Id).AddRoleAsync(item.Item);
-				
+
 				await m_dataBaseProvider.SetProfiles(profile);
 				await Context.Interaction.FollowupAsync($"{item.Name} bought", ephemeral: true);
 

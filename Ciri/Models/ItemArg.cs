@@ -39,8 +39,11 @@ public class ItemArg
 public class NullableItemArg
 {
 	[ComplexParameterCtor]
-	public NullableItemArg([Autocomplete(typeof(ItemAutocomplete))] byte index, IRole? item = default,
-		string? name = null, long? cost = null, sbyte? discount = null)
+	public NullableItemArg([Autocomplete(typeof(ItemAutocomplete))] byte index,
+		IRole? item = default,
+		string? name = null,
+		long? cost = null,
+		sbyte? discount = null)
 	{
 		Index = index;
 		Name = name;

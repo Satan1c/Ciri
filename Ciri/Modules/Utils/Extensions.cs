@@ -18,7 +18,8 @@ public static class Extensions
 		new(@"(?<start>\{)+(?<property>[\w\.\[\]]+)(?<format>:[^}]+)?(?<end>\})+",
 			RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-	public static string GetDisplayAvatar(this IGuildUser member, ImageFormat format = ImageFormat.Auto,
+	public static string GetDisplayAvatar(this IGuildUser member,
+		ImageFormat format = ImageFormat.Auto,
 		ushort size = 512)
 	{
 		return member.GetDisplayAvatarUrl(format, size) ?? member.GetDefaultAvatarUrl();
@@ -58,7 +59,9 @@ public static class Extensions
 			: builder.Append(separator).Append(value);
 	}
 
-	public static ActionRowBuilder AddPagination(this ActionRowBuilder builder, byte max, string[] ids,
+	public static ActionRowBuilder AddPagination(this ActionRowBuilder builder,
+		byte max,
+		string[] ids,
 		bool disabled = false)
 	{
 		var disable = disabled ? disabled : max == 1;
@@ -68,8 +71,11 @@ public static class Extensions
 			.WithButton("=>", ids[2], style, disabled: disable);
 	}
 
-	public static ActionRowBuilder AddItems(this ActionRowBuilder builder, int page, Shop shop,
-		DataBase.Models.Profile profile, bool disabled = false)
+	public static ActionRowBuilder AddItems(this ActionRowBuilder builder,
+		int page,
+		Shop shop,
+		DataBase.Models.Profile profile,
+		bool disabled = false)
 	{
 		page--;
 		var items = shop.Items.Take((page * 5)..(page * 5 + 5)).ToArray();
@@ -98,7 +104,6 @@ public static class Extensions
 				ButtonStyle.Secondary,
 				disabled: true);
 
-
 		return builder;
 	}
 
@@ -109,8 +114,12 @@ public static class Extensions
 		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>");
 	}
 
-	public static ComponentBuilder SetShopControls(this ComponentBuilder builder, int current, Shop shop,
-		DataBase.Models.Profile profile, string[] ids, bool disabled = false)
+	public static ComponentBuilder SetShopControls(this ComponentBuilder builder,
+		int current,
+		Shop shop,
+		DataBase.Models.Profile profile,
+		string[] ids,
+		bool disabled = false)
 	{
 		return builder
 			.AddRow(new ActionRowBuilder().AddPagination(1, ids, disabled))
@@ -118,9 +127,13 @@ public static class Extensions
 	}
 
 	public static async Task UpdateShop(this SocketInteraction interaction,
-		EmbedBuilder current, int currentPage, int max,
-		DateTimeOffset closeAt, string[] ids,
-		DataBase.Models.Profile profile, Shop shop)
+		EmbedBuilder current,
+		int currentPage,
+		int max,
+		DateTimeOffset closeAt,
+		string[] ids,
+		DataBase.Models.Profile profile,
+		Shop shop)
 	{
 		current.SetPage(currentPage, max, closeAt);
 		await interaction.ModifyOriginalResponseAsync(options =>
@@ -131,8 +144,11 @@ public static class Extensions
 		});
 	}
 
-	public static async Task CloseShop(this SocketInteraction interaction, Shop shop, int current,
-		int count, string[] ids)
+	public static async Task CloseShop(this SocketInteraction interaction,
+		Shop shop,
+		int current,
+		int count,
+		string[] ids)
 	{
 		await interaction.ModifyOriginalResponseAsync(options =>
 		{
@@ -141,7 +157,9 @@ public static class Extensions
 		});
 	}
 
-	public static EmbedBuilder MoveLeft(this EmbedBuilder current, ref int currentPage, ref int max,
+	public static EmbedBuilder MoveLeft(this EmbedBuilder current,
+		ref int currentPage,
+		ref int max,
 		ref LinkedList<EmbedBuilder> embeds)
 	{
 		if (currentPage == 1)
@@ -158,7 +176,9 @@ public static class Extensions
 		return current;
 	}
 
-	public static EmbedBuilder MoveRight(this EmbedBuilder current, ref int currentPage, ref int max,
+	public static EmbedBuilder MoveRight(this EmbedBuilder current,
+		ref int currentPage,
+		ref int max,
 		ref LinkedList<EmbedBuilder> embeds)
 	{
 		if (currentPage == max)
@@ -174,7 +194,6 @@ public static class Extensions
 
 		return current;
 	}
-
 
 	public static string FormatWith<T>(this string format, T source)
 		where T : class

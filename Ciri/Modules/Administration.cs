@@ -63,7 +63,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 			[ComplexParameter] NullableItemArg item,
 			byte newIndex = 0)
 		{
-			var find = await DataBaseProvider.GetItem(index: item.Index);
+			var find = await DataBaseProvider.GetItem(item.Index);
 			if (find == null)
 			{
 				await Context.Interaction.RespondAsync("Item not found", ephemeral: true);
