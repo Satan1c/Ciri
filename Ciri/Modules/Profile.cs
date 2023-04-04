@@ -102,7 +102,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		var locale = m_lcalCategory.GetDataFor("user_profile");
 		var data = locale.GetForLocale(Context);
 
-		var title = data["title"];
+		var title = data["title"].FormatWith(user);
 		var description = data["description"].FormatWith(profile);
 
 		var balanceTitle = data["balance_title"];
@@ -118,11 +118,11 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		var reputationValue = data["reputation_value"].FormatWith(profile);
 
 		var loverTitle = data["lover_title"];
-		var loverValue = data[profile.Lover == 0 ? "lover_no_value" : "lover_value"].FormatWith(profile);
+		var loverValue = data[profile.Lover is null or 0 ? "lover_no_value" : "lover_value"].FormatWith(profile);
 
 		return new EmbedBuilder()
 			.WithThumbnailUrl(user.GetDisplayAvatarUrl())
-			.WithTitle(title.FormatWith(user))
+			.WithTitle(title)
 			.WithUrl($"https://discord.com/users/{user.Id.ToString()}")
 			.WithDescription(description)
 			.AddField(voiceTitle, voiceValue, true)
