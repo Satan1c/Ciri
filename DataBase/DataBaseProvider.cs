@@ -105,7 +105,7 @@ public class DataBaseProvider
 
 		var shop = await GetShop<TItem>(name);
 
-		if (shop == null || shop.Items.Count < index) return default;
+		if (shop == null || shop.Items.Count < index + 1) return default;
 
 		return shop.Items[index];
 	}
