@@ -14,7 +14,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using JsonLocalizationManager = Localization.JsonLocalizationManager;
 using Logger = Microsoft.Extensions.Logging.Logger<Microsoft.Extensions.Logging.ILogger>;
 
-var locals = Path.GetFullPath("../../", AppDomain.CurrentDomain.BaseDirectory) + "Localizations";
+var locals = Path.GetFullPath("../../../", AppDomain.CurrentDomain.BaseDirectory) + "Localizations";
 var jsons = locals + "/json";
 var csv = locals + "/csv";
 
