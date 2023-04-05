@@ -1,0 +1,5 @@
+.idea/*
+/**/bin/Release
+/**/bin/Debug
+/**/obj/
+obj/

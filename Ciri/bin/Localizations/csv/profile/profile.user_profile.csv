@@ -1,0 +1,14 @@
+﻿Key,En,Ru
+title,📖 {Username}'s Profile,📖 Профиль пользователя - {Username}
+description,```fix\nAbout me:\n{Bio}```,```fix\nО себе:\n{Bio}```
+balance_title,💸 Balance,💸 Баланс
+balance_value,"{HeartVal} `{Hearts}`","{HeartVal} `{Hearts}`"
+voice_title,🔊 Voice time,🔊 Голос
+voice_value,```{Voice}```,```{Voice}```
+messages_title,💬 messages,💬 Сообщений
+messages_value,```{Messages}```,```{Messages}```
+reputation_title,⭐ Reputation,⭐ Репутация
+reputation_value,```{Reputation}```,```{Reputation}```
+lover_title,🤍 Lover,🤍 Нравится
+lover_value,{Lover},{Lover}
+lover_no_value,`No-one`,`Никто`
