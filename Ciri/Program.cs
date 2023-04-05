@@ -1,4 +1,6 @@
-﻿using Ciri.Handlers;
+﻿using System.Text;
+using Ciri.Handlers;
+using Ciri.Utils;
 using DataBase;
 using Discord;
 using Discord.Interactions;
@@ -14,6 +16,10 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using JsonLocalizationManager = Localization.JsonLocalizationManager;
 using Logger = Microsoft.Extensions.Logging.Logger<Microsoft.Extensions.Logging.ILogger>;
 
+Console.InputEncoding = Encoding.UTF8;
+Console.OutputEncoding = Encoding.UTF8;
+
+var env = Utils.GetEnv();
 var locals = Path.GetFullPath("../../../", AppDomain.CurrentDomain.BaseDirectory) + "Localizations";
 var jsons = locals + "/json";
 var csv = locals + "/csv";
@@ -46,13 +52,12 @@ await using var services = new ServiceCollection()
 		LocalizationManager = new JsonLocalizationManager(jsons)
 	})
 	.AddSingleton(new ClientSettings(
-			"Geno",
-			"mkGRM2ud5xmOqUl5bvZkUbFV-zqjQimkQ-W5hhPBFR0",
-			"OlOUNsD14GN2TM6WHwaUaEuqrkFS7LGKJfwtHvyf6Ck"
+			env["ShikimoriClientName"],
+			env["ShikimoriClientId"],
+			env["ShikimoriClientSecret"]
 		)
 	)
-	.AddSingleton(MongoClientSettings.FromConnectionString(
-		"mongodb+srv://Ciri:Atlas23Game@cluster0.fdfr9.mongodb.net/?retryWrites=true&w=majority"))
+	.AddSingleton(MongoClientSettings.FromConnectionString(env["Mongo"]))
 	.AddSingleton(new LocalizationManager(csv))
 	.AddSingleton<IMongoClient, MongoClient>()
 	.AddSingleton<DataBaseProvider, DataBaseProvider>()
@@ -67,6 +72,6 @@ await using var services = new ServiceCollection()
 var bot = services.GetRequiredService<DiscordSocketClient>();
 services.GetRequiredService<ClientEvents>();
 
-await bot.LoginAsync(TokenType.Bot, "Njk5NjczMzUzMDE1MDAxMTE4.GKFBr3.w0mntSHnjL4RS5oZvRQ4FSSpk3xB5Ly3O-84QI", false).ConfigureAwait(false);
+await bot.LoginAsync(TokenType.Bot, env["Token"], false).ConfigureAwait(false);
 await bot.StartAsync().ConfigureAwait(false);
 await Task.Delay(Timeout.Infinite);
