@@ -26,16 +26,35 @@ public class ClientEvents
 
 	public static Task OnLog(LogMessage message)
 	{
+		var text = "";
+
+		if (message.Exception is { StackTrace: { } })
+		{
+			text = message.Exception.StackTrace.Replace("\n", "\n\t\t\t");
+
+			if (message.Exception is { InnerException.StackTrace: { } })
+			{
+				var innerRaw = message.Exception.InnerException.StackTrace.Replace("\n", "\n\t\t\t");
+
+				text = string.Create(
+					text.Length + innerRaw.Length + 2,
+					(text, innerRaw), (span, source) =>
+					{
+						span[0] = ' ';
+						span[1] = '\n';
+						source.text.CopyTo(span[2..source.text.Length]);
+						source.innerRaw.CopyTo(span[(source.text.Length + 3)..]);
+					});
+			}
+		}
+
 		s_logger?.Write(
 			SeverityToLevel(message.Severity),
 			message.Exception,
-			"[{Source}]\t{Message} {Trace} {InnerTrace}",
+			"[{Source}]\t{Message} {Trace}",
 			message.Source,
 			message.Message,
-			message.Exception != null ? $"\n{message.Exception.StackTrace?.Replace("\n", "\n\t\t\t")}" : "",
-			message.Exception is { StackTrace: { } }
-				? $"\n{message.Exception.StackTrace.Replace("\n", "\n\t\t\t")}"
-				: "");
+			text);
 
 		return Task.CompletedTask;
 	}
@@ -56,11 +75,16 @@ public class ClientEvents
 
 	public async Task OnReady()
 	{
-		m_client.Ready -= OnReady;
+		try
+		{
+			m_client.Ready -= OnReady;
 
-		await m_guildEvents.Init().ConfigureAwait(false);
-		await m_interactionHandler.Init().ConfigureAwait(false);
-
-		await OnLog(new LogMessage(LogSeverity.Verbose, nameof(OnReady), "end of ready event"));
+			await m_guildEvents.Init().ConfigureAwait(false);
+			await m_interactionHandler.Init().ConfigureAwait(false);
+		}
+		catch (Exception e)
+		{
+			await OnLog(new LogMessage(LogSeverity.Error, nameof(OnReady), e.Message, e));
+		}
 	}
 }

@@ -40,10 +40,9 @@ public class DataBaseProvider
 	{
 		var filter = Builders<Profile>.Filter.Empty;
 		var options = new FindOptions<Profile> { BatchSize = 10 };
-		var cursor = await m_profiles.FindAsync(filter, options);
-		while (await cursor.MoveNextAsync())
-			foreach (var profile in cursor.Current)
-				m_profileCache.Put(profile.Id.ToString(), profile);
+		var cursor = await (await m_profiles.FindAsync(filter, options)).ToListAsync();
+		foreach (var profile in cursor)
+			m_profileCache.Put(profile.Id.ToString(), profile);
 	}
 
 	public async ValueTask<bool> HasProfile(ulong id)
@@ -64,7 +63,7 @@ public class DataBaseProvider
 		var profileId = id.ToString();
 		if (m_profileCache.Exists(profileId)) return m_profileCache.Get(profileId);
 
-		var filter = await m_profiles.Find(profile1 => profile1.Id == id).FirstOrDefaultAsync();
+		var filter = await m_profiles.Find(Builders<Profile>.Filter.Eq(x => x.Id, id)).FirstOrDefaultAsync();
 		if (filter.AreSame(default)) return Profile.GetDefault(id);
 
 		m_profileCache.Put(profileId, filter);
@@ -90,7 +89,7 @@ public class DataBaseProvider
 	{
 		if (m_shopCache.Exists("shop")) return m_shopCache.Get("shop");
 
-		var filter = await m_shop.Find(x => x.Name == "shop").FirstOrDefaultAsync();
+		var filter = await m_shop.Find(Builders<Shop>.Filter.Eq(shop1 => shop1.Name, "shop")).FirstOrDefaultAsync();
 
 		if (filter.AreSame(default)) return default;
 
@@ -117,7 +116,7 @@ public class DataBaseProvider
 		if (shop.AreSame(default)) return;
 
 		var oldItem = await GetItem(item.Index);
-		if (oldItem.AreSame(default) && (oldItem.Index != index || oldItem.Name != item.Name))
+		if (!oldItem.AreSame(default) && (oldItem.Index != index || oldItem.Name != item.Name))
 			await UpdateInventories(oldItem, item);
 
 		if (item.Index != index) await RemoveItem(item.Index, false);
@@ -152,7 +151,9 @@ public class DataBaseProvider
 	{
 		var oldId = $"shop_{oldItem.Name}_{oldItem.Index}";
 		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync()).ToArray();
+		
 		profiles.UpdateUnsafe(ref oldId, ref newItem);
+		
 		await SetProfiles(profiles);
 	}
 
@@ -162,7 +163,7 @@ public class DataBaseProvider
 		{
 			m_profileCache.Put(profile.Id.ToString(), profile);
 
-			if ((await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile)).AreSame(default))
+			if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default))
 				await m_profiles.InsertOneAsync(profile);
 		}
 	}
@@ -170,7 +171,7 @@ public class DataBaseProvider
 	public async ValueTask SetProfiles(Profile profile)
 	{
 		m_profileCache.Put(profile.Id.ToString(), profile);
-		if ((await m_profiles.FindOneAndReplaceAsync(profile1 => profile1.Id == profile.Id, profile)).AreSame(default)) return;
+		if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default)) return;
 
 		await m_profiles.InsertOneAsync(profile);
 	}
@@ -178,7 +179,7 @@ public class DataBaseProvider
 	public async ValueTask SetShop(Shop shop)
 	{
 		m_shopCache.Put("shop", shop);
-		var filter = await m_shop.FindOneAndReplaceAsync(shop1 => shop1.Name == "shop", shop);
+		var filter = await m_shop.FindOneAndReplaceAsync(Builders<Shop>.Filter.Eq(shop1 => shop1.Name, "shop"), shop);
 		if (filter.AreSame(default)) return;
 
 		await m_shop.InsertOneAsync(shop);

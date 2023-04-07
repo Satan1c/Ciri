@@ -9,9 +9,9 @@ namespace Ciri.Handlers;
 
 public class GuildEvents
 {
-	public static IVoiceChannel m_membersCount;
+	public static IVoiceChannel MembersCount = null!;
 
-	private static readonly Embed m_bumpEmbed = new EmbedBuilder()
+	private static readonly Embed s_bumpEmbed = new EmbedBuilder()
 		.WithTitle("Бамп")
 		.WithDescription($"Вы полуили **__50__**{EmojiConfig.HeartVal}")
 		.WithColor(3093046)
@@ -91,9 +91,9 @@ public class GuildEvents
 		channel = await guild.GetChannelAsync(714345605467471914);
 
 		if (channel is IVoiceChannel membersCount)
-			m_membersCount = membersCount;
+			MembersCount = membersCount;
 
-		await m_membersCount.ModifyAsync(x =>
+		await MembersCount.ModifyAsync(x =>
 			x.Name = $"🌹: {m_client.GetGuild(542005378049638400).MemberCount.ToString()}");
 	}
 
@@ -103,12 +103,14 @@ public class GuildEvents
 
 		var title = message.Embeds.First().Title.Trim();
 		if (string.IsNullOrEmpty(title) || !title.StartsWith("Успешный Up")) return;
-
+		
 		var reference = (await channel.GetMessageAsync(message.Reference.MessageId.Value))!;
 		var profile = await m_dataBaseProvider.GetProfiles(reference.Author.Id);
+		
 		profile.Hearts += 50;
+		
 		await m_dataBaseProvider.SetProfiles(profile);
-		await channel.SendMessageAsync(embed: m_bumpEmbed, messageReference: message.Reference,
+		await channel.SendMessageAsync(embed: s_bumpEmbed, messageReference: message.Reference,
 			allowedMentions: AllowedMentions.None);
 	}
 
@@ -119,7 +121,7 @@ public class GuildEvents
 
 	public async Task OnMemberJoined(SocketGuildUser member)
 	{
-		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {member.Guild.MemberCount.ToString()}");
+		await MembersCount.ModifyAsync(x => x.Name = $"🌹: {member.Guild.MemberCount.ToString()}");
 		await m_logChannel.SendMessageAsync(embed: member.GetWelcomeEmbed());
 		//newcomer role
 		await member.AddRoleAsync(542012055775870976);
@@ -129,7 +131,7 @@ public class GuildEvents
 
 	public async Task OnMemberLeft(SocketGuild guild, SocketUser user)
 	{
-		await m_membersCount.ModifyAsync(x => x.Name = $"🌹: {guild.MemberCount.ToString()}");
+		await MembersCount.ModifyAsync(x => x.Name = $"🌹: {guild.MemberCount.ToString()}");
 		await m_logChannel.SendMessageAsync(embed: user.GetGoodbyeEmbed());
 		await ClientEvents.OnLog(new LogMessage(
 			LogSeverity.Info,
