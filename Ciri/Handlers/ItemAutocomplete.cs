@@ -39,45 +39,52 @@ public static class UnsafeExtensions
 	public static IEnumerable<AutocompleteResult> GetAutocompleteResults(this List<ShopItem> shopItems,
 		ref string userInput)
 	{
-		var itemsRaw = shopItems.ToArray();
+		var itemsRaw = shopItems.ToArray().AsSpan();
 		var items = new AutocompleteResult[5];
 
-		ref var start = ref MemoryMarshal.GetArrayDataReference(items);
+		ref var start = ref MemoryMarshal.GetReference(items.AsSpan());
 		ref var end = ref Unsafe.Add(ref start, items.Length);
 
-		ref var startItems = ref MemoryMarshal.GetArrayDataReference(itemsRaw);
+		ref var startItems = ref MemoryMarshal.GetReference(itemsRaw);
 		ref var endItems = ref Unsafe.Add(ref startItems, itemsRaw.Length);
 
-		var count = 0;
+		//var count = 0;
 		if (string.IsNullOrEmpty(userInput))
 			while (Unsafe.IsAddressLessThan(ref start, ref end))
 			{
 				start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
 				start = ref Unsafe.Add(ref start, 1);
+				
 				startItems = ref Unsafe.Add(ref startItems, 1);
-				count++;
+				//count++;
 			}
 		else if (byte.TryParse(userInput, out _))
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
 			{
-				if (!startItems.Index.ToString().StartsWith(userInput)) continue;
-
-				start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
+				if (startItems.Index.ToString().StartsWith(userInput))
+				{
+					start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
+					start = ref Unsafe.Add(ref start, 1);
+				}
+				
 				startItems = ref Unsafe.Add(ref startItems, 1);
-				count++;
+				//count++;
 			}
 		else
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
 			{
-				if (!startItems.Name.StartsWith(userInput)) continue;
-
-				start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
+				if (!startItems.Name.StartsWith(userInput))
+				{
+					start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
+					start = ref Unsafe.Add(ref start, 1);
+				}
+				
 				startItems = ref Unsafe.Add(ref startItems, 1);
-				count++;
+				//count++;
 			}
 
-		return items.Take(count);
+		return items;
 	}
 }
