@@ -3,4 +3,4 @@ title,📖 {Username}'s Profile,📖 Профиль участника - {Userna
 roles_title,🌐 Roles,🌐 Роли
 roles_value,{HeartVal} `{Count}`,{HeartVal} `{Count}`
 joined_title,Joined guild at,Присоединился к серверу
-joined_value,{JoinedAt},{JoinedAt}
+joined_value,<t:{JoinedAt}:R>,<t:{JoinedAt}:R>

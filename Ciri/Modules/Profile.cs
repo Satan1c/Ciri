@@ -17,15 +17,13 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		[ChoiceDisplay("remove")] Remove
 	}
 
-	private const ulong c_femaleRole = 691311950277115904;
-	private const ulong c_maleRole = 691312169836347502;
 	private readonly DataBaseProvider m_dataBaseProvider;
-	private readonly Category m_lcalCategory;
+	private readonly Category m_localeCategory;
 
 	public Profile(DataBaseProvider dataBaseProvider, LocalizationManager localizationManager)
 	{
 		m_dataBaseProvider = dataBaseProvider;
-		m_lcalCategory = localizationManager.GetCategory("profile");
+		m_localeCategory = localizationManager.GetCategory("profile");
 	}
 
 	[SlashCommand("info", "Shows user profile info")]
@@ -78,7 +76,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	private EmbedBuilder GetEmbed(IGuildUser member, DataBase.Models.Profile profile)
 	{
 		var embed = GetEmbed((IUser)member, profile);
-		var locale = m_lcalCategory.GetDataFor("member_profile");
+		var locale = m_localeCategory.GetDataFor("member_profile");
 		var data = locale.GetForLocale(Context);
 
 		var title = data["title"].FormatWith(member);
@@ -88,7 +86,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 
 		var joinedTitle = data["joined_title"];
 		var joinedValue = data["joined_value"].FormatWith(new
-			{ JoinedAt = $"<t:{(member.JoinedAt?.ToUnixTimeSeconds() ?? 0).ToString()}:R>" });
+			{ JoinedAt = (member.JoinedAt?.ToUnixTimeSeconds() ?? 0).ToString() });
 
 		return embed
 			.WithTitle(title)
@@ -99,7 +97,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 
 	private EmbedBuilder GetEmbed(IUser user, DataBase.Models.Profile profile)
 	{
-		var locale = m_lcalCategory.GetDataFor("user_profile");
+		var locale = m_localeCategory.GetDataFor("user_profile");
 		var data = locale.GetForLocale(Context);
 
 		var title = data["title"].FormatWith(user);
