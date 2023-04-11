@@ -62,29 +62,27 @@ public class DataBaseProvider
 
 	public async ValueTask<Profile> GetProfiles(ulong id)
 	{
-		var profileId = id.ToString();
-		if (m_profileCache.Exists(profileId)) return m_profileCache.Get(profileId);
+		Profile item;
+		var itemId = id.ToString();
+		if (await HasProfile(id).ConfigureAwait(false))
+		{
+			item = m_profileCache.Get(itemId);
+		}
+		else
+		{
+			item = new Profile(id);
+			m_profileCache.Put(itemId, item);
+		}
 
-		var filter = await m_profiles.Find(Builders<Profile>.Filter.Eq(x => x.Id, id)).FirstOrDefaultAsync().ConfigureAwait(false);
-		if (filter.AreSame(default)) return default;
-
-		m_profileCache.Put(profileId, filter);
-
-		return filter;
+		return item;
 	}
 
 	public async ValueTask<Profile[]> GetProfiles(ulong[] ids)
 	{
-		var profiles = m_profileCache.GetProfilesUnsafe(ref ids);
-		if (profiles.Length == ids.Length) return profiles;
-
-		var filter = await m_profiles
-			.Find(profile1 => ids.Contains(profile1.Id) && !profiles.Contains(profile1))
-			.ToListAsync().ConfigureAwait(false);
-
-		m_profileCache.GetProfilesUnsafe(ref profiles, ref filter);
-
-		return profiles;
+		var tasks = ids.Select(async arg => await GetProfiles(arg).ConfigureAwait(false)).ToArray();
+		var res = await Task.WhenAll(tasks).ConfigureAwait(false);
+		
+		return res;
 	}
 
 	public async ValueTask<Shop> GetShop()
