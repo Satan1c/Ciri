@@ -17,8 +17,6 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 		[ChoiceDisplay("remove")] Remove
 	}
 
-	private const ulong c_femaleRole = 691311950277115904;
-	private const ulong c_maleRole = 691312169836347502;
 	private readonly DataBaseProvider m_dataBaseProvider;
 	private readonly Category m_localeCategory;
 
