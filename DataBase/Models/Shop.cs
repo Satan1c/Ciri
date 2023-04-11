@@ -8,6 +8,16 @@ public struct Shop
 	{
 	}
 
+	[BsonConstructor]
+	public Shop(string name = "shop",
+		sbyte discount = 0,
+		List<ShopItem>? items = null)
+	{
+		Name = name;
+		Discount = discount;
+		Items = items ?? new List<ShopItem>();
+	}
+
 	[BsonElement("_id")] public string Name { get; set; } = string.Empty;
 
 	[BsonElement("discount")] public sbyte Discount { get; set; } = 0;

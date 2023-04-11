@@ -54,7 +54,7 @@ public static class UnsafeExtensions
 			{
 				start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
 				start = ref Unsafe.Add(ref start, 1);
-				
+
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
@@ -67,7 +67,7 @@ public static class UnsafeExtensions
 					start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
 					start = ref Unsafe.Add(ref start, 1);
 				}
-				
+
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
@@ -80,7 +80,7 @@ public static class UnsafeExtensions
 					start = new AutocompleteResult(startItems.Name, startItems.Index.ToString());
 					start = ref Unsafe.Add(ref start, 1);
 				}
-				
+
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}

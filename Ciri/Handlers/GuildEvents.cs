@@ -103,12 +103,12 @@ public class GuildEvents
 
 		var title = message.Embeds.First().Title.Trim();
 		if (string.IsNullOrEmpty(title) || !title.StartsWith("Успешный Up")) return;
-		
+
 		var reference = (await channel.GetMessageAsync(message.Reference.MessageId.Value))!;
 		var profile = await m_dataBaseProvider.GetProfiles(reference.Author.Id);
-		
+
 		profile.Hearts += 50;
-		
+
 		await m_dataBaseProvider.SetProfiles(profile);
 		await channel.SendMessageAsync(embed: s_bumpEmbed, messageReference: message.Reference,
 			allowedMentions: AllowedMentions.None);

@@ -112,9 +112,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			});
 			var componentInteraction = (interaction as IComponentInteraction)!;
 			closeAt = DateTimeOffset.UtcNow.Add(timeout);
-
 			await componentInteraction.DeferAsync(true);
-
 			if (componentInteraction.Data.CustomId == ids[1]) break;
 
 			if (componentInteraction.Data.CustomId == ids[0])
