@@ -2,7 +2,7 @@
 
 namespace DataBase.Models;
 
-public struct Shop
+public class Shop
 {
 	public Shop()
 	{
@@ -17,11 +17,11 @@ public struct Shop
 		Items = items ?? new List<ShopItem>();
 	}
 
-	[BsonElement("_id")] public string Name { get; set; } = string.Empty;
+	[BsonElement("_id")] public string Name { get; set; }
 
-	[BsonElement("discount")] public sbyte Discount { get; set; } = 0;
+	[BsonElement("discount")] public sbyte Discount { get; set; }
 
-	[BsonElement("items")] public List<ShopItem> Items { get; set; } = new();
+	[BsonElement("items")] public List<ShopItem> Items { get; set; }
 
 	public long GetCost(ShopItem item)
 	{

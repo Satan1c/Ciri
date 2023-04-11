@@ -2,11 +2,53 @@
 using System.Runtime.InteropServices;
 using CacheManager.Core;
 using DataBase.Models;
+using MongoDB.Driver;
 
 namespace DataBase;
 
 public static class UnsafeExtensions
 {
+	public static async ValueTask<bool> HasDocument<TDocument, TKey>(this IMongoCollection<TDocument> collection,
+		ICacheManager<TDocument> cacheManager,
+		FilterDefinition<TDocument> filterDefinition,
+		TKey id)
+	{
+		var itemId = id!.ToString();
+		if (cacheManager.Exists(itemId))
+			return true;
+
+		var item = await collection.Find(filterDefinition).ToListAsync().ConfigureAwait(false);
+		if (item.Count < 1) return false;
+
+		cacheManager.Put(itemId, item[0]);
+		return true;
+	}
+
+	public static async ValueTask InsertOrReplaceOne<TDocument>(this IMongoCollection<TDocument> collection,
+		FilterDefinition<TDocument> filterDefinition,
+		TDocument document)
+	{
+		var item = await collection.FindOneAndReplaceAsync(filterDefinition, document).ConfigureAwait(false);
+
+		if (item == null)
+			await collection.InsertOneAsync(document).ConfigureAwait(false);
+	}
+
+	public static async ValueTask SetDocument<TDocument>(this IMongoCollection<TDocument> collection,
+		FilterDefinition<TDocument> filterDefinition,
+		ICacheManager<TDocument> cacheManager,
+		string key,
+		TDocument document,
+		TDocument before)
+	{
+		if (document.AreSame(before)) return;
+
+		cacheManager.Put(key, document);
+		await collection.InsertOrReplaceOne(
+			filterDefinition,
+			document).ConfigureAwait(false);
+	}
+
 	public static bool AreSame<T>(this T left, T right)
 	{
 		return EqualityComparer<T>.Default.Equals(left, right);
