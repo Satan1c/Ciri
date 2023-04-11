@@ -8,7 +8,6 @@ public struct Profile
 	{
 	}
 
-	[BsonConstructor]
 	public Profile(ulong id = 0,
 		string bio = "",
 		long hearts = 0,

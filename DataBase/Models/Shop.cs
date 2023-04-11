@@ -8,7 +8,6 @@ public struct Shop
 	{
 	}
 
-	[BsonConstructor]
 	public Shop(string name = "shop",
 		sbyte discount = 0,
 		List<ShopItem>? items = null)
