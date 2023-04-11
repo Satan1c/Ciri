@@ -8,7 +8,6 @@ public struct ShopItem
 	{
 	}
 
-	[BsonConstructor]
 	public ShopItem(byte index = 0, string name = "", long cost = 0, ulong item = 0, sbyte discount = 0)
 	{
 		Index = index;
