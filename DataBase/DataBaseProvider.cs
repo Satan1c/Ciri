@@ -52,7 +52,7 @@ public class DataBaseProvider
 
 		var profile = await GetProfiles(id);
 
-		if (profile.AreSame(Profile.Default)) return false;
+		if (profile.AreSame(default)) return false;
 		exists = true;
 
 		return exists;
@@ -64,7 +64,7 @@ public class DataBaseProvider
 		if (m_profileCache.Exists(profileId)) return m_profileCache.Get(profileId);
 
 		var filter = await m_profiles.Find(Builders<Profile>.Filter.Eq(x => x.Id, id)).FirstOrDefaultAsync();
-		if (filter.AreSame(default)) return Profile.GetDefault(id);
+		if (filter.AreSame(default)) return default;
 
 		m_profileCache.Put(profileId, filter);
 
@@ -151,9 +151,9 @@ public class DataBaseProvider
 	{
 		var oldId = $"shop_{oldItem.Name}_{oldItem.Index}";
 		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync()).ToArray();
-		
+
 		profiles.UpdateUnsafe(ref oldId, ref newItem);
-		
+
 		await SetProfiles(profiles);
 	}
 
@@ -163,7 +163,8 @@ public class DataBaseProvider
 		{
 			m_profileCache.Put(profile.Id.ToString(), profile);
 
-			if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default))
+			if ((await m_profiles.FindOneAndReplaceAsync(
+				    Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default))
 				await m_profiles.InsertOneAsync(profile);
 		}
 	}
@@ -171,7 +172,8 @@ public class DataBaseProvider
 	public async ValueTask SetProfiles(Profile profile)
 	{
 		m_profileCache.Put(profile.Id.ToString(), profile);
-		if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default)) return;
+		if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id),
+			    profile)).AreSame(default)) return;
 
 		await m_profiles.InsertOneAsync(profile);
 	}

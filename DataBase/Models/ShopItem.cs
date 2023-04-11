@@ -6,9 +6,16 @@ public struct ShopItem
 {
 	public ShopItem()
 	{
-		Index = 0;
-		Cost = 0;
-		Discount = 0;
+	}
+
+	[BsonConstructor]
+	public ShopItem(byte index = 0, string name = "", long cost = 0, ulong item = 0, sbyte discount = 0)
+	{
+		Index = index;
+		Name = name;
+		Cost = cost;
+		Item = item;
+		Discount = discount;
 	}
 
 	[BsonElement("index")] public byte Index { get; set; } = 0;

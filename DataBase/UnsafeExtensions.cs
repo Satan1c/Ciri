@@ -11,7 +11,7 @@ public static class UnsafeExtensions
 	{
 		return EqualityComparer<T>.Default.Equals(left, right);
 	}
-	
+
 	public static Profile[] GetProfilesUnsafe(this ICacheManager<Profile> profileCache, ref ulong[] ids)
 	{
 		var result = new Profile[ids.Length];

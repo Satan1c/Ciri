@@ -4,11 +4,28 @@ namespace DataBase.Models;
 
 public struct Profile
 {
-	public static readonly Profile Default = GetDefault(0);
-
 	public Profile()
 	{
-		Id = 0;
+	}
+
+	[BsonConstructor]
+	public Profile(ulong id = 0,
+		string bio = "",
+		long hearts = 0,
+		long reputation = 0,
+		ulong messages = 0,
+		ulong? lover = null,
+		List<string>? inventory = null,
+		DateTime? voice = null)
+	{
+		Id = id;
+		Bio = bio;
+		Hearts = hearts;
+		Reputation = reputation;
+		Messages = messages;
+		Lover = lover;
+		Inventory = inventory ?? new List<string>();
+		Voice = voice ?? new DateTime();
 	}
 
 	[BsonElement("_id")] public ulong Id { get; set; } = 0;
@@ -19,11 +36,4 @@ public struct Profile
 	[BsonElement("lover")] public ulong? Lover { get; set; } = null;
 	[BsonElement("inventory")] public List<string> Inventory { get; set; } = new();
 	[BsonElement("voice")] public DateTime Voice { get; set; } = new();
-
-	public static Profile GetDefault(ulong id)
-	{
-		var profile = new Profile();
-		profile.Id = id;
-		return profile;
-	}
 }
