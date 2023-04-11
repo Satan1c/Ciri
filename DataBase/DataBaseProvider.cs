@@ -39,23 +39,25 @@ public class DataBaseProvider
 	public async ValueTask SyncCache()
 	{
 		var filter = Builders<Profile>.Filter.Empty;
-		var options = new FindOptions<Profile> { BatchSize = 10 };
-		var cursor = await (await m_profiles.FindAsync(filter, options)).ToListAsync();
+		var cursor = await m_profiles.Find(filter).ToListAsync().ConfigureAwait(false);
 		foreach (var profile in cursor)
 			m_profileCache.Put(profile.Id.ToString(), profile);
 	}
 
 	public async ValueTask<bool> HasProfile(ulong id)
 	{
-		var exists = m_profileCache.Exists(id.ToString());
-		if (exists) return true;
+		return await m_profiles.HasDocument(
+			m_profileCache,
+			Builders<Profile>.Filter.Eq(x => x.Id, id),
+			id).ConfigureAwait(false);
+	}
 
-		var profile = await GetProfiles(id);
-
-		if (profile.AreSame(default)) return false;
-		exists = true;
-
-		return exists;
+	public async ValueTask<bool> HasShop()
+	{
+		return await m_shop.HasDocument(
+			m_shopCache,
+			Builders<Shop>.Filter.Eq(x => x.Name, "shop"),
+			"shop").ConfigureAwait(false);
 	}
 
 	public async ValueTask<Profile> GetProfiles(ulong id)
@@ -63,7 +65,7 @@ public class DataBaseProvider
 		var profileId = id.ToString();
 		if (m_profileCache.Exists(profileId)) return m_profileCache.Get(profileId);
 
-		var filter = await m_profiles.Find(Builders<Profile>.Filter.Eq(x => x.Id, id)).FirstOrDefaultAsync();
+		var filter = await m_profiles.Find(Builders<Profile>.Filter.Eq(x => x.Id, id)).FirstOrDefaultAsync().ConfigureAwait(false);
 		if (filter.AreSame(default)) return default;
 
 		m_profileCache.Put(profileId, filter);
@@ -78,7 +80,7 @@ public class DataBaseProvider
 
 		var filter = await m_profiles
 			.Find(profile1 => ids.Contains(profile1.Id) && !profiles.Contains(profile1))
-			.ToListAsync();
+			.ToListAsync().ConfigureAwait(false);
 
 		m_profileCache.GetProfilesUnsafe(ref profiles, ref filter);
 
@@ -87,39 +89,45 @@ public class DataBaseProvider
 
 	public async ValueTask<Shop> GetShop()
 	{
-		if (m_shopCache.Exists("shop")) return m_shopCache.Get("shop");
+		Shop item;
+		const string itemId = "shop";
+		if (await HasShop().ConfigureAwait(false))
+		{
+			item = m_shopCache.Get(itemId);
+		}
+		else
+		{
+			item = new Shop();
+			m_shopCache.Put(itemId, item);
+		}
 
-		var filter = await m_shop.Find(Builders<Shop>.Filter.Eq(shop1 => shop1.Name, "shop")).FirstOrDefaultAsync();
-
-		if (filter.AreSame(default)) return default;
-
-		m_shopCache.Put("shop", filter);
-
-		return filter;
+		return item;
 	}
 
 	public async ValueTask<ShopItem> GetItem(byte index = 0)
 	{
-		if (m_shopItemCache.Exists(index.ToString()))
-			return m_shopItemCache.Get(index.ToString());
+		var id = index.ToString();
+		if (m_shopItemCache.Exists(id))
+			return m_shopItemCache.Get(id);
 
-		var shop = await GetShop();
+		var shop = await GetShop().ConfigureAwait(false);
+		var item = shop.Items.Count < index + 1
+			? new ShopItem()
+			: shop.Items[index];
 
-		if (shop.AreSame(default) || shop.Items.Count < index + 1) return default;
+		m_shopItemCache.Put(id, item);
 
-		return shop.Items[index];
+		return item;
 	}
 
 	public async ValueTask SetItem(ShopItem item, byte index = 0)
 	{
-		var shop = await GetShop();
-		if (shop.AreSame(default)) return;
-
-		var oldItem = await GetItem(item.Index);
+		var shop = await GetShop().ConfigureAwait(false);
+		var oldItem = await GetItem(item.Index).ConfigureAwait(false);
 		if (!oldItem.AreSame(default) && (oldItem.Index != index || oldItem.Name != item.Name))
-			await UpdateInventories(oldItem, item);
+			await UpdateInventories(oldItem, item).ConfigureAwait(false);
 
-		if (item.Index != index) await RemoveItem(item.Index, false);
+		if (item.Index != index) await RemoveItem(item.Index, false).ConfigureAwait(false);
 
 		if (shop.Items.Capacity < index)
 		{
@@ -132,58 +140,58 @@ public class DataBaseProvider
 
 		m_shopItemCache.Put(item.Index.ToString(), item);
 
-		await SetShop(shop);
+		await SetShop(shop).ConfigureAwait(false);
 	}
 
 	public async ValueTask RemoveItem(byte index = 0, bool remove = true)
 	{
-		var shop = (await GetShop())!;
-		var item = (await GetItem(index))!;
+		var shop = (await GetShop().ConfigureAwait(false))!;
+		var item = (await GetItem(index).ConfigureAwait(false))!;
 
-		if (remove) await UpdateInventories(item);
+		if (remove) await UpdateInventories(item).ConfigureAwait(false);
 
 		shop.Items.Remove(item);
 		m_shopItemCache.Remove(index.ToString());
-		await SetShop(shop);
+		await SetShop(shop).ConfigureAwait(false);
 	}
 
 	public async ValueTask UpdateInventories(ShopItem oldItem, ShopItem newItem = default)
 	{
 		var oldId = $"shop_{oldItem.Name}_{oldItem.Index}";
-		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync()).ToArray();
+		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync().ConfigureAwait(false)).ToArray();
 
 		profiles.UpdateUnsafe(ref oldId, ref newItem);
 
-		await SetProfiles(profiles);
+		await SetProfiles(profiles).ConfigureAwait(false);
 	}
 
 	public async ValueTask SetProfiles(Profile[] profiles)
 	{
-		foreach (var profile in profiles)
-		{
-			m_profileCache.Put(profile.Id.ToString(), profile);
-
-			if ((await m_profiles.FindOneAndReplaceAsync(
-				    Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id), profile)).AreSame(default))
-				await m_profiles.InsertOneAsync(profile);
-		}
+		var tasks = profiles.Select(async profile => await SetProfiles(profile).ConfigureAwait(false));
+		await Task.WhenAll(tasks).ConfigureAwait(false);
 	}
 
-	public async ValueTask SetProfiles(Profile profile)
+	public async ValueTask SetProfiles(Profile profile, Profile? before = null)
 	{
-		m_profileCache.Put(profile.Id.ToString(), profile);
-		if ((await m_profiles.FindOneAndReplaceAsync(Builders<Profile>.Filter.Eq(profile1 => profile1.Id, profile.Id),
-			    profile)).AreSame(default)) return;
-
-		await m_profiles.InsertOneAsync(profile);
+		before ??= await GetProfiles(profile.Id).ConfigureAwait(false);
+		await m_profiles.SetDocument(
+				Builders<Profile>.Filter.Eq(x => x.Id, profile.Id),
+				m_profileCache,
+				profile.Id.ToString(),
+				profile,
+				before)
+			.ConfigureAwait(false);
 	}
 
-	public async ValueTask SetShop(Shop shop)
+	public async ValueTask SetShop(Shop shop, Shop? before = null)
 	{
-		m_shopCache.Put("shop", shop);
-		var filter = await m_shop.FindOneAndReplaceAsync(Builders<Shop>.Filter.Eq(shop1 => shop1.Name, "shop"), shop);
-		if (filter.AreSame(default)) return;
-
-		await m_shop.InsertOneAsync(shop);
+		before ??= await GetShop().ConfigureAwait(false);
+		await m_shop.SetDocument(
+				Builders<Shop>.Filter.Eq(x => x.Name, "shop"),
+				m_shopCache,
+				"shop",
+				shop,
+				before)
+			.ConfigureAwait(false);
 	}
 }
