@@ -86,7 +86,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 
 		var joinedTitle = data["joined_title"];
 		var joinedValue = data["joined_value"].FormatWith(new
-			{ JoinedAt = $"<t:{(member.JoinedAt?.ToUnixTimeSeconds() ?? 0).ToString()}:R>" });
+			{ JoinedAt = (member.JoinedAt?.ToUnixTimeSeconds() ?? 0).ToString() });
 
 		return embed
 			.WithTitle(title)
