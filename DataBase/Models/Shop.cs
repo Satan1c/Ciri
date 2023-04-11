@@ -4,6 +4,10 @@ namespace DataBase.Models;
 
 public class Shop
 {
+	public Shop()
+	{
+	}
+
 	public Shop(string name = "shop",
 		sbyte discount = 0,
 		List<ShopItem>? items = null)

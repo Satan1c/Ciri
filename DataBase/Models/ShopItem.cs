@@ -4,7 +4,11 @@ namespace DataBase.Models;
 
 public class ShopItem
 {
-	public ShopItem(byte index = 0, string? name = null, long cost = 0, ulong item = 0, sbyte discount = 0)
+	public ShopItem()
+	{
+	}
+  
+  public ShopItem(byte index = 0, string? name = null, long cost = 0, ulong item = 0, sbyte discount = 0)
 	{
 		Index = index;
 		Name = name ?? string.Empty;

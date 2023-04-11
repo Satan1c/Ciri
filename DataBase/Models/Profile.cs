@@ -4,6 +4,10 @@ namespace DataBase.Models;
 
 public class Profile
 {
+	public Profile()
+	{
+	}
+  
 	public Profile(ulong id = 0,
 		string? bio = null,
 		long hearts = 0,
