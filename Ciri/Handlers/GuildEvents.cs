@@ -4,6 +4,7 @@ using Ciri.Modules.Utils;
 using DataBase;
 using Discord;
 using Discord.WebSocket;
+using static Ciri.Modules.Configs.ImagesConfig;
 
 namespace Ciri.Handlers;
 
@@ -145,8 +146,7 @@ public class GuildEvents
 			    { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription }
 		    || message.Author is not SocketGuildUser member)
 			return;
-		//booster role add
-		await member.AddRoleAsync(812189549295566889);
+		
 		await ClientEvents.OnLog(new LogMessage(
 			LogSeverity.Info,
 			nameof(OnMessageReceived),
@@ -154,7 +154,9 @@ public class GuildEvents
 
 		await m_boostChannel.SendMessageAsync(embed: new EmbedBuilder()
 			.WithTitle($"{member.Username}\nЗабустил сервер!")
-			.WithDescription($"<@&{812189549295566889}>\nОгромное спасибо, что помогаете серверу!!")
+			.WithDescription($"<@&{709738102394191984}>\nОгромное спасибо, что помогаете серверу!!")
+			.WithThumbnailUrl(member.GetDisplayAvatarUrl() ?? member.GetDefaultAvatarUrl())
+			.WithImageUrl(BoostGif)
 			.WithColor(3093046)
 			.Build());
 	}
