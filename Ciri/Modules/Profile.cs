@@ -66,10 +66,35 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	[SlashCommand("rep", "give reputation to user")]
 	public async Task Rep(IUser user, RepMode mode = RepMode.Add)
 	{
+		var author = await m_dataBaseProvider.GetProfiles(Context.User.Id);
 		var profile = await m_dataBaseProvider.GetProfiles(user.Id);
-		profile.Reputation += mode == RepMode.Add ? 1 : -1;
 
-		await m_dataBaseProvider.SetProfiles(profile);
+		switch (mode)
+		{
+			case RepMode.Add:
+				if (author.RepGiven.Contains(user.Id))
+				{
+					await RespondAsync("You already gave rep to this user", ephemeral: true);
+					return;
+				}
+				
+				profile.Reputation++;
+				author.RepGiven.AddLast(user.Id);
+				break;
+			
+			case RepMode.Remove:
+				if (!author.RepGiven.Contains(user.Id))
+				{
+					await RespondAsync("You didn't give rep to this user", ephemeral: true);
+					return;
+				}
+				
+				profile.Reputation--;
+				author.RepGiven.Remove(user.Id);
+				break;
+		}
+		
+		await m_dataBaseProvider.SetProfiles(new[] { profile, author });
 		await RespondAsync("Rep changed", ephemeral: true);
 	}
 

@@ -12,8 +12,9 @@ public struct Profile
 		long reputation = 0,
 		ulong messages = 0,
 		ulong? lover = null,
-		List<string>? inventory = null,
-		DateTime? voice = null)
+		LinkedList<string> inventory = null!,
+		LinkedList<ulong> repGiven = null!,
+		DateTime voice = default)
 	{
 		Id = id;
 		Bio = bio ?? string.Empty;
@@ -32,6 +33,7 @@ public struct Profile
 	[BsonElement("reputation")] public long Reputation { get; set; }
 	[BsonElement("messages")] public ulong Messages { get; set; }
 	[BsonElement("lover")] public ulong? Lover { get; set; }
-	[BsonElement("inventory")] public List<string> Inventory { get; set; }
+	[BsonElement("inventory")] public LinkedList<string> Inventory { get; set; } = new();
+	[BsonElement("rep_given")] public LinkedList<ulong> RepGiven { get; set; } = new();
 	[BsonElement("voice")] public DateTime Voice { get; set; }
 }
