@@ -97,12 +97,12 @@ public class GuildEvents
 			x.Name = $"🌹: {m_client.GetGuild(542005378049638400).MemberCount.ToString()}");
 	}
 
-	public async Task OnMessageEdit(Cacheable<IMessage, ulong> _, SocketMessage message, ISocketMessageChannel channel)
+	public async Task OnMessageEdit(Cacheable<IMessage, ulong> с, SocketMessage message, ISocketMessageChannel channel)
 	{
 		if (!message.Author.IsBot || message.Author.Id != 464272403766444044) return;
 
-		var title = message.Embeds.First().Title.Trim();
-		if (string.IsNullOrEmpty(title) || !title.StartsWith("Успешный Up")) return;
+		var title = message.Embeds.First().Description?.Trim();
+		if (string.IsNullOrEmpty(title) || !title.StartsWith("**Успешный Up!**")) return;
 
 		var reference = (await channel.GetMessageAsync(message.Reference.MessageId.Value))!;
 		var profile = await m_dataBaseProvider.GetProfiles(reference.Author.Id);

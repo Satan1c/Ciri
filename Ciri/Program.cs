@@ -41,7 +41,8 @@ await using var services = new ServiceCollection()
 		GatewayIntents = GatewayIntents.GuildMembers
 		                 | GatewayIntents.GuildMessages
 		                 | GatewayIntents.Guilds
-		                 | GatewayIntents.GuildVoiceStates,
+		                 | GatewayIntents.GuildVoiceStates
+		                 | GatewayIntents.MessageContent,
 		LogLevel = LogSeverity.Info
 	})
 	.AddSingleton(new InteractionServiceConfig
