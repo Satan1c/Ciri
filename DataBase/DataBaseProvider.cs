@@ -66,6 +66,7 @@ public class DataBaseProvider
 			{
 				Id = id
 			};
+      
 			m_profileCache.Put(itemId, item);
 		}
 
