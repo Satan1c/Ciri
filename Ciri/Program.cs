@@ -41,7 +41,8 @@ await using var services = new ServiceCollection()
 		GatewayIntents = GatewayIntents.GuildMembers
 		                 | GatewayIntents.GuildMessages
 		                 | GatewayIntents.Guilds
-		                 | GatewayIntents.GuildVoiceStates,
+		                 | GatewayIntents.GuildVoiceStates
+		                 | GatewayIntents.MessageContent,
 		LogLevel = LogSeverity.Info
 	})
 	.AddSingleton(new InteractionServiceConfig
@@ -57,7 +58,7 @@ await using var services = new ServiceCollection()
 			env["ShikimoriClientSecret"]
 		)
 	)
-	.AddSingleton(MongoClientSettings.FromConnectionString(env["Mongo"]))
+	.AddSingleton(MongoClientSettings.FromConnectionString(env["MongoCiri"]))
 	.AddSingleton(new LocalizationManager(csv))
 	.AddSingleton<IMongoClient, MongoClient>()
 	.AddSingleton<DataBaseProvider, DataBaseProvider>()

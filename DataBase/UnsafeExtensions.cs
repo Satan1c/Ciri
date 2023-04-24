@@ -28,9 +28,11 @@ public static class UnsafeExtensions
 		FilterDefinition<TDocument> filterDefinition,
 		TDocument document)
 	{
-		var item = await collection.FindOneAndReplaceAsync(filterDefinition, document).ConfigureAwait(false);
-
-		if (item == null)
+		var count = await collection.CountDocumentsAsync(filterDefinition).ConfigureAwait(false);
+		
+		if (count > 0)
+			await collection.ReplaceOneAsync(filterDefinition, document).ConfigureAwait(false);
+		else
 			await collection.InsertOneAsync(document).ConfigureAwait(false);
 	}
 
@@ -39,7 +41,7 @@ public static class UnsafeExtensions
 		ICacheManager<TDocument> cacheManager,
 		string key,
 		TDocument document,
-		TDocument before)
+		TDocument before = default!)
 	{
 		if (document.AreSame(before)) return;
 
@@ -113,13 +115,13 @@ public static class UnsafeExtensions
 
 		if (newItem.AreSame(default)) return;
 
-		var newId = $"shop_{newItem.Name}_{newItem.Index}";
+		var newId = $"roles_{newItem.Name}_{newItem.Index}";
 		start = ref MemoryMarshal.GetArrayDataReference(profiles);
 		end = ref Unsafe.Add(ref start, profiles.Length);
 
 		while (Unsafe.IsAddressLessThan(ref start, ref end))
 		{
-			start.Inventory.Add(newId);
+			start.Inventory.AddLast(newId);
 			start = ref Unsafe.Add(ref start, 1);
 		}
 	}

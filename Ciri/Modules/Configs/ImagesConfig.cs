@@ -23,16 +23,19 @@ public static class ImagesConfig
 	public const string MomentsImage =
 		"https://media.discordapp.net/attachments/669887782117703701/781572552580530216/5ee6b1c039ce0f6b.png?width=1214&height=683";
 
-	public static ImagesConfigSingleton Instance { get; } = new();
+	public const string BoostGif = "https://thumbs.gfycat.com/ClumsyExcellentLeveret-size_restricted.gif";
+
+	//public static readonly ImagesConfigClass Instance = new();
 }
 
-public class ImagesConfigSingleton
+/*public class ImagesConfigClass
 {
-	public string MafiaImage => ImagesConfig.MafiaImage;
-	public string AliasImage => ImagesConfig.AliasImage;
-	public string WhoIImage => ImagesConfig.WhoIImage;
-	public string CrocodileImage => ImagesConfig.CrocodileImage;
-	public string JackboxImage => ImagesConfig.JackboxImage;
-	public string TabletopImage => ImagesConfig.TabletopImage;
-	public string MomentsImage => ImagesConfig.MomentsImage;
-}
+	public const string MafiaImage = ImagesConfig.MafiaImage;
+	public const string AliasImage = ImagesConfig.AliasImage;
+	public const string WhoIImage = ImagesConfig.WhoIImage;
+	public const string CrocodileImage = ImagesConfig.CrocodileImage;
+	public const string JackboxImage = ImagesConfig.JackboxImage;
+	public const string TabletopImage = ImagesConfig.TabletopImage;
+	public const string MomentsImage = ImagesConfig.MomentsImage;
+	public const string BoostGif = ImagesConfig.BoostGif;
+}*/

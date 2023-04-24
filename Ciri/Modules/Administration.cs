@@ -61,7 +61,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 		[SlashCommand("edit", "edit shop item command")]
 		public async Task EditShopItem(
 			[ComplexParameter] NullableItemArg item,
-			byte newIndex = 0)
+			byte? newIndex = null)
 		{
 			var find = await DataBaseProvider.GetItem(item.Index);
 			if (find.AreSame(default))
@@ -72,7 +72,7 @@ public class Administration : InteractionModuleBase<SocketInteractionContext>
 
 			find = item.CreateShopItem(item.Item?.Id ?? find.Item, find);
 
-			await DataBaseProvider.SetItem(find, newIndex);
+			await DataBaseProvider.SetItem(find, newIndex ?? item.Index);
 			await Context.Interaction.RespondAsync($"{item.Name} edited", ephemeral: true);
 		}
 

@@ -219,7 +219,7 @@ public static class Extensions
 					? source
 					: DataBinder.Eval(source, propertyName.Value));
 			}
-			catch (Exception _)
+			catch
 			{
 				values.Add(DataBinder.Eval(EmojiConfig.Instance, propertyName.Value));
 			}

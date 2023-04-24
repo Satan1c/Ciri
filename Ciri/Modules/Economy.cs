@@ -33,7 +33,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				await m_dataBaseProvider.SetProfiles(profiles);
 
 				description.Add(
-					$"<&{role}> получила зарплату в количестве **__{profit.Hearts}__**{EmojiConfig.HeartVal}");
+					$"<@&{role}> получила зарплату в количестве **__{profit.Hearts}__**{EmojiConfig.HeartVal}");
 			}
 
 			await channel.SendMessageAsync(embed: new EmbedBuilder()
@@ -143,7 +143,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				}
 
 				profile.Hearts -= shop.GetCost(item);
-				profile.Inventory.Add($"{shop.Name}_{item.Name}_{item.Index}");
+				profile.Inventory.AddLast($"{shop.Name}_{item.Name}_{item.Index}");
 				await Context.Guild.GetUser(Context.User.Id).AddRoleAsync(item.Item);
 
 				await m_dataBaseProvider.SetProfiles(profile);

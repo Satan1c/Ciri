@@ -20,17 +20,10 @@ public class ItemAutocomplete : AutocompleteHandler
 	{
 		s_dataBaseProvider ??= services.GetRequiredService<DataBaseProvider>();
 
-		try
-		{
-			var items = (await s_dataBaseProvider.GetShop())!.Items;
-			var userInput = autocompleteInteraction.Data.Current.Value.ToString()!.Trim();
+		var items = (await s_dataBaseProvider.GetShop())!.Items;
+		var userInput = autocompleteInteraction.Data.Current.Value.ToString()!.Trim();
 
-			return AutocompletionResult.FromSuccess(items.GetAutocompleteResults(ref userInput));
-		}
-		catch (Exception e)
-		{
-			return AutocompletionResult.FromError(e);
-		}
+		return AutocompletionResult.FromSuccess(items.GetAutocompleteResults(ref userInput));
 	}
 }
 
@@ -39,8 +32,8 @@ public static class UnsafeExtensions
 	public static IEnumerable<AutocompleteResult> GetAutocompleteResults(this List<ShopItem> shopItems,
 		ref string userInput)
 	{
-		var itemsRaw = shopItems.ToArray().AsSpan();
-		var items = new AutocompleteResult[5];
+		var itemsRaw = CollectionsMarshal.AsSpan(shopItems);
+		var items = new AutocompleteResult[itemsRaw.Length > 5 ? 5 : itemsRaw.Length];
 
 		ref var start = ref MemoryMarshal.GetReference(items.AsSpan());
 		ref var end = ref Unsafe.Add(ref start, items.Length);
@@ -58,6 +51,7 @@ public static class UnsafeExtensions
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
+		
 		else if (byte.TryParse(userInput, out _))
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
@@ -71,6 +65,7 @@ public static class UnsafeExtensions
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
+		
 		else
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
