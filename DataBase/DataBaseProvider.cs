@@ -36,14 +36,6 @@ public class DataBaseProvider
 		m_shop = database.GetCollection<Shop>("shop");
 	}
 
-	public async ValueTask SyncCache()
-	{
-		var filter = Builders<Profile>.Filter.Empty;
-		var cursor = await m_profiles.Find(filter).ToListAsync().ConfigureAwait(false);
-		foreach (var profile in cursor)
-			m_profileCache.Put(profile.Id.ToString(), profile);
-	}
-
 	public async ValueTask<bool> HasProfile(ulong id)
 	{
 		return await m_profiles.HasDocument(
@@ -70,7 +62,10 @@ public class DataBaseProvider
 		}
 		else
 		{
-			item = new Profile(id);
+			item = new Profile
+			{
+				Id = id
+			};
 			m_profileCache.Put(itemId, item);
 		}
 
