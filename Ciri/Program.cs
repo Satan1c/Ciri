@@ -57,7 +57,7 @@ await using var services = new ServiceCollection()
 			env["ShikimoriClientSecret"]
 		)
 	)
-	.AddSingleton(MongoClientSettings.FromConnectionString(env["Mongo"]))
+	.AddSingleton(MongoClientSettings.FromConnectionString(env["MongoCiri"]))
 	.AddSingleton(new LocalizationManager(csv))
 	.AddSingleton<IMongoClient, MongoClient>()
 	.AddSingleton<DataBaseProvider, DataBaseProvider>()
