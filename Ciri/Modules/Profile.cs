@@ -57,7 +57,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	public async Task Lover(IUser? user = null)
 	{
 		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
-		profile.Lover += user?.Id ?? null;
+		profile.Lover = user?.Id ?? null;
 
 		await m_dataBaseProvider.SetProfiles(profile);
 		await RespondAsync("Profile lover changed", ephemeral: true);
