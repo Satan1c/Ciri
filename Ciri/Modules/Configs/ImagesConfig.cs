@@ -28,13 +28,14 @@ public static class ImagesConfig
 	//public static readonly ImagesConfigClass Instance = new();
 }
 
-public class ImagesConfigSingleton
+/*public class ImagesConfigClass
 {
-	public string MafiaImage => ImagesConfig.MafiaImage;
-	public string AliasImage => ImagesConfig.AliasImage;
-	public string WhoIImage => ImagesConfig.WhoIImage;
-	public string CrocodileImage => ImagesConfig.CrocodileImage;
-	public string JackboxImage => ImagesConfig.JackboxImage;
-	public string TabletopImage => ImagesConfig.TabletopImage;
-	public string MomentsImage => ImagesConfig.MomentsImage;
-}
+	public const string MafiaImage = ImagesConfig.MafiaImage;
+	public const string AliasImage = ImagesConfig.AliasImage;
+	public const string WhoIImage = ImagesConfig.WhoIImage;
+	public const string CrocodileImage = ImagesConfig.CrocodileImage;
+	public const string JackboxImage = ImagesConfig.JackboxImage;
+	public const string TabletopImage = ImagesConfig.TabletopImage;
+	public const string MomentsImage = ImagesConfig.MomentsImage;
+	public const string BoostGif = ImagesConfig.BoostGif;
+}*/

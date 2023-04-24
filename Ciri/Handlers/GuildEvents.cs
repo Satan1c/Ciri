@@ -34,7 +34,7 @@ public class GuildEvents
 		m_client.UserLeft += OnMemberLeft;
 		m_client.MessageReceived += OnMessageReceived;
 		m_client.MessageUpdated += OnMessageEdit;
-		m_client.MessageReceived += OnMessageCreate;
+		//m_client.MessageReceived += OnMessageCreate;
 	}
 
 	public async Task Init()
@@ -65,7 +65,8 @@ public class GuildEvents
 				helper.AddLast(member.Id);
 			else if (member.RoleIds.Contains<ulong>(1091762902945505301))
 				closeMod.AddLast(member.Id);
-			else if (member.RoleIds.Contains<ulong>(789431764514504724)) prManager.AddLast(member.Id);
+			else if (member.RoleIds.Contains<ulong>(789431764514504724))
+				prManager.AddLast(member.Id);
 
 		Profit = new Dictionary<ulong, ProfitData>
 		{
@@ -115,10 +116,10 @@ public class GuildEvents
 			allowedMentions: AllowedMentions.None);
 	}
 
-	public async Task OnMessageCreate(SocketMessage message)
+	/*public async Task OnMessageCreate(SocketMessage message)
 	{
 		if (!message.Author.IsBot) return;
-	}
+	}*/
 
 	public async Task OnMemberJoined(SocketGuildUser member)
 	{
