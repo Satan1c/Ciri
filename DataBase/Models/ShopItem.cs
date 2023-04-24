@@ -2,13 +2,11 @@
 
 namespace DataBase.Models;
 
-public class ShopItem
+[BsonIgnoreExtraElements]
+public struct ShopItem
 {
-	public ShopItem()
-	{
-	}
-  
-  public ShopItem(byte index = 0, string? name = null, long cost = 0, ulong item = 0, sbyte discount = 0)
+	[BsonConstructor]
+	public ShopItem(byte index = 0, string name = null!, long cost = 0, ulong item = 0, sbyte discount = 0)
 	{
 		Index = index;
 		Name = name ?? string.Empty;
@@ -19,7 +17,7 @@ public class ShopItem
 
 	[BsonElement("index")] public byte Index { get; set; }
 
-	[BsonElement("name")] public string Name { get; set; }
+	[BsonElement("name")] public string Name { get; set; } = string.Empty;
 
 	[BsonElement("cost")] public long Cost { get; set; }
 
@@ -30,5 +28,10 @@ public class ShopItem
 	public long GetCost()
 	{
 		return (long)Math.Round(Cost * (1 - (double)Discount / 100), 0);
+	}
+	
+	public static byte NormalizeIndex(byte index)
+	{
+		return (byte)(index == 0 ? 0 : index - 1);
 	}
 }

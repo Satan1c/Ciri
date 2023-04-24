@@ -10,7 +10,7 @@ public class ItemArg
 	[ComplexParameterCtor]
 	public ItemArg(byte index, string name, long cost, IRole item, sbyte discount = 0)
 	{
-		Index = index;
+		Index = ShopItem.NormalizeIndex(index);
 		Name = name;
 		Cost = cost;
 		Item = item;
@@ -26,13 +26,13 @@ public class ItemArg
 	public ShopItem CreateShopItem(ulong item)
 	{
 		return new ShopItem
-		{
-			Index = Index,
-			Name = Name,
-			Cost = Cost,
-			Item = item,
-			Discount = Discount
-		};
+		(
+			Index,
+			Name,
+			Cost,
+			item,
+			Discount
+		);
 	}
 }
 
@@ -45,7 +45,7 @@ public class NullableItemArg
 		long? cost = null,
 		sbyte? discount = null)
 	{
-		Index = index;
+		Index = ShopItem.NormalizeIndex(index);
 		Name = name;
 		Cost = cost;
 		Item = item;
@@ -61,12 +61,12 @@ public class NullableItemArg
 	public ShopItem CreateShopItem(ulong item, ShopItem? old = null)
 	{
 		return new ShopItem
-		{
-			Index = Index,
-			Name = Name ?? old?.Name ?? string.Empty,
-			Cost = Cost ?? old?.Cost ?? 0,
-			Item = item,
-			Discount = Discount ?? 0
-		};
+		(
+			Index,
+			Name ?? old?.Name ?? string.Empty,
+			Cost ?? old?.Cost ?? 0,
+			item,
+			Discount ?? 0
+		);
 	}
 }
