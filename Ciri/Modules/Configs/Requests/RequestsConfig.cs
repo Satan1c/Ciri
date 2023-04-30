@@ -5,8 +5,11 @@ namespace Ciri.Modules.Configs.Requests;
 
 public static class RequestsConfig
 {
-	public const ulong ModersThread = 1081311778539049061;
-	public const ulong EventersThread = 1081311794603241515;
+	//public const ulong ModersThread = 1081311778539049061;
+	public const ulong ModersChannel = 1102184271424274462;
+
+	//public const ulong EventersThread = 1081311794603241515;
+	public const ulong EventersChannel = 1102184307516260402;
 	public const string Tabs = "\t\t";
 
 	public static readonly string[] Dates =

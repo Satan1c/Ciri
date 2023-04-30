@@ -89,24 +89,25 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 	[ModalInteraction("moder_modal", true)]
 	public async Task ModerModal(ModerRequestModal modal)
 	{
-		await Context.Guild
-			.GetThreadChannel(RequestsConfig.ModersThread)
-			.SendMessageAsync(embed: new EmbedBuilder()
-				.WithTitle("Заявка на Модератора")
-				.WithFields(modal.GetFields())
-				.Build());
+		//var channel = Context.Guild.GetThreadChannel(RequestsConfig.ModersThread);
+		var channel = Context.Guild.GetTextChannel(RequestsConfig.ModersChannel);
+		await channel.SendMessageAsync(embed: new EmbedBuilder()
+			.WithTitle("Заявка на Модератора")
+			.WithFields(modal.GetFields())
+			.Build());
+		
 		await Context.Interaction.RespondAsync("Sent", ephemeral: true);
 	}
 
 	[ModalInteraction("eventer_modal", true)]
 	public async Task EventerModal(EventerRequestModal modal)
 	{
-		await Context.Guild
-			.GetThreadChannel(RequestsConfig.EventersThread)
-			.SendMessageAsync(embed: new EmbedBuilder()
-				.WithTitle("Заявка на Ивентера")
-				.WithFields(modal.GetFields())
-				.Build());
+		var channel = Context.Guild.GetTextChannel(RequestsConfig.EventersChannel);
+		await channel.SendMessageAsync(embed: new EmbedBuilder()
+			.WithTitle("Заявка на Ивентера")
+			.WithFields(modal.GetFields())
+			.Build());
+		
 		await Context.Interaction.RespondAsync("Sent", ephemeral: true);
 	}
 }
