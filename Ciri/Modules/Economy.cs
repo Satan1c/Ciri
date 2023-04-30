@@ -90,7 +90,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			"shop_right"
 		};
 
-		var timeout = TimeSpan.FromMinutes(2);
+		var timeout = TimeSpan.FromMinutes(1);
 		var components = new ComponentBuilder()
 			.SetShopControls(1, shop, profile, ids)
 			.Build();
@@ -110,8 +110,10 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				       (ids.Contains(componentInteraction.Data.CustomId) ||
 				        componentInteraction.Data.CustomId.StartsWith("buy_"));
 			});
+			
 			var componentInteraction = (interaction as IComponentInteraction)!;
 			closeAt = DateTimeOffset.UtcNow.Add(timeout);
+			
 			await componentInteraction.DeferAsync(true);
 			if (componentInteraction.Data.CustomId == ids[1]) break;
 
