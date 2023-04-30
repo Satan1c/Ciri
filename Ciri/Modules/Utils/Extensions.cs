@@ -35,6 +35,7 @@ public static class Extensions
 		var items = CollectionsMarshal.AsSpan(shop.Items);
 		for (var i = 0; i < items.Length; i += 5)
 		{
+			var description = new StringBuilder();
 			var embed = new EmbedBuilder()
 				.WithTitle("Магазин")
 				.WithColor(3093046);
@@ -43,10 +44,11 @@ public static class Extensions
 			for (var j = 0; j < lim; j++)
 			{
 				var shopItem = items[i + j];
-				embed.AddField(
-					$"[{(shopItem.Index + 1).ToString()}] {shopItem.Name}",
-					$"{shop.GetCost(shopItem).ToString()}{EmojiConfig.HeartVal}");
+				description.Add(
+					$"[{(shopItem.Index + 1).ToString()}] {shopItem.Name}\n{shop.GetCost(shopItem).ToString()}{EmojiConfig.HeartVal}");
 			}
+
+			embed.WithDescription(description.ToString());
 
 			embeds.AddLast(embed);
 		}
@@ -111,7 +113,7 @@ public static class Extensions
 	{
 		if (max > 1)
 			builder.WithFooter($"Страница {current.ToString()} / {max.ToString()}");
-		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>");
+		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>\n\n{builder.Description}");
 	}
 
 	public static ComponentBuilder SetShopControls(this ComponentBuilder builder,
