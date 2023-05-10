@@ -8,15 +8,15 @@ public static class MessagesConfig
     public static readonly ulong[] Roles = new ulong[]
     {
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
     };
     
     public static readonly MessageProperties WelcomeProperties = new()
