@@ -14,7 +14,7 @@ public class Welcomer : InteractionModuleBase<SocketInteractionContext>
         await RespondAsync(embeds: props.Embeds, components: props.Components);
     }
 
-    [ComponentInteraction("welcome_category")]
+    [ComponentInteraction("welcome_category", true)]
     public async Task WelcomeSelect(string[] values)
     {
         var value = values[0];
@@ -29,7 +29,7 @@ public class Welcomer : InteractionModuleBase<SocketInteractionContext>
         await RespondAsync(ephemeral: true, embeds: props.Embeds, components: props.Components);
     }
 
-    [ComponentInteraction("roles_select")]
+    [ComponentInteraction("roles_select", true)]
     public async Task RolseSelect(IRole[] values)
     {
         var ids = values.Select(x => x.Id);
