@@ -113,7 +113,8 @@ public static class Extensions
 	{
 		if (max > 1)
 			builder.WithFooter($"Страница {current.ToString()} / {max.ToString()}");
-		return builder.WithDescription($"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>\n\n{builder.Description}");
+		return builder.WithDescription(
+			$"Авто-закрытие <t:{closeAt.ToUnixTimeSeconds().ToString()}:R>\n\n{builder.Description}");
 	}
 
 	public static ComponentBuilder SetShopControls(this ComponentBuilder builder,

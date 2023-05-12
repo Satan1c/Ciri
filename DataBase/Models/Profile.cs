@@ -26,7 +26,7 @@ public struct Profile
 		RepGiven = repGiven ?? new LinkedList<ulong>();
 		Voice = voice;
 	}
-	
+
 	[BsonElement("_id")] public ulong Id { get; set; }
 	[BsonElement("bio")] public string Bio { get; set; } = string.Empty;
 	[BsonElement("hearts")] public long Hearts { get; set; }

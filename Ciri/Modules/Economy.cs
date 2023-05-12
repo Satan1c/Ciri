@@ -110,10 +110,10 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				       (ids.Contains(componentInteraction.Data.CustomId) ||
 				        componentInteraction.Data.CustomId.StartsWith("buy_"));
 			});
-			
+
 			var componentInteraction = (interaction as IComponentInteraction)!;
 			closeAt = DateTimeOffset.UtcNow.Add(timeout);
-			
+
 			await componentInteraction.DeferAsync(true);
 			if (componentInteraction.Data.CustomId == ids[1]) break;
 

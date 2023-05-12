@@ -147,7 +147,7 @@ public class GuildEvents
 			    { Channel: ITextChannel { Id: 718427495640203264 }, Type: MessageType.UserPremiumGuildSubscription }
 		    || message.Author is not SocketGuildUser member)
 			return;
-		
+
 		await ClientEvents.OnLog(new LogMessage(
 			LogSeverity.Info,
 			nameof(OnMessageReceived),

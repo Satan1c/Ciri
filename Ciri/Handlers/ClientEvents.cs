@@ -28,11 +28,11 @@ public class ClientEvents
 	{
 		var text = "";
 
-		if (message.Exception is { StackTrace: { } })
+		if (message.Exception is { StackTrace: not null })
 		{
 			text = message.Exception.StackTrace.Replace("\n", "\n\t\t\t");
 
-			if (message.Exception is { InnerException.StackTrace: { } })
+			if (message.Exception is { InnerException.StackTrace: not null })
 			{
 				var innerRaw = message.Exception.InnerException.StackTrace.Replace("\n", "\n\t\t\t");
 

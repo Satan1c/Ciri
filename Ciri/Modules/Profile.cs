@@ -77,23 +77,23 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 					await RespondAsync("You already gave rep to this user", ephemeral: true);
 					return;
 				}
-				
+
 				profile.Reputation++;
 				author.RepGiven.AddLast(user.Id);
 				break;
-			
+
 			case RepMode.Remove:
 				if (!author.RepGiven.Contains(user.Id))
 				{
 					await RespondAsync("You didn't give rep to this user", ephemeral: true);
 					return;
 				}
-				
+
 				profile.Reputation--;
 				author.RepGiven.Remove(user.Id);
 				break;
 		}
-		
+
 		await m_dataBaseProvider.SetProfiles(new[] { profile, author });
 		await RespondAsync("Rep changed", ephemeral: true);
 	}
