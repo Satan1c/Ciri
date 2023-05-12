@@ -29,7 +29,7 @@ public struct ShopItem
 	{
 		return (long)Math.Round(Cost * (1 - (double)Discount / 100), 0);
 	}
-	
+
 	public static byte NormalizeIndex(byte index)
 	{
 		return (byte)(index == 0 ? 0 : index - 1);

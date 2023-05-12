@@ -26,7 +26,7 @@ public struct Shop
 		var cost = item.GetCost();
 		return (long)Math.Round(cost * (1 - (double)Discount / 100), 0);
 	}
-	
+
 	public Shop GetCopy()
 	{
 		var items = new ShopItem[Items.Count];

@@ -103,14 +103,14 @@ public class Requests : InteractionModuleBase<SocketInteractionContext>
 			Context.Guild.GetTextChannel(RequestsConfig.EventersChannel),
 			modal.GetFields());
 	}
-	
+
 	private async Task SendFormResultAsync(string topic, IMessageChannel channel, EmbedFieldBuilder[] fields)
 	{
 		await channel.SendMessageAsync($"<@{Context.Interaction.User.Id}>", embed: new EmbedBuilder()
 			.WithTitle(topic)
 			.WithFields(fields)
 			.Build());
-		
+
 		await Context.Interaction.RespondAsync("Sent", ephemeral: true);
 	}
 }

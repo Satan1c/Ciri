@@ -66,7 +66,7 @@ public class DataBaseProvider
 			{
 				Id = id
 			};
-      
+
 			m_profileCache.Put(itemId, item);
 		}
 
@@ -77,7 +77,7 @@ public class DataBaseProvider
 	{
 		var tasks = ids.Select(async arg => await GetProfiles(arg).ConfigureAwait(false)).ToArray();
 		var res = await Task.WhenAll(tasks).ConfigureAwait(false);
-		
+
 		return res;
 	}
 
@@ -148,14 +148,15 @@ public class DataBaseProvider
 
 		shop.Items.Remove(item);
 		m_shopItemCache.Remove(index.ToString());
-		
+
 		await SetShop(shop, oldShop).ConfigureAwait(false);
 	}
 
 	public async ValueTask UpdateInventories(ShopItem oldItem, ShopItem newItem = default)
 	{
 		var oldId = $"roles_{oldItem.Name}_{oldItem.Index}";
-		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync().ConfigureAwait(false)).ToArray();
+		var profiles = (await m_profiles.Find(p => p.Inventory.Contains(oldId)).ToListAsync().ConfigureAwait(false))
+			.ToArray();
 
 		profiles.UpdateUnsafe(ref oldId, ref newItem);
 
@@ -172,7 +173,7 @@ public class DataBaseProvider
 	{
 		if (profile.AreSame(default)) return;
 		if (before.AreSame(default)) before = await GetProfiles(profile.Id).ConfigureAwait(false);
-		
+
 		await m_profiles.SetDocument(
 				Builders<Profile>.Filter.Eq(x => x.Id, profile.Id),
 				m_profileCache,
@@ -185,7 +186,7 @@ public class DataBaseProvider
 	public async ValueTask SetShop(Shop shop, Shop before = default)
 	{
 		if (before.AreSame(default)) before = await GetShop().ConfigureAwait(false);
-		
+
 		await m_shop.SetDocument(
 				Builders<Shop>.Filter.Eq(x => x.Name, "roles"),
 				m_shopCache,

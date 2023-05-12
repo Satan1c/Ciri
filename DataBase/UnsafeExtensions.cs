@@ -29,7 +29,7 @@ public static class UnsafeExtensions
 		TDocument document)
 	{
 		var count = await collection.CountDocumentsAsync(filterDefinition).ConfigureAwait(false);
-		
+
 		if (count > 0)
 			await collection.ReplaceOneAsync(filterDefinition, document).ConfigureAwait(false);
 		else

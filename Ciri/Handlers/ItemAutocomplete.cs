@@ -51,7 +51,7 @@ public static class UnsafeExtensions
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
-		
+
 		else if (byte.TryParse(userInput, out _))
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
@@ -65,7 +65,7 @@ public static class UnsafeExtensions
 				startItems = ref Unsafe.Add(ref startItems, 1);
 				//count++;
 			}
-		
+
 		else
 			while (Unsafe.IsAddressLessThan(ref startItems, ref endItems) &&
 			       Unsafe.IsAddressLessThan(ref start, ref end))
