@@ -30,12 +30,18 @@ public class Welcomer : InteractionModuleBase<SocketInteractionContext>
 	}
 
 	[ComponentInteraction("roles_select", true)]
-	public async Task RolseSelect(IRole[] values)
+	public async Task RolseSelect(string[] rawValues)
 	{
-		var ids = values.Select(x => x.Id);
+		var values = rawValues.Select(x => Context.Guild.GetRole(ulong.Parse(x)) as IRole).ToArray();
+		
 		var user = Context.Guild.GetUser(Context.User.Id);
 
-		await user.AddRolesAsync(values);
-		await user.RemoveRolesAsync(MessagesConfig.Roles.Where(x => !ids.Contains(x)));
+		var add = values.Where(x => !user.Roles.Contains(x)).Select(x => x.Id).ToArray();
+		var delete = MessagesConfig.Roles.Where(x => !add.Contains(x)).ToArray();
+
+		await user.AddRolesAsync(add);
+		await user.RemoveRolesAsync(delete);
+
+		await RespondAsync("Done", ephemeral: true);
 	}
 }
