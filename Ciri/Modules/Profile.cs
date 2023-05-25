@@ -31,7 +31,7 @@ public class Profile : InteractionModuleBase<SocketInteractionContext>
 	{
 		user ??= Context.User;
 		var profile = await m_dataBaseProvider.GetProfiles(user.Id);
-		var member = Context.Guild.GetUser(user.Id);
+		var member = Context.Guild?.GetUser(user.Id);
 		if (member != null)
 		{
 			await RespondAsync(embed: GetEmbed(member, profile).Build());

@@ -28,7 +28,10 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			foreach (var (role, profit) in guildEvents.Profit)
 			{
 				var profiles = await m_dataBaseProvider.GetProfiles(profit.Members);
-				Array.ForEach(profiles, profile => profile.Hearts += profit.Hearts);
+				for (var i = 0; i < profiles.Length; i++)
+				{
+					profiles[i].Hearts += profit.Hearts;
+				}
 
 				await m_dataBaseProvider.SetProfiles(profiles);
 

@@ -24,11 +24,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CacheManager.Microsoft.Extensions.Caching.Memory" Version="2.0.0-beta-1629"/>
-        <PackageReference Include="Discord.Net.Core" Version="3.10.0"/>
-        <PackageReference Include="MongoDB.Bson" Version="2.19.1"/>
-        <PackageReference Include="MongoDB.Driver" Version="2.19.1"/>
-        <PackageReference Include="MongoDB.Driver.Core" Version="2.19.1"/>
+        <PackageReference Include="CacheManager.Microsoft.Extensions.Caching.Memory" Version="2.0.0-beta-1629" />
+        <PackageReference Include="Discord.Net.Core" Version="3.10.0" />
+        <PackageReference Include="MongoDB.Bson" Version="2.19.2" />
+        <PackageReference Include="MongoDB.Driver" Version="2.19.2" />
+        <PackageReference Include="MongoDB.Driver.Core" Version="2.19.2" />
     </ItemGroup>
 
 </Project>

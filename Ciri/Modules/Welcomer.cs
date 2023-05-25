@@ -30,7 +30,7 @@ public class Welcomer : InteractionModuleBase<SocketInteractionContext>
 	}
 
 	[ComponentInteraction("roles_select", true)]
-	public async Task RolseSelect(string[] rawValues)
+	public async Task RolesSelect(string[] rawValues)
 	{
 		var values = rawValues.Select(x => Context.Guild.GetRole(ulong.Parse(x)) as IRole).ToArray();
 		
