@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ciri.Utils;
 
@@ -10,5 +11,11 @@ public static class Utils
 			.ToDictionary(
 				kvp
 					=> (string)kvp.Key, kvp => (string)kvp.Value!);
+	}
+
+	public static IServiceCollection AddCronScheduler(this IServiceCollection collection)
+	{
+		collection.AddScheduler();
+		return collection;
 	}
 }
