@@ -6,6 +6,8 @@ using DataBase;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using NCrontab;
+using NCrontab.Scheduler;
 
 namespace Ciri.Modules;
 
@@ -13,27 +15,27 @@ namespace Ciri.Modules;
 [EnabledInDm(false)]
 public class Economy : InteractionModuleBase<SocketInteractionContext>
 {
-	public static DataBaseProvider m_dataBaseProvider;
+	public static DataBaseProvider DataBaseProvider = null!;
 	private readonly DiscordSocketClient m_client;
-	private readonly CronTimer m_timer = new("0 0 * * 0", "UTC");
+	private readonly CrontabSchedule m_schedule = CrontabSchedule.Parse("0 0 0 * * 0");
 
-	public Economy(DataBaseProvider dataBaseProvider, GuildEvents guildEvents, DiscordSocketClient client)
+	public Economy(DataBaseProvider dataBaseProvider, GuildEvents guildEvents, DiscordSocketClient client, IScheduler cron)
 	{
 		ITextChannel channel = client.GetGuild(542005378049638400).GetTextChannel(684011228531654658);
-		m_dataBaseProvider = dataBaseProvider;
+		DataBaseProvider = dataBaseProvider;
 		m_client = client;
-		m_timer.OnOccurence += async (_, _) =>
+		cron.AddTask(m_schedule, async _ =>
 		{
 			var description = new StringBuilder();
 			foreach (var (role, profit) in guildEvents.Profit)
 			{
-				var profiles = await m_dataBaseProvider.GetProfiles(profit.Members);
+				var profiles = await DataBaseProvider.GetProfiles(profit.Members);
 				for (var i = 0; i < profiles.Length; i++)
 				{
 					profiles[i].Hearts += profit.Hearts;
 				}
 
-				await m_dataBaseProvider.SetProfiles(profiles);
+				await DataBaseProvider.SetProfiles(profiles);
 
 				description.Add(
 					$"<@&{role}> получила зарплату в количестве **__{profit.Hearts}__**{EmojiConfig.HeartVal}");
@@ -42,8 +44,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			await channel.SendMessageAsync(embed: new EmbedBuilder()
 				.WithDescription(description.ToString())
 				.WithColor(3093046).Build());
-		};
-		m_timer.Start();
+		});
 	}
 
 	[SlashCommand("give", "give hearts to user")]
@@ -55,32 +56,32 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			return;
 		}
 
-		var myProfile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
+		var myProfile = await DataBaseProvider.GetProfiles(Context.User.Id);
 		if (myProfile.Hearts < amount)
 		{
 			await RespondAsync("You don't have enough hearts", ephemeral: true);
 			return;
 		}
 
-		var userProfile = await m_dataBaseProvider.GetProfiles(user.Id);
+		var userProfile = await DataBaseProvider.GetProfiles(user.Id);
 		myProfile.Hearts -= amount;
 		userProfile.Hearts += amount;
 
-		await m_dataBaseProvider.SetProfiles(new[] { myProfile, userProfile });
+		await DataBaseProvider.SetProfiles(new[] { myProfile, userProfile });
 		await RespondAsync($"You gave {user.Mention} {amount.ToString()}{EmojiConfig.HeartVal}", ephemeral: true);
 	}
 
 	[SlashCommand("shop", "shop command")]
 	public async Task Shop()
 	{
-		var shop = await m_dataBaseProvider.GetShop();
+		var shop = await DataBaseProvider.GetShop();
 		if (shop.AreSame(default))
 		{
 			await Context.Interaction.RespondAsync("Shop not found", ephemeral: true);
 			return;
 		}
 
-		var profile = await m_dataBaseProvider.GetProfiles(Context.User.Id);
+		var profile = await DataBaseProvider.GetProfiles(Context.User.Id);
 		var embeds = new LinkedList<EmbedBuilder>();
 		shop.GenerateEmbeds(ref embeds);
 
@@ -139,7 +140,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 			else if (componentInteraction.Data.CustomId.StartsWith("buy_"))
 			{
 				var index = byte.Parse(componentInteraction.Data.CustomId.Split("_")[^1]);
-				var item = await m_dataBaseProvider.GetItem(index);
+				var item = await DataBaseProvider.GetItem(index);
 
 				if (item.AreSame(default))
 				{
@@ -151,7 +152,7 @@ public class Economy : InteractionModuleBase<SocketInteractionContext>
 				profile.Inventory.AddLast($"{shop.Name}_{item.Name}_{item.Index}");
 				await Context.Guild.GetUser(Context.User.Id).AddRoleAsync(item.Item);
 
-				await m_dataBaseProvider.SetProfiles(profile);
+				await DataBaseProvider.SetProfiles(profile);
 				await Context.Interaction.FollowupAsync($"{item.Name} bought", ephemeral: true);
 
 				await interaction.UpdateShop(

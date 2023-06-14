@@ -68,6 +68,7 @@ await using var services = new ServiceCollection()
 	.AddSingleton<ClientEvents>()
 	.AddSingleton<GuildEvents>()
 	.AddSingleton<ShikimoriClient>()
+	.AddCronScheduler()
 	.BuildServiceProvider();
 
 var bot = services.GetRequiredService<DiscordSocketClient>();
